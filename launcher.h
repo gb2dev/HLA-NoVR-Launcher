@@ -3,6 +3,7 @@
 #define LAUNCHER_H
 
 
+#include <QDesktopServices>
 #include <QDir>
 #include <QObject>
 #include <QProcess>

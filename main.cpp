@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("launcher", &launcher);
+    rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
     const QUrl url(u"qrc:/HLA-NoVR-Launcher/Main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,

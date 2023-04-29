@@ -21,7 +21,7 @@ Window {
             updateButton.text = "Installing...";
         }
         function onUpdateModFinished() {
-            updateButton.text = "Update/Install";
+            updateButton.text = "Update/Install NoVR";
             updateButton.enabled = true;
         }
     }
@@ -39,7 +39,7 @@ Window {
     Video {
         id: video
         anchors.fill: parent
-        source: "file:/output.webm"
+        source: "file:///" + applicationDirPath + "/background.webm"
         fillMode: VideoOutput.PreserveAspectCrop
         loops: MediaPlayer.Infinite
         Component.onCompleted: play()
@@ -59,7 +59,7 @@ Window {
             id: playButton
             width: 217
             height: 34
-            text: "Play"
+            text: "Play NoVR"
             onClicked: {
                 launcher.playGame()
                 Qt.quit()
@@ -70,7 +70,7 @@ Window {
             id: updateButton
             width: 217
             height: 34
-            text: "Update/Install"
+            text: "Update/Install NoVR"
             onClicked: folderDialog.open()
         }
 
