@@ -22,10 +22,10 @@ int main(int argc, char *argv[])
     QUrl url;
 
     if (app.arguments().contains("-noupdate")) {
-        Launcher launcher;
+        Launcher *launcher = new Launcher(&app);
 
         QQmlContext *rootContext = engine.rootContext();
-        rootContext->setContextProperty("launcher", &launcher);
+        rootContext->setContextProperty("launcher", launcher);
         rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Main.qml"_qs);

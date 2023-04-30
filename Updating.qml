@@ -24,6 +24,6 @@ Window {
         id: errorLabel
         anchors.centerIn: parent
         font.pointSize: 24
-        text: "Updating..."
+        text: "Updating Launcher..."
     }
 }
