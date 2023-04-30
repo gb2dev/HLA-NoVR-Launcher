@@ -27,13 +27,13 @@ void Launcher::updateMod(const QString &installLocation)
             emit updateModInstalling();
             QProcess *unzip = new QProcess(this);
             unzip->setProgram("7za");
-            unzip->setArguments({"x", "main.zip"});
+            unzip->setArguments({"x", "main.zip", "-y"});
             unzip->start();
 
             connect(unzip, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                 QProcess *move = new QProcess(this);
                 move->setProgram("robocopy");
-                move->setArguments({"HLA-NoVR-main", QUrl(installLocation).toLocalFile()});
+                move->setArguments({"HLA-NoVR-main", QUrl(installLocation).toLocalFile(), "/S", "/IS"});
                 move->start();
 
                 connect(move, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
