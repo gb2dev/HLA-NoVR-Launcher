@@ -14,6 +14,13 @@ Window {
     minimumWidth: 976
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
+    onClosing: (close) => {
+        if (!updateButton.enabled) {
+            close.accepted = false;
+            errorLabel.text = "Installation in progress!\nPlease wait.";
+            error.open();
+        }
+    }
 
     Connections {
         target: launcher
@@ -23,6 +30,9 @@ Window {
         function onUpdateModFinished() {
             updateButton.text = "Update/Install NoVR";
             updateButton.enabled = true;
+            playButton.enabled = true;
+            quitButton.enabled = true;
+            error.close();
         }
     }
 
@@ -30,9 +40,32 @@ Window {
         id: folderDialog
         currentFolder: "file:///C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx"
         onAccepted: {
-            updateButton.enabled = false;
-            updateButton.text = "Downloading...";
             launcher.updateMod(folderDialog.selectedFolder)
+            if (launcher.validInstallation) {
+                updateButton.enabled = false;
+                updateButton.text = "Downloading...";
+                playButton.enabled = false;
+                quitButton.enabled = false;
+            } else {
+                errorLabel.text = "Half-Life: Alyx installation not found!\nPlease try again.";
+                error.open();
+            }
+        }
+    }
+
+    Popup {
+        id: error
+        anchors.centerIn: parent
+        height: 100
+        width: 600
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        Label {
+            id: errorLabel
+            anchors.fill: parent
+            font.pointSize: 24
         }
     }
 
@@ -60,6 +93,7 @@ Window {
             width: 217
             height: 34
             text: "Play NoVR"
+            enabled: launcher.validInstallation
             onClicked: {
                 launcher.playGame()
                 Qt.quit()

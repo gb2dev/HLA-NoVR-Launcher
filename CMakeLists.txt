@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(HLA-NoVR-Launcher VERSION 0.1 LANGUAGES CXX)
+project(HLA-NoVR-Launcher VERSION 0.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -18,7 +18,7 @@ qt_add_executable(HLA-NoVR-Launcher
 qt_add_qml_module(HLA-NoVR-Launcher
     URI HLA-NoVR-Launcher
     VERSION 1.0
-    QML_FILES Main.qml
+    QML_FILES Main.qml Updating.qml
 )
 
 set_target_properties(HLA-NoVR-Launcher PROPERTIES
@@ -36,3 +36,5 @@ target_link_libraries(HLA-NoVR-Launcher
 install(TARGETS HLA-NoVR-Launcher
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+target_compile_definitions(HLA-NoVR-Launcher PRIVATE VERSION="${PROJECT_VERSION}")

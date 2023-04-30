@@ -14,6 +14,7 @@
 class Launcher : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool validInstallation MEMBER m_validInstallation NOTIFY validInstallationChanged)
 public:
     explicit Launcher(QObject *parent = nullptr);
 
@@ -24,10 +25,13 @@ public slots:
 signals:
     void updateModInstalling();
     void updateModFinished();
+    void validInstallationChanged();
 
 private:
-    QSettings settings;
+    void checkValidInstallation();
 
+    QSettings settings;
+    bool m_validInstallation;
 };
 
 #endif // LAUNCHER_H
