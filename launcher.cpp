@@ -8,13 +8,13 @@ Launcher::Launcher(QObject *parent)
     checkValidInstallation();
 }
 
-void Launcher::playGame()
+void Launcher::playGame() // Launches The Game by using the set Install Location and then add the /play.bat to start it with the arguments and so on
 {
     QDir::setCurrent(settings.value("installLocation").toString());
     QDesktopServices::openUrl(QUrl::fromLocalFile(settings.value("installLocation").toString() + "/play.bat"));
 }
 
-void Launcher::updateMod(const QString &installLocation)
+void Launcher::updateMod(const QString &installLocation) // Takes the Install Location, downloads the new file, extracts everything so it is installed correctly
 {
     settings.setValue("installLocation", QUrl(installLocation).toLocalFile());
     checkValidInstallation();
@@ -46,7 +46,7 @@ void Launcher::updateMod(const QString &installLocation)
     }
 }
 
-void Launcher::checkValidInstallation()
+void Launcher::checkValidInstallation() // Checks for a valid Installation by lookin the the hlvr.exe exists and if the install Location is set correctly
 {
     m_validInstallation = QFile(settings.value("installLocation").toString() + "/game/bin/win64/hlvr.exe").exists();
     emit validInstallationChanged();
