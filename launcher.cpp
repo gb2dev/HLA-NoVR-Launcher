@@ -11,7 +11,7 @@ Launcher::Launcher(QObject *parent)
 void Launcher::playGame() // Launches The Game by using the set Install Location and then add the /play.bat to start it with the arguments and so on
 {
     QDir::setCurrent(settings.value("installLocation").toString());
-    QDesktopServices::openUrl(QUrl::fromLocalFile(settings.value("installLocation").toString() + "/play.bat"));
+    QDesktopServices::openUrl(QUrl("steam://run/546560// -novr -vsync -console -vconsole +vr_enable_fake_vr 1"));
 }
 
 void Launcher::updateMod(const QString &installLocation) // Takes the Install Location, downloads the new file, extracts everything so it is installed correctly
