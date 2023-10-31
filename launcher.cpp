@@ -8,13 +8,17 @@ Launcher::Launcher(QObject *parent)
     checkValidInstallation();
 }
 
-void Launcher::playGame() // Launches The Game by using the set Install Location and then add the /play.bat to start it with the arguments and so on
+void Launcher::editKeyBinds() // Opens the bindings.lua file
 {
-    QDir::setCurrent(settings.value("installLocation").toString());
-    QDesktopServices::openUrl(QUrl("steam://run/546560// -novr -vsync -console -vconsole +vr_enable_fake_vr 1"));
+    QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
 }
 
-void Launcher::updateMod(const QString &installLocation) // Takes the Install Location, downloads the new file, extracts everything so it is installed correctly
+void Launcher::playGame() // Launches the game with the arguments
+{
+    QDesktopServices::openUrl(QUrl("steam://run/546560// -novr +vr_enable_fake_vr 1 " + m_customLaunchOptions));
+}
+
+void Launcher::updateMod(const QString &installLocation) // Takes the install location, downloads the new file, extracts everything so it is installed correctly
 {
     settings.setValue("installLocation", QUrl(installLocation).toLocalFile());
     checkValidInstallation();
@@ -46,7 +50,7 @@ void Launcher::updateMod(const QString &installLocation) // Takes the Install Lo
     }
 }
 
-void Launcher::checkValidInstallation() // Checks for a valid Installation by lookin the the hlvr.exe exists and if the install Location is set correctly
+void Launcher::checkValidInstallation() // Checks for a valid installation by checking if the hlvr.exe exists and if the install location is set correctly
 {
     m_validInstallation = QFile(settings.value("installLocation").toString() + "/game/bin/win64/hlvr.exe").exists();
     emit validInstallationChanged();

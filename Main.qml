@@ -14,13 +14,13 @@ Window {
     minimumWidth: 976
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
-    onClosing: (close) => {
+    /*onClosing: (close) => {
         if (!updateButton.enabled) {
             close.accepted = false;
             errorLabel.text = "Installation in progress!\nPlease wait.";
             error.open();
         }
-    }
+    }*/
 
     Connections {
         target: launcher
@@ -31,6 +31,7 @@ Window {
             updateButton.text = "Update/Install NoVR";
             updateButton.enabled = true;
             playButton.enabled = true;
+            optionsButton.enabled = true;
             quitButton.enabled = true;
             error.close();
         }
@@ -45,6 +46,7 @@ Window {
                 updateButton.enabled = false;
                 updateButton.text = "Downloading...";
                 playButton.enabled = false;
+                optionsButton.enabled = false;
                 quitButton.enabled = false;
             } else {
                 errorLabel.text = "Half-Life: Alyx installation not found!\nPlease try again.";
@@ -112,8 +114,11 @@ Window {
             id: optionsButton
             width: 217
             height: 34
-            text: "Options"
-            enabled: false
+            text: "Edit Controls/Key Binds"
+            enabled: launcher.validInstallation
+            onClicked: {
+                launcher.editKeyBinds()
+            }
         }
 
         Button {
@@ -122,6 +127,28 @@ Window {
             height: 34
             text: "Quit"
             onClicked: Qt.quit()
+        }
+
+        Row {
+            id: row
+            width: 200
+            height: 400
+
+            TextField {
+                id: launchOptionsTextFieldLabel
+                width: 217
+                text: "Custom launch options:"
+                selectByMouse: false
+                readOnly: true
+            }
+            TextField {
+                id: launchOptionsTextField
+                width: 434
+                text: "-vsync -console -vconsole"
+                focus: true
+                Component.onCompleted: launcher.customLaunchOptions = text
+                onTextChanged: launcher.customLaunchOptions = text
+            }
         }
     }
 
