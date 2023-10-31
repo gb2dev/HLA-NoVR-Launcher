@@ -14,11 +14,11 @@ Window {
     minimumWidth: 976
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
-    /*onClosing: (close) => {
+    onClosing: (close) => {
         if (!updateButton.enabled) {
             close.accepted = false;
         }
-    }*/
+    }
 
     Label {
         id: errorLabel
