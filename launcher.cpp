@@ -47,6 +47,10 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                 });
             });
         });
+
+        connect(manager, &DownloadManager::downloadError, this, [this](const QString &message) {
+            emit errorMessage(message);
+        });
     }
 }
 

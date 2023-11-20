@@ -23,6 +23,7 @@ Window {
     }
 
     Connections {
+        id: connections
         target: launcher
         function onUpdateModInstalling() {
             updateButton.text = "Installing...";
@@ -34,6 +35,11 @@ Window {
             optionsButton.enabled = true;
             quitButton.enabled = true;
             error.close();
+        }
+        function onErrorMessage(message) {
+            connections.onUpdateModFinished()
+            errorLabel.text = message;
+            error.open();
         }
     }
 
@@ -68,6 +74,7 @@ Window {
             id: errorLabel
             anchors.fill: parent
             font.pointSize: 24
+            wrapMode: "WordWrap"
         }
     }
 

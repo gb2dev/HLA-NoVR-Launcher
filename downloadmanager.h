@@ -24,14 +24,14 @@ public slots:
 
         connect(reply, &QNetworkReply::finished, [=]() {
             if (reply->error()) {
-                qDebug() << "Download error: " << reply->errorString();
+                emit downloadError("Download error: " + reply->errorString());
                 reply->deleteLater();
                 return;
             }
 
             QFile file(destinationFile);
             if (!file.open(QIODevice::WriteOnly)) {
-                qDebug() << "Failed to open file for writing: " << destinationFile;
+                emit downloadError("Failed to open file for writing: " + destinationFile);
                 reply->deleteLater();
                 return;
             }
@@ -46,6 +46,7 @@ public slots:
 
 signals:
     void downloadFinished();
+    void downloadError(const QString &message);
 
 private:
     QNetworkAccessManager *manager;

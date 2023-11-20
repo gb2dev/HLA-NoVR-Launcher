@@ -27,6 +27,7 @@ public slots:
 signals:
     void updateModInstalling();
     void updateModFinished();
+    void errorMessage(const QString &message);
     void validInstallationChanged();
     void customLaunchOptionsChanged();
 
