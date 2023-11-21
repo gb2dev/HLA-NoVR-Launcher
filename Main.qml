@@ -22,6 +22,13 @@ Window {
         }
     }
 
+    Component.onCompleted: function() {
+        if (audioWarning) {
+            errorLabel.text = "Warning: Only Stereo/Mono audio devices are supported by the game!";
+            error.open();
+        }
+    }
+
     Connections {
         id: connections
         target: launcher

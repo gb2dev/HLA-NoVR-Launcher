@@ -2,6 +2,8 @@
 #include <QGuiApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QAudioDevice>
+#include <QMediaDevices>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -29,6 +31,11 @@ int main(int argc, char *argv[])
         rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Main.qml"_qs);
+
+        QAudioDevice info(QMediaDevices::defaultAudioOutput());
+        if (info.maximumChannelCount() > 2) {
+            rootContext->setContextProperty("audioWarning", true);
+        }
     } else {
         QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
         QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));

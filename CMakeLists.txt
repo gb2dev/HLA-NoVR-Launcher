@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(HLA-NoVR-Launcher VERSION 1.3 LANGUAGES CXX)
+project(HLA-NoVR-Launcher VERSION 1.4 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Network)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Network Multimedia)
 
 qt_standard_project_setup()
 
@@ -30,7 +30,7 @@ set_target_properties(HLA-NoVR-Launcher PROPERTIES
 )
 
 target_link_libraries(HLA-NoVR-Launcher
-    PRIVATE Qt6::Quick Qt6::Network
+    PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia
 )
 
 install(TARGETS HLA-NoVR-Launcher
