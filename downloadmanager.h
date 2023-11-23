@@ -22,7 +22,7 @@ public slots:
         QNetworkRequest request(url);
         QNetworkReply *reply = manager->get(request);
 
-        connect(reply, &QNetworkReply::finished, [=]() {
+        connect(reply, &QNetworkReply::finished, this, [=]() {
             if (reply->error()) {
                 emit downloadError("Download error: " + reply->errorString());
                 reply->deleteLater();

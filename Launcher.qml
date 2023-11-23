@@ -5,7 +5,7 @@ import QtQuick.Dialogs
 import QtQuick.Window
 
 Window {
-    id: window
+    id: launcherWindow
     visible: true
     color: "#000000"
     maximumHeight: 408
@@ -112,7 +112,6 @@ Window {
             enabled: launcher.validInstallation
             onClicked: {
                 launcher.playGame()
-                Qt.quit()
             }
         }
 

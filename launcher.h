@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QObject>
 #include <QProcess>
+#include <QQmlApplicationEngine>
 #include <QSettings>
 #include <QDebug>
 
@@ -18,6 +19,7 @@ class Launcher : public QObject
     Q_PROPERTY(QString customLaunchOptions MEMBER m_customLaunchOptions NOTIFY customLaunchOptionsChanged)
 public:
     explicit Launcher(QObject *parent = nullptr);
+    QQmlApplicationEngine *engine;
 
 public slots:
     void editKeyBinds();

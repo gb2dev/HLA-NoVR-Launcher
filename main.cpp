@@ -12,6 +12,7 @@
 #include <QQmlContext>
 
 #include "downloadmanager.h"
+#include "gamemenu.h"
 #include "launcher.h"
 
 int main(int argc, char *argv[])
@@ -24,24 +25,26 @@ int main(int argc, char *argv[])
     QUrl url;
 
     if (app.arguments().contains("-noupdate")) {
-        Launcher *launcher = new Launcher(&app);
-
         QQmlContext *rootContext = engine.rootContext();
-        rootContext->setContextProperty("launcher", launcher);
         rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
-        url = QUrl(u"qrc:/HLA-NoVR-Launcher/Main.qml"_qs);
+        Launcher *launcher = new Launcher(&app);
+        launcher->engine = &engine;
+        rootContext->setContextProperty("launcher", launcher);
 
         QAudioDevice info(QMediaDevices::defaultAudioOutput());
-        if (info.maximumChannelCount() > 2) {
-            rootContext->setContextProperty("audioWarning", true);
-        }
+        rootContext->setContextProperty("audioWarning", info.maximumChannelCount() > 2);
+
+        GameMenu *gameMenu = new GameMenu(&app);
+        rootContext->setContextProperty("gameMenu", gameMenu);
+
+        url = QUrl(u"qrc:/HLA-NoVR-Launcher/Launcher.qml"_qs);
     } else {
         QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
         QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));
         QNetworkReply *reply = networkManager->get(request);
 
-        QObject::connect(reply, &QNetworkReply::finished, [=]() {
+        QObject::connect(reply, &QNetworkReply::finished, nullptr, [reply]() {
             if (reply->error()) {
                 QDesktopServices::openUrl(QUrl("update.bat"));
                 qApp->quit();
@@ -58,7 +61,7 @@ int main(int argc, char *argv[])
                     DownloadManager *downloadManager = new DownloadManager;
                     downloadManager->download(QUrl("https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip"), "HLA-NoVR-Launcher.zip");
 
-                    QObject::connect(downloadManager, &DownloadManager::downloadFinished, [=]() {
+                    QObject::connect(downloadManager, &DownloadManager::downloadFinished, nullptr, [=]() {
                         QProcess *unzip = new QProcess;
                         unzip->setProgram("7za");
                         unzip->setArguments({"x", "HLA-NoVR-Launcher.zip", "-aoa", "-oUpdate"});

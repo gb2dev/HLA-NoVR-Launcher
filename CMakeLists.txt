@@ -4,7 +4,7 @@ project(HLA-NoVR-Launcher VERSION 1.4 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Network Multimedia)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Network Multimedia Concurrent)
 
 qt_standard_project_setup()
 
@@ -13,12 +13,14 @@ qt_add_executable(HLA-NoVR-Launcher
     launcher.h
     launcher.cpp
     downloadmanager.h
+    gamemenu.h
+    gamemenu.cpp
 )
 
 qt_add_qml_module(HLA-NoVR-Launcher
     URI HLA-NoVR-Launcher
     VERSION 1.0
-    QML_FILES Main.qml Updating.qml
+    QML_FILES Launcher.qml GameMenu.qml Updating.qml
 )
 
 set_target_properties(HLA-NoVR-Launcher PROPERTIES
@@ -30,7 +32,7 @@ set_target_properties(HLA-NoVR-Launcher PROPERTIES
 )
 
 target_link_libraries(HLA-NoVR-Launcher
-    PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia
+    PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia Qt6::Concurrent
 )
 
 install(TARGETS HLA-NoVR-Launcher
