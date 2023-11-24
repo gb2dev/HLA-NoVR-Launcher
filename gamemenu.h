@@ -3,19 +3,20 @@
 #define GAMEMENU_H
 
 
+#include <QDesktopServices>
 #include <QtConcurrent>
 #include <QObject>
 #include <QQuickWindow>
+#include <QSettings>
 #include <QDebug>
 
 
 class GameMenu : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool pauseMenuMode MEMBER m_pauseMenuMode NOTIFY pauseMenuModeChanged)
-    Q_PROPERTY(int health MEMBER m_health NOTIFY healthChanged)
 public:
     explicit GameMenu(QObject *parent = nullptr);
+    enum VisibilityState { Hidden, HUD, PauseMenu, MainMenu };
 
 public slots:
     void gameStarted(QQuickWindow *window);
@@ -26,24 +27,25 @@ public slots:
     void buttonQuitClicked();
 
 signals:
-    void pauseMenuModeChanged();
-    void healthChanged();
+    void pauseMenuModeChanged(bool pauseMenuMode);
+    void hudHealthChanged(int hudHealth);
+    void visibilityStateChanged(GameMenu::VisibilityState v);
 
 private:
+    QSettings settings;
     QQuickWindow *window;
-    QObject *menu;
-    QObject *hud;
     HWND hWnd;
     HWND targetWindow;
     bool escPrevious = false;
     QFuture<void> future;
     bool stopRead = false;
+    bool stopSearchingTargetWindow = false;
     void runGameScript(const QString &script);
     void runGameCommand(const QString &command);
+    int hudHealth = 100;
+    bool pauseMenuMode = false;
     bool loadingMode = false;
-    bool eventFilter(QObject *object, QEvent *event);
-    bool m_pauseMenuMode = false;
-    int m_health;
+    bool gamePaused = false;
 };
 
 #endif // LAUNCHER_H

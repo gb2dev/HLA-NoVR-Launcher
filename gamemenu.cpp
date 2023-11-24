@@ -16,56 +16,50 @@ GameMenu::GameMenu(QObject *parent)
 void GameMenu::gameStarted(QQuickWindow *w)
 {
     window = w;
-    menu = w->findChild<QObject *>("menu");
-    hud = w->findChild<QObject *>("labelHealth");
-    w->installEventFilter(this);
 
     // Add WS_EX_NOACTIVATE to the default extended style
     hWnd = (HWND)window->winId();
-    LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-    SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle | WS_EX_NOACTIVATE);
-
-    targetWindow = FindWindowA("SDL_app", "Half-Life: Alyx");
-    if (!targetWindow) {
-        qDebug() << "window not found";
-        qApp->quit();
-    }
-
-    SetForegroundWindow(targetWindow);
+    //LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+    //SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle | WS_EX_NOACTIVATE);
 
     QFuture<void> future = QtConcurrent::run([this]{
         bool skipBuffered = true;
         QFile file("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/console.log");
+        file.resize(0);
         file.open(QIODevice::ReadOnly);
         QTextStream in(&file);
         while (!stopRead) {
             while (!in.atEnd()) {
                 if (skipBuffered) {
-                    in.readLine();
+                    qDebug() << in.readLine();
                 } else {
                     QString resultString = in.readLine();
                     if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
-                        menu->setProperty("visible", false);
                         loadingMode = true;
+                        gamePaused = false;
+                        window->setFlag(Qt::WindowTransparentForInput, true);
+                        emit visibilityStateChanged(VisibilityState::Hidden);
                     } else {
                         QStringList result = resultString.split("[MainMenu] ");
                         if (result.size() > 1) {
                             if (result[1] == "main_menu_mode") {
-                                menu->setProperty("visible", true);
-                                QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
-                                m_pauseMenuMode = false;
-                                emit pauseMenuModeChanged();
+                                //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+                                pauseMenuMode = false;
                                 loadingMode = false;
+                                window->setFlag(Qt::WindowTransparentForInput, false);
+                                window->show();
+                                emit visibilityStateChanged(VisibilityState::MainMenu);
                             } else if (result[1] == "pause_menu_mode") {
-                                QGuiApplication::setOverrideCursor(Qt::BlankCursor);
-                                m_pauseMenuMode = true;
-                                emit pauseMenuModeChanged();
+                                //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+                                pauseMenuMode = true;
                                 loadingMode = false;
+                                window->setFlag(Qt::WindowTransparentForInput, true);
+                                window->show();
+                                emit visibilityStateChanged(VisibilityState::HUD);
                             } else {
                                 result = result[1].split(" ");
                                 if (result[0] == "player_health") {
-                                    m_health = result[1].toInt();
-                                    emit healthChanged();
+                                    emit hudHealthChanged(hudHealth = result[1].toInt());
                                 }
                             }
                         }
@@ -76,41 +70,67 @@ void GameMenu::gameStarted(QQuickWindow *w)
         }
     });
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &GameMenu::update);
-    timer->start();
+    QTimer* timerUpdate = new QTimer(this);
+    connect(timerUpdate, &QTimer::timeout, this, &GameMenu::update);
+    timerUpdate->start();
 
-    window->show();
+    QTimer* timerTargetWindow = new QTimer(this);
+    connect(timerTargetWindow, &QTimer::timeout, this, [this]() {
+        stopSearchingTargetWindow = true;
+    });
+    timerTargetWindow->start(60000);
+
+    //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+
+    //window->show();
 }
 
 void GameMenu::update()
 {
-    SetWindowPos(hWnd, GetNextWindow(targetWindow, GW_HWNDPREV), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-    RECT rect;
-    if (GetClientRect(targetWindow, &rect)) {
-        ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.left));
-        ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.right));
-        window->setGeometry(rect.left, rect.top, rect.right - rect.left,
-                            rect.bottom - rect.top);
-    } else {
-        qDebug() << "GetClientRect failed";
-        qApp->quit();
-    }
-
-    bool escape_current = GetKeyState(VK_ESCAPE) < 0;
-    if (escape_current && !escPrevious) {
-        if (m_pauseMenuMode && !loadingMode) {
-            if (menu->property("visible").toBool()) {
-                runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
-                QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+    if (stopSearchingTargetWindow) {
+        if (targetWindow) {
+            RECT rect;
+            if (GetClientRect(targetWindow, &rect)) {
+                ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.left));
+                ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.right));
+                window->setGeometry(rect.left, rect.top, rect.right - rect.left,
+                                    rect.bottom - rect.top);
             } else {
-                runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause");
-                QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+                qDebug() << "GetClientRect failed";
+                qApp->quit();
             }
-            menu->setProperty("visible", !menu->property("visible").toBool());
+
+            bool escape_current = GetKeyState(VK_ESCAPE) < 0;
+            if (escape_current && !escPrevious) {
+                if (pauseMenuMode && !loadingMode && GetFocus() == targetWindow) {
+                    if (gamePaused) {
+                        gamePaused = false;
+                        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
+                        //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+                        window->setFlag(Qt::WindowTransparentForInput, true);
+                        emit visibilityStateChanged(VisibilityState::HUD);
+                    } else {
+                        gamePaused = true;
+                        runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause");
+                        //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
+                        window->setFlag(Qt::WindowTransparentForInput, false);
+                        emit visibilityStateChanged(VisibilityState::PauseMenu);
+                    }
+                }
+            }
+            escPrevious = escape_current;
+        } else {
+            qApp->quit();
+        }
+    } else {
+        targetWindow = FindWindowA("SDL_app", "Half-Life: Alyx");
+        if (targetWindow) {
+            stopSearchingTargetWindow = true;
+
+            SetWindowLongPtr(hWnd, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
+            SetForegroundWindow(targetWindow);
         }
     }
-    escPrevious = escape_current;
 }
 
 void GameMenu::runGameScript(const QString &script)
@@ -131,10 +151,13 @@ void GameMenu::runGameCommand(const QString &command)
 
 void GameMenu::buttonPlayClicked()
 {
-    if (m_pauseMenuMode) {
+    if (pauseMenuMode && GetFocus() == targetWindow) {
+        gamePaused = false;
+        //SetForegroundWindow(targetWindow);
         runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
-        menu->setProperty("visible", false);
-        QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+        //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
+        window->setFlag(Qt::WindowTransparentForInput, true);
+        emit visibilityStateChanged(VisibilityState::HUD);
     } else {
         // TODO: Implement loading most recent save
         runGameCommand("load quick");
@@ -143,7 +166,7 @@ void GameMenu::buttonPlayClicked()
 
 void GameMenu::buttonOptionsClicked()
 {
-
+    QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
 }
 
 void GameMenu::buttonMainMenuClicked()
@@ -154,12 +177,4 @@ void GameMenu::buttonMainMenuClicked()
 void GameMenu::buttonQuitClicked()
 {
     runGameCommand("quit");
-}
-
-bool GameMenu::eventFilter(QObject *object, QEvent *event)
-{
-    if (event->type() == QEvent::MouseButtonPress) {
-        SetForegroundWindow(targetWindow);
-    }
-    return false;
 }

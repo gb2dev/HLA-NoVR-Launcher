@@ -5,13 +5,54 @@ import QtQuick.Layouts
 
 Window {
     id: gameMenuWindow
-    flags: Qt.FramelessWindowHint
+    visible: true
+    flags: Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
     color: "transparent"
 
     Component.onCompleted: gameMenu.gameStarted(this)
 
+    Connections {
+        id: connections
+        target: gameMenu
+        function onHudHealthChanged(hudHealth) {
+            labelHudHealth.text = hudHealth;
+        }
+        function onVisibilityStateChanged(state) {
+            switch (state) {
+                case 0: // Hidden
+                    menu.visible = false;
+                    labelHudHealth.visible = false;
+                    break;
+                case 1: // HUD
+                    menu.visible = false;
+                    labelHudHealth.visible = true;
+                    break;
+                case 2: // PauseMenu
+                    menu.visible = true;
+                    buttonMainMenu.visible = true;
+                    break;
+                case 3: // MainMenu
+                    mainMenuTimer.start();
+                    break;
+            }
+        }
+    }
+
+    Timer {
+        id: mainMenuTimer
+        interval: 5000
+        running: false
+        repeat: false
+        onTriggered: function() {
+            menu.visible = true;
+            buttonMainMenu.visible = false;
+            labelHudHealth.visible = false;
+        }
+    }
+
     ColumnLayout {
-        objectName: "menu"
+        id: menu
+        visible: false
         width: 100
         height: 100
         anchors.centerIn: parent
@@ -35,7 +76,6 @@ Window {
         Button {
             id: buttonMainMenu
             width: 50
-            visible: gameMenu.pauseMenuMode
             text: qsTr("Main Menu")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonMainMenuClicked()
@@ -51,10 +91,11 @@ Window {
     }
 
     Label {
-        objectName: "labelHealth"
+        id: labelHudHealth
+        visible: false
+        text: "100"
+        color: "red"
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 0
-        text: gameMenu.health
     }
 }

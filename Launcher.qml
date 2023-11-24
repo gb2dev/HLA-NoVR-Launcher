@@ -174,9 +174,7 @@ Window {
         text: "NoVR by GB_2 Development Team"
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        font.bold: true
-        anchors.bottomMargin: 2
+        anchors.bottomMargin: 4
         anchors.leftMargin: 2
-        font.family: "Tahoma"
     }
 }
