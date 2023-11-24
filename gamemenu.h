@@ -13,6 +13,7 @@ class GameMenu : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool pauseMenuMode MEMBER m_pauseMenuMode NOTIFY pauseMenuModeChanged)
+    Q_PROPERTY(int health MEMBER m_health NOTIFY healthChanged)
 public:
     explicit GameMenu(QObject *parent = nullptr);
 
@@ -26,9 +27,12 @@ public slots:
 
 signals:
     void pauseMenuModeChanged();
+    void healthChanged();
 
 private:
     QQuickWindow *window;
+    QObject *menu;
+    QObject *hud;
     HWND hWnd;
     HWND targetWindow;
     bool escPrevious = false;
@@ -39,6 +43,7 @@ private:
     bool loadingMode = false;
     bool eventFilter(QObject *object, QEvent *event);
     bool m_pauseMenuMode = false;
+    int m_health;
 };
 
 #endif // LAUNCHER_H

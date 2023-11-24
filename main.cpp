@@ -1,4 +1,5 @@
 
+#include <QFont>
 #include <QGuiApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("HLA-NoVR");
     app.setApplicationName("Launcher");
+    app.setFont(QFont("Raju"));
 
     QQmlApplicationEngine engine;
     QUrl url;

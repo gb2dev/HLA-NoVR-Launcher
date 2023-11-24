@@ -1,6 +1,8 @@
 
 #include "gamemenu.h"
 
+#include <QGuiApplication>
+
 #include <Windows.h>
 
 GameMenu::GameMenu(QObject *parent)
@@ -14,6 +16,8 @@ GameMenu::GameMenu(QObject *parent)
 void GameMenu::gameStarted(QQuickWindow *w)
 {
     window = w;
+    menu = w->findChild<QObject *>("menu");
+    hud = w->findChild<QObject *>("labelHealth");
     w->installEventFilter(this);
 
     // Add WS_EX_NOACTIVATE to the default extended style
@@ -41,20 +45,28 @@ void GameMenu::gameStarted(QQuickWindow *w)
                 } else {
                     QString resultString = in.readLine();
                     if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
-                        window->setVisible(false);
+                        menu->setProperty("visible", false);
                         loadingMode = true;
                     } else {
                         QStringList result = resultString.split("[MainMenu] ");
                         if (result.size() > 1) {
                             if (result[1] == "main_menu_mode") {
-                                window->setVisible(true);
+                                menu->setProperty("visible", true);
+                                QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
                                 m_pauseMenuMode = false;
                                 emit pauseMenuModeChanged();
                                 loadingMode = false;
                             } else if (result[1] == "pause_menu_mode") {
+                                QGuiApplication::setOverrideCursor(Qt::BlankCursor);
                                 m_pauseMenuMode = true;
                                 emit pauseMenuModeChanged();
                                 loadingMode = false;
+                            } else {
+                                result = result[1].split(" ");
+                                if (result[0] == "player_health") {
+                                    m_health = result[1].toInt();
+                                    emit healthChanged();
+                                }
                             }
                         }
                     }
@@ -88,12 +100,14 @@ void GameMenu::update()
     bool escape_current = GetKeyState(VK_ESCAPE) < 0;
     if (escape_current && !escPrevious) {
         if (m_pauseMenuMode && !loadingMode) {
-            if (window->isVisible()) {
+            if (menu->property("visible").toBool()) {
                 runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
+                QGuiApplication::setOverrideCursor(Qt::BlankCursor);
             } else {
                 runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause");
+                QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
             }
-            window->setVisible(!window->isVisible());
+            menu->setProperty("visible", !menu->property("visible").toBool());
         }
     }
     escPrevious = escape_current;
@@ -119,7 +133,8 @@ void GameMenu::buttonPlayClicked()
 {
     if (m_pauseMenuMode) {
         runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
-        window->setVisible(false);
+        menu->setProperty("visible", false);
+        QGuiApplication::setOverrideCursor(Qt::BlankCursor);
     } else {
         // TODO: Implement loading most recent save
         runGameCommand("load quick");

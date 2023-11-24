@@ -11,7 +11,7 @@ Window {
     Component.onCompleted: gameMenu.gameStarted(this)
 
     ColumnLayout {
-        id: columnLayout
+        objectName: "menu"
         width: 100
         height: 100
         anchors.centerIn: parent
@@ -48,5 +48,13 @@ Window {
             Layout.fillWidth: true
             onClicked: gameMenu.buttonQuitClicked()
         }
+    }
+
+    Label {
+        objectName: "labelHealth"
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 0
+        text: gameMenu.health
     }
 }
