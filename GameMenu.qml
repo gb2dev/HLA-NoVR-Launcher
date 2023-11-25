@@ -24,6 +24,7 @@ Window {
                     labelHudHealth.visible = false;
                     savesListView.visible = false;
                     chaptersListView.visible = false;
+                    addonsListView.visible = false;
                     break;
                 case 1: // HUD
                     menu.visible = false;
@@ -36,6 +37,7 @@ Window {
                     buttonPlay.visible = true;
                     buttonLoadGame.visible = true;
                     buttonMainMenu.visible = true;
+                    buttonAddons.visible = false;
                     savesListView.visible = false;
                     chaptersListView.visible = false;
                     savesModel.clear();
@@ -48,11 +50,18 @@ Window {
                     } else if (savesListView.visible) {
                         savesListView.visible = false;
                         menu.visible = true;
+                    } else if (addonsListView.visible) {
+                        addonsListView.visible = false;
+                        menu.visible = true;
                     } else {
                         mainMenuTimer.start();
                     }
+                    buttonAddons.visible = true;
                     savesModel.clear();
                     savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
+                    addonsModel.clear();
+                    addonsModel.append({ addonName: "Cancel", addonFileName: "cancel" });
+                    addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
                     break;
             }
         }
@@ -66,6 +75,9 @@ Window {
         function onNoSaveFilesDetected() {
             buttonPlay.visible = false;
             buttonLoadGame.visible = false;
+        }
+        function onAddonAdded(name, fileName) {
+            addonsModel.append({ addonName: name, addonFileName: fileName })
         }
     }
 
@@ -130,6 +142,28 @@ Window {
         }
     }
 
+    ListModel {
+        id: addonsModel
+
+        ListElement { addonName: "Cancel"; addonFileName: "cancel"; }
+        ListElement { addonName: "Workshop"; addonFileName: "workshop"; }
+    }
+
+    ListView {
+        id: addonsListView
+        visible: false
+        anchors.top: menu.top
+        anchors.bottom: parent.bottom
+        width: 200
+        anchors.horizontalCenter: parent.horizontalCenter
+        model: addonsModel
+        delegate: Button {
+            width: 200
+            text: addonName
+            onClicked: gameMenu.toggleAddon(addonFileName)
+        }
+    }
+
     Timer {
         id: mainMenuTimer
         interval: 5000
@@ -191,6 +225,18 @@ Window {
             text: qsTr("Main Menu")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonMainMenuClicked()
+        }
+
+        Button {
+            id: buttonAddons
+            width: 50
+            text: qsTr("Addons")
+            Layout.fillWidth: true
+            onClicked: function() {
+                addonsListView.visible = true;
+                menu.visible = false;
+                gameMenu.buttonAddonsClicked();
+            }
         }
 
         Button {

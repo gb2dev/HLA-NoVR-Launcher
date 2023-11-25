@@ -21,6 +21,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
 
     QFuture<void> future = QtConcurrent::run([this]{
         bool skipBuffered = true;
+        bool listingAddons = false;
         QFile file("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/console.log");
         file.resize(0);
         file.open(QIODevice::ReadOnly);
@@ -31,6 +32,27 @@ void GameMenu::gameStarted(QQuickWindow *w)
                     qDebug() << in.readLine();
                 } else {
                     QString resultString = in.readLine();
+                    if (listingAddons) {
+                        if (resultString.contains("default_enabled_addons_list = ")) {
+                            listingAddons = false;
+                            enabledAddons = resultString.split("default_enabled_addons_list = ").at(1).split(",");
+                        } else {
+                            resultString = resultString.sliced(15);
+                            QStringList localAddons = resultString.split("local: ");
+                            QStringList subscribedAddons = resultString.split("subscribed: ");
+                            //resultString = localAddons.at(0);
+                            //resultString.remove("\t");
+                            //resultString.remove(QRegularExpression("subscribed.*$"));
+                            //qDebug() << resultString.split(" = ");
+                            if (localAddons.size() == 2) {
+                                resultString = localAddons.at(1);
+                                emit addonAdded(resultString, resultString);
+                            } else if (subscribedAddons.size() == 2) {
+                                resultString = subscribedAddons.at(1);
+                                emit addonAdded(resultString, resultString);
+                            }
+                        }
+                    }
                     if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
                         loadingMode = true;
                         gamePaused = false;
@@ -43,15 +65,22 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, false);
                                 emit visibilityStateChanged(VisibilityState::MainMenu);
+
+                                // Check if there are no save files
                                 QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
                                 if (savesDirectory.entryList().isEmpty()) {
                                     emit noSaveFilesDetected();
                                 }
+
+                                // Get list of addon
+                                runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
                             } else if (result[1] == "pause_menu_mode") {
                                 pauseMenuMode = true;
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, true);
                                 emit visibilityStateChanged(VisibilityState::HUD);
+                            } else if (result[1] == "addon_list") {
+                                listingAddons = true;
                             } else {
                                 result = result[1].split(" ");
                                 if (result[0] == "player_health") {
@@ -189,6 +218,11 @@ void GameMenu::buttonMainMenuClicked()
     runGameCommand("map startup");
 }
 
+void GameMenu::buttonAddonsClicked()
+{
+
+}
+
 void GameMenu::buttonQuitClicked()
 {
     runGameCommand("quit");
@@ -209,5 +243,24 @@ void GameMenu::newGame(const QString &mapName)
         emit visibilityStateChanged(pauseMenuMode ? VisibilityState::PauseMenu : VisibilityState::MainMenu);
     } else {
         runGameCommand("map " + mapName);
+    }
+}
+
+void GameMenu::toggleAddon(const QString &fileName)
+{
+    if (fileName == "cancel") {
+        emit visibilityStateChanged(VisibilityState::MainMenu);
+    } else if (fileName == "workshop") {
+        QDesktopServices::openUrl(QUrl("steam://url/SteamWorkshopPage/546560"));
+    } else {
+        if (enabledAddons.contains(fileName)) {
+            enabledAddons.removeAll(fileName);
+            runGameCommand("addon_disable " + fileName);
+            emit addonAdded(fileName + " (Disabled)", fileName);
+        } else {
+            enabledAddons.append(fileName);
+            runGameCommand("addon_enable " + fileName);
+            emit addonAdded(fileName + " (Enabled)", fileName);
+        }
     }
 }

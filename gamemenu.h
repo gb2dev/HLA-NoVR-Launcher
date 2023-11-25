@@ -26,9 +26,11 @@ public slots:
     void buttonNewGameClicked();
     void buttonOptionsClicked();
     void buttonMainMenuClicked();
+    void buttonAddonsClicked();
     void buttonQuitClicked();
     void loadSave(const QString &fileName);
     void newGame(const QString &mapName);
+    void toggleAddon(const QString &fileName);
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
@@ -37,6 +39,7 @@ signals:
     void saveAdded(const QString &name, const QString &timeDate, const QString &fileName);
     void newGameSelected();
     void noSaveFilesDetected();
+    void addonAdded(const QString &name, const QString &fileName);
 
 private:
     QSettings settings;
@@ -53,6 +56,7 @@ private:
     bool pauseMenuMode = false;
     bool loadingMode = false;
     bool gamePaused = false;
+    QStringList enabledAddons;
 };
 
 #endif // LAUNCHER_H
