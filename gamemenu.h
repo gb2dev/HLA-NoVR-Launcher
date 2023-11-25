@@ -23,16 +23,19 @@ public slots:
     void update();
     void buttonPlayClicked();
     void buttonLoadGameClicked();
+    void buttonNewGameClicked();
     void buttonOptionsClicked();
     void buttonMainMenuClicked();
     void buttonQuitClicked();
     void loadSave(const QString &fileName);
+    void newGame(const QString &mapName);
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
     void hudHealthChanged(int hudHealth);
     void visibilityStateChanged(GameMenu::VisibilityState v);
     void saveAdded(const QString &name, const QString &timeDate, const QString &fileName);
+    void newGameSelected();
 
 private:
     QSettings settings;

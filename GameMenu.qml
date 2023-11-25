@@ -23,26 +23,43 @@ Window {
                     menu.visible = false;
                     labelHudHealth.visible = false;
                     savesListView.visible = false;
+                    chaptersListView.visible = false;
                     break;
                 case 1: // HUD
                     menu.visible = false;
-                    labelHudHealth.visible = true;
+                    //labelHudHealth.visible = true;
                     savesListView.visible = false;
+                    chaptersListView.visible = false;
                     break;
                 case 2: // PauseMenu
                     menu.visible = true;
                     buttonMainMenu.visible = true;
                     savesListView.visible = false;
-                    savesModel.clear()
+                    chaptersListView.visible = false;
+                    savesModel.clear();
+                    savesModel.append({ saveName: "Cancel", saveFileName: "cancel" });
                     break;
                 case 3: // MainMenu
-                    mainMenuTimer.start();
-                    savesModel.clear()
+                    if (chaptersListView.visible) {
+                        chaptersListView.visible = false;
+                        menu.visible = true;
+                    } else if (savesListView.visible) {
+                        savesListView.visible = false;
+                        menu.visible = true;
+                    } else {
+                        mainMenuTimer.start();
+                    }
+                    savesModel.clear();
+                    savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
                     break;
             }
         }
         function onSaveAdded(name, timeDate, fileName) {
             savesModel.append({ saveName: name, saveTimeDate: timeDate, saveFileName: fileName })
+        }
+        function onNewGameSelected() {
+            chaptersListView.visible = true;
+            menu.visible = false;
         }
     }
 
@@ -61,16 +78,49 @@ Window {
             width: 200
             contentItem: Column {
                 Label {
-                    font.bold: true
+                    font.bold: saveFileName !== "cancel"
                     text: saveName
-                    verticalAlignment: Text.AlignLeft
+                    verticalAlignment: saveFileName === "cancel" ? Text.AlignHCenter : Text.AlignLeft
                 }
                 Label {
+                    visible: saveFileName !== "cancel"
                     text: saveTimeDate
                     verticalAlignment: Text.AlignLeft
                 }
             }
             onClicked: gameMenu.loadSave(saveFileName)
+        }
+    }
+
+    ListModel {
+        id: chaptersModel
+
+        ListElement { chapterName: "Cancel"; chapterMapName: "cancel"; }
+        ListElement { chapterName: "Entanglement"; chapterMapName: "a1_intro_world" }
+        ListElement { chapterName: "The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance" }
+        ListElement { chapterName: "Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel" }
+        ListElement { chapterName: "Superweapon"; chapterMapName: "a3_station_street" }
+        ListElement { chapterName: "The Northern Star"; chapterMapName: "a3_hotel_lobby_basement" }
+        ListElement { chapterName: "Arms Race"; chapterMapName: "a3_c17_processing_plant" }
+        ListElement { chapterName: "Jeff"; chapterMapName: "a3_distillery" }
+        ListElement { chapterName: "Captivity"; chapterMapName: "a4_c17_zoo" }
+        ListElement { chapterName: "Revelations"; chapterMapName: "a4_c17_tanker_yard" }
+        ListElement { chapterName: "Breaking and Entering"; chapterMapName: "a4_c17_water_tower" }
+        ListElement { chapterName: "Point Extraction"; chapterMapName: "a5_vault" }
+    }
+
+    ListView {
+        id: chaptersListView
+        visible: false
+        anchors.top: menu.top
+        anchors.bottom: parent.bottom
+        width: 200
+        anchors.horizontalCenter: parent.horizontalCenter
+        model: chaptersModel
+        delegate: Button {
+            width: 200
+            text: chapterName
+            onClicked: gameMenu.newGame(chapterMapName)
         }
     }
 
@@ -93,7 +143,7 @@ Window {
         height: 100
         anchors.centerIn: parent
 
-        Button {
+        Button { // TODO: Hide if no save file yet
             id: buttonPlay
             width: 50
             text: qsTr("Continue")
@@ -111,6 +161,14 @@ Window {
                 savesListView.visible = true;
                 gameMenu.buttonLoadGameClicked();
             }
+        }
+
+        Button {
+            id: buttonNewGmae
+            width: 50
+            text: qsTr("New Game")
+            Layout.fillWidth: true
+            onClicked: gameMenu.buttonNewGameClicked();
         }
 
         Button {

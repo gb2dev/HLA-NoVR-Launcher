@@ -170,6 +170,11 @@ void GameMenu::buttonLoadGameClicked()
     }
 }
 
+void GameMenu::buttonNewGameClicked()
+{
+    emit newGameSelected();
+}
+
 void GameMenu::buttonOptionsClicked()
 {
     QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
@@ -187,5 +192,18 @@ void GameMenu::buttonQuitClicked()
 
 void GameMenu::loadSave(const QString &fileName)
 {
-    runGameCommand("load " + fileName);
+    if (fileName == "cancel") {
+        emit visibilityStateChanged(pauseMenuMode ? VisibilityState::PauseMenu : VisibilityState::MainMenu);
+    } else {
+        runGameCommand("load " + fileName);
+    }
+}
+
+void GameMenu::newGame(const QString &mapName)
+{
+    if (mapName == "cancel") {
+        emit visibilityStateChanged(pauseMenuMode ? VisibilityState::PauseMenu : VisibilityState::MainMenu);
+    } else {
+        runGameCommand("map " + mapName);
+    }
 }
