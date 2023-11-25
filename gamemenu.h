@@ -22,14 +22,17 @@ public slots:
     void gameStarted(QQuickWindow *window);
     void update();
     void buttonPlayClicked();
+    void buttonLoadGameClicked();
     void buttonOptionsClicked();
     void buttonMainMenuClicked();
     void buttonQuitClicked();
+    void loadSave(const QString &fileName);
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
     void hudHealthChanged(int hudHealth);
     void visibilityStateChanged(GameMenu::VisibilityState v);
+    void saveAdded(const QString &name, const QString &timeDate, const QString &fileName);
 
 private:
     QSettings settings;

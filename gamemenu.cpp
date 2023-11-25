@@ -17,10 +17,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
 {
     window = w;
 
-    // Add WS_EX_NOACTIVATE to the default extended style
     hWnd = (HWND)window->winId();
-    //LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-    //SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle | WS_EX_NOACTIVATE);
 
     QFuture<void> future = QtConcurrent::run([this]{
         bool skipBuffered = true;
@@ -37,24 +34,19 @@ void GameMenu::gameStarted(QQuickWindow *w)
                     if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
                         loadingMode = true;
                         gamePaused = false;
-                        window->setFlag(Qt::WindowTransparentForInput, true);
                         emit visibilityStateChanged(VisibilityState::Hidden);
                     } else {
                         QStringList result = resultString.split("[MainMenu] ");
                         if (result.size() > 1) {
                             if (result[1] == "main_menu_mode") {
-                                //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
                                 pauseMenuMode = false;
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, false);
-                                window->show();
                                 emit visibilityStateChanged(VisibilityState::MainMenu);
                             } else if (result[1] == "pause_menu_mode") {
-                                //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
                                 pauseMenuMode = true;
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, true);
-                                window->show();
                                 emit visibilityStateChanged(VisibilityState::HUD);
                             } else {
                                 result = result[1].split(" ");
@@ -79,10 +71,6 @@ void GameMenu::gameStarted(QQuickWindow *w)
         stopSearchingTargetWindow = true;
     });
     timerTargetWindow->start(60000);
-
-    //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
-
-    //window->show();
 }
 
 void GameMenu::update()
@@ -101,19 +89,17 @@ void GameMenu::update()
             }
 
             bool escape_current = GetKeyState(VK_ESCAPE) < 0;
-            if (escape_current && !escPrevious) {
-                if (pauseMenuMode && !loadingMode && GetFocus() == targetWindow) {
+            if (escape_current && !escPrevious && GetForegroundWindow() == targetWindow) {
+                if (pauseMenuMode && !loadingMode) {
                     if (gamePaused) {
                         gamePaused = false;
-                        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
-                        //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
                         window->setFlag(Qt::WindowTransparentForInput, true);
+                        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
                         emit visibilityStateChanged(VisibilityState::HUD);
                     } else {
                         gamePaused = true;
-                        runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause");
-                        //QGuiApplication::setOverrideCursor(Qt::ArrowCursor);
                         window->setFlag(Qt::WindowTransparentForInput, false);
+                        runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause");
                         emit visibilityStateChanged(VisibilityState::PauseMenu);
                     }
                 }
@@ -128,7 +114,7 @@ void GameMenu::update()
             stopSearchingTargetWindow = true;
 
             SetWindowLongPtr(hWnd, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
-            SetForegroundWindow(targetWindow);
+            window->show();
         }
     }
 }
@@ -151,16 +137,36 @@ void GameMenu::runGameCommand(const QString &command)
 
 void GameMenu::buttonPlayClicked()
 {
-    if (pauseMenuMode && GetFocus() == targetWindow) {
-        gamePaused = false;
-        //SetForegroundWindow(targetWindow);
-        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
-        //QGuiApplication::setOverrideCursor(Qt::BlankCursor);
-        window->setFlag(Qt::WindowTransparentForInput, true);
-        emit visibilityStateChanged(VisibilityState::HUD);
+    if (pauseMenuMode) {
+        if (GetForegroundWindow() == targetWindow) {
+            gamePaused = false;
+            window->setFlag(Qt::WindowTransparentForInput, true);
+            runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
+            emit visibilityStateChanged(VisibilityState::HUD);
+        }
     } else {
-        // TODO: Implement loading most recent save
-        runGameCommand("load quick");
+        QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
+        QString name = savesDirectory.entryList().at(0);
+        name.remove(".sav");
+        runGameCommand("load " + name);
+    }
+}
+
+void GameMenu::buttonLoadGameClicked()
+{
+    QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
+    QFileInfoList saveInfos = savesDirectory.entryInfoList();
+    for (const QFileInfo &saveInfo : saveInfos) {
+        const QString fileName = saveInfo.fileName().remove(".sav");
+        QString name = fileName;
+        if (!name.contains("autosavedangerous")) {
+            name.replace("autosave", "Autosave");
+            name.replace("quick", "Quicksave");
+            name.replace("01", "");
+            name.replace("02", "");
+            QDateTime timeDate = saveInfo.lastModified();
+            emit saveAdded(name, timeDate.toString(), fileName);
+        }
     }
 }
 
@@ -177,4 +183,9 @@ void GameMenu::buttonMainMenuClicked()
 void GameMenu::buttonQuitClicked()
 {
     runGameCommand("quit");
+}
+
+void GameMenu::loadSave(const QString &fileName)
+{
+    runGameCommand("load " + fileName);
 }

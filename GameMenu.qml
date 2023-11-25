@@ -22,19 +22,55 @@ Window {
                 case 0: // Hidden
                     menu.visible = false;
                     labelHudHealth.visible = false;
+                    savesListView.visible = false;
                     break;
                 case 1: // HUD
                     menu.visible = false;
                     labelHudHealth.visible = true;
+                    savesListView.visible = false;
                     break;
                 case 2: // PauseMenu
                     menu.visible = true;
                     buttonMainMenu.visible = true;
+                    savesListView.visible = false;
+                    savesModel.clear()
                     break;
                 case 3: // MainMenu
                     mainMenuTimer.start();
+                    savesModel.clear()
                     break;
             }
+        }
+        function onSaveAdded(name, timeDate, fileName) {
+            savesModel.append({ saveName: name, saveTimeDate: timeDate, saveFileName: fileName })
+        }
+    }
+
+    ListModel {
+        id: savesModel
+    }
+
+    ListView {
+        id: savesListView
+        anchors.top: menu.top
+        anchors.bottom: parent.bottom
+        width: 200
+        anchors.horizontalCenter: parent.horizontalCenter
+        model: savesModel
+        delegate: Button {
+            width: 200
+            contentItem: Column {
+                Label {
+                    font.bold: true
+                    text: saveName
+                    verticalAlignment: Text.AlignLeft
+                }
+                Label {
+                    text: saveTimeDate
+                    verticalAlignment: Text.AlignLeft
+                }
+            }
+            onClicked: gameMenu.loadSave(saveFileName)
         }
     }
 
@@ -62,7 +98,19 @@ Window {
             width: 50
             text: qsTr("Continue")
             Layout.fillWidth: true
-            onClicked: gameMenu.buttonPlayClicked()
+            onClicked: gameMenu.buttonPlayClicked();
+        }
+
+        Button {
+            id: buttonLoadGame
+            width: 50
+            text: qsTr("Load Game")
+            Layout.fillWidth: true
+            onClicked: function() {
+                menu.visible = false;
+                savesListView.visible = true;
+                gameMenu.buttonLoadGameClicked();
+            }
         }
 
         Button {
