@@ -43,6 +43,10 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, false);
                                 emit visibilityStateChanged(VisibilityState::MainMenu);
+                                QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
+                                if (savesDirectory.entryList().isEmpty()) {
+                                    emit noSaveFilesDetected();
+                                }
                             } else if (result[1] == "pause_menu_mode") {
                                 pauseMenuMode = true;
                                 loadingMode = false;

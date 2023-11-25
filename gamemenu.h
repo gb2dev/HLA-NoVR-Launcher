@@ -36,6 +36,7 @@ signals:
     void visibilityStateChanged(GameMenu::VisibilityState v);
     void saveAdded(const QString &name, const QString &timeDate, const QString &fileName);
     void newGameSelected();
+    void noSaveFilesDetected();
 
 private:
     QSettings settings;

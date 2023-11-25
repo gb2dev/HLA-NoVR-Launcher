@@ -33,6 +33,8 @@ Window {
                     break;
                 case 2: // PauseMenu
                     menu.visible = true;
+                    buttonPlay.visible = true;
+                    buttonLoadGame.visible = true;
                     buttonMainMenu.visible = true;
                     savesListView.visible = false;
                     chaptersListView.visible = false;
@@ -60,6 +62,10 @@ Window {
         function onNewGameSelected() {
             chaptersListView.visible = true;
             menu.visible = false;
+        }
+        function onNoSaveFilesDetected() {
+            buttonPlay.visible = false;
+            buttonLoadGame.visible = false;
         }
     }
 
