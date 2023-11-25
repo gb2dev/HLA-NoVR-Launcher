@@ -33,23 +33,39 @@ void GameMenu::gameStarted(QQuickWindow *w)
                 } else {
                     QString resultString = in.readLine();
                     if (listingAddons) {
-                        if (resultString.contains("default_enabled_addons_list = ")) {
+                        if (resultString.contains("default_enabled_addons_list")) {
                             listingAddons = false;
-                            enabledAddons = resultString.split("default_enabled_addons_list = ").at(1).split(",");
                         } else {
                             resultString = resultString.sliced(15);
                             QStringList localAddons = resultString.split("local: ");
                             QStringList subscribedAddons = resultString.split("subscribed: ");
-                            //resultString = localAddons.at(0);
-                            //resultString.remove("\t");
-                            //resultString.remove(QRegularExpression("subscribed.*$"));
-                            //qDebug() << resultString.split(" = ");
+
                             if (localAddons.size() == 2) {
+                                // New local addon
                                 resultString = localAddons.at(1);
-                                emit addonAdded(resultString, resultString);
+                                Addon addon;
+                                addon.fileName = resultString;
+                                addons.append(addon);
                             } else if (subscribedAddons.size() == 2) {
+                                // New subscribed addon
                                 resultString = subscribedAddons.at(1);
-                                emit addonAdded(resultString, resultString);
+                                Addon addon;
+                                addon.fileName = resultString;
+                                addons.append(addon);
+                            } else {
+                                // Addon info
+                                resultString = localAddons.at(0);
+                                resultString.remove("\t");
+                                resultString.remove(QRegularExpression("subscribed.*$"));
+                                QStringList info = resultString.split(" = ");
+
+                                if (info[0] == "mounted") {
+                                    addons.last().mounted = info[1].startsWith("YES");
+                                } else if (info[0] == "enabled") {
+                                    addons.last().enabled = info[1].startsWith("YES");
+                                } else if (info[0] == "maps") {
+                                    addons.last().maps = info[1];
+                                }
                             }
                         }
                     }
@@ -73,6 +89,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                 }
 
                                 // Get list of addon
+                                addons.clear();
                                 runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
                             } else if (result[1] == "pause_menu_mode") {
                                 pauseMenuMode = true;
@@ -220,7 +237,10 @@ void GameMenu::buttonMainMenuClicked()
 
 void GameMenu::buttonAddonsClicked()
 {
-
+    for (const Addon &addon : addons) {
+        QString name = addon.fileName + (addon.enabled ? " (Enabled)" : " (Disabled)");
+        emit addonAdded(name, addon.fileName);
+    }
 }
 
 void GameMenu::buttonQuitClicked()
@@ -253,14 +273,18 @@ void GameMenu::toggleAddon(const QString &fileName)
     } else if (fileName == "workshop") {
         QDesktopServices::openUrl(QUrl("steam://url/SteamWorkshopPage/546560"));
     } else {
-        if (enabledAddons.contains(fileName)) {
-            enabledAddons.removeAll(fileName);
-            runGameCommand("addon_disable " + fileName);
-            emit addonAdded(fileName + " (Disabled)", fileName);
-        } else {
-            enabledAddons.append(fileName);
-            runGameCommand("addon_enable " + fileName);
-            emit addonAdded(fileName + " (Enabled)", fileName);
+        emit addonToggled();
+        for (Addon &addon : addons) {
+            if (addon.fileName == fileName) {
+                if (addon.enabled) {
+                    runGameCommand("addon_disable " + fileName);
+                } else {
+                    runGameCommand("addon_enable " + fileName);
+                }
+                addon.enabled = !addon.enabled;
+            }
+            QString name = addon.fileName + (addon.enabled ? " (Enabled)" : " (Disabled)");
+            emit addonAdded(name, addon.fileName);
         }
     }
 }

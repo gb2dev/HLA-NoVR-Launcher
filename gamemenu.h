@@ -10,6 +10,12 @@
 #include <QSettings>
 #include <QDebug>
 
+struct Addon {
+    QString fileName;
+    bool mounted;
+    bool enabled;
+    QString maps;
+};
 
 class GameMenu : public QObject
 {
@@ -40,6 +46,7 @@ signals:
     void newGameSelected();
     void noSaveFilesDetected();
     void addonAdded(const QString &name, const QString &fileName);
+    void addonToggled();
 
 private:
     QSettings settings;
@@ -56,7 +63,7 @@ private:
     bool pauseMenuMode = false;
     bool loadingMode = false;
     bool gamePaused = false;
-    QStringList enabledAddons;
+    QList<Addon> addons;
 };
 
 #endif // LAUNCHER_H

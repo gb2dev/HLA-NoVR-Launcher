@@ -59,9 +59,7 @@ Window {
                     buttonAddons.visible = true;
                     savesModel.clear();
                     savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
-                    addonsModel.clear();
-                    addonsModel.append({ addonName: "Cancel", addonFileName: "cancel" });
-                    addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
+                    onAddonToggled();
                     break;
             }
         }
@@ -78,6 +76,11 @@ Window {
         }
         function onAddonAdded(name, fileName) {
             addonsModel.append({ addonName: name, addonFileName: fileName })
+        }
+        function onAddonToggled() {
+            addonsModel.clear();
+            addonsModel.append({ addonName: "Cancel", addonFileName: "cancel" });
+            addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
         }
     }
 
@@ -144,9 +147,6 @@ Window {
 
     ListModel {
         id: addonsModel
-
-        ListElement { addonName: "Cancel"; addonFileName: "cancel"; }
-        ListElement { addonName: "Workshop"; addonFileName: "workshop"; }
     }
 
     ListView {
