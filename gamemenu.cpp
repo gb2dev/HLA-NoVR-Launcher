@@ -236,7 +236,7 @@ void GameMenu::buttonNewGameClicked()
 
 void GameMenu::buttonOptionsClicked()
 {
-    QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
+    //QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
 }
 
 void GameMenu::buttonMainMenuClicked()
@@ -300,4 +300,106 @@ void GameMenu::toggleAddon(const QString &fileName)
             emit addonAdded(name, addon.fileName);
         }
     }
+}
+
+void GameMenu::recordInput(const QString &inputName)
+{
+    recordInputName = inputName;
+    window->installEventFilter(this);
+    window->setFlag(Qt::WindowDoesNotAcceptFocus, false);
+    SetFocus(hWnd);
+}
+
+bool GameMenu::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        QString key = keyEvent->text();
+        int keyNumber = keyEvent->key();
+        // TODO: Add more keys
+        if (keyNumber == Qt::Key_Escape) {
+            key = "ESCAPE";
+        } else if (keyNumber == Qt::Key_Tab) {
+            key = "TAB";
+        } else if (keyNumber == Qt::Key_CapsLock) {
+            key = "CAPSLOCK";
+        } else if (keyNumber == Qt::Key_Shift) {
+            key = "SHIFT";
+        } else if (keyNumber == Qt::Key_Control) {
+            key = "CTRL";
+        } else if (keyNumber == Qt::Key_Meta) {
+            key = "LWIN";
+        } else if (keyNumber == Qt::Key_Alt) {
+            key = "ALT";
+        } else if (keyNumber == Qt::Key_Space) {
+            key = "SPACE";
+        } else if (keyNumber == Qt::Key_Menu) {
+            key = "APPS";
+        } else if (keyNumber == Qt::Key_Return) {
+            key = "ENTER";
+        } else if (keyNumber == Qt::Key_Enter) {
+            key = "KP_ENTER";
+        } else if (keyNumber == Qt::Key_Backspace) {
+            key = "BACKSPACE";
+        } else if (keyNumber == Qt::Key_Up) {
+            key = "UPARROW";
+        } else if (keyNumber == Qt::Key_Down) {
+            key = "DOWNARROW";
+        } else if (keyNumber == Qt::Key_Left) {
+            key = "LEFTARROW";
+        } else if (keyNumber == Qt::Key_Right) {
+            key = "RIGHTARROW";
+        } else if (keyNumber == Qt::Key_Delete) {
+            key = "DEL";
+        } else if (keyNumber >= Qt::Key_F1 && keyNumber <= Qt::Key_F23) {
+            key = "F" + QString::number(keyNumber - 0x0100002F);
+        } else {
+            if (key.isEmpty()) {
+                key = "UNSUPPORTED";
+            }
+        }
+        key = key.toUpper();
+        emit inputRecorded(recordInputName, key);
+
+        // Write to bindings.lua file
+        const QString path = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua";
+        QFile bindings(path);
+        bindings.open(QIODevice::Text | QIODevice::ReadWrite);
+        QTextStream in(&bindings);
+        QStringList lines;
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            if (line.startsWith(recordInputName)) {
+                static QRegularExpression bindingRegEx("\"(.*?)\"");
+                line.replace(bindingRegEx, "\"" + key + "\"");
+            }
+            lines.append(line);
+        }
+        bindings.resize(0);
+        QTextStream out(&bindings);
+        for (const QString &line : lines) {
+            out << line << "\n";
+        }
+        bindings.close();
+
+        window->removeEventFilter(this);
+        window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+        SetFocus(targetWindow);
+    } else if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        int button = mouseEvent->button();
+        if (button == Qt::MiddleButton) {
+            button = 3;
+        } else if (button == Qt::ForwardButton) {
+            button = 4;
+        } else if (button == Qt::BackButton) {
+            button = 5;
+        }
+        emit inputRecorded(recordInputName, "MOUSE" + QString::number(button));
+
+        window->removeEventFilter(this);
+        window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+        SetFocus(targetWindow);
+    }
+    return false;
 }

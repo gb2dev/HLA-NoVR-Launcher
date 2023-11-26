@@ -6,7 +6,7 @@ import QtQuick.Layouts
 Window {
     id: gameMenuWindow
     visible: true
-    flags: Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
+    flags: Qt.FramelessWindowHint
     color: "transparent"
 
     Component.onCompleted: gameMenu.gameStarted(this)
@@ -21,6 +21,7 @@ Window {
             switch (state) {
                 case 0: // Hidden
                     menu.visible = false;
+                    options.visible = false;
                     labelHudHealth.visible = false;
                     savesListView.visible = false;
                     chaptersListView.visible = false;
@@ -28,6 +29,7 @@ Window {
                     break;
                 case 1: // HUD
                     menu.visible = false;
+                    options.visible = false;
                     //labelHudHealth.visible = true;
                     savesListView.visible = false;
                     chaptersListView.visible = false;
@@ -56,6 +58,7 @@ Window {
                     } else {
                         mainMenuTimer.start();
                     }
+                    options.visible = false;
                     buttonAddons.visible = true;
                     savesModel.clear();
                     savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
@@ -91,6 +94,98 @@ Window {
             addonsModel.clear();
             addonsModel.append({ addonName: "Cancel", addonFileName: "cancel" });
             addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
+        }
+        function onInputRecorded(inputName, bind) {
+            switch (inputName) {
+                case "PRIMARY_ATTACK":
+                    buttonPrimaryAttack.text = bind;
+                    buttonPrimaryAttack.enabled = true;
+                    break;
+                case "SECONDATY_ATTACK":
+                    buttonSecondaryAttack.text = bind;
+                    buttonSecondaryAttack.enabled = true;
+                    break;
+                case "TERTIARY_ATTACK":
+                    buttonTertiaryAttack.text = bind;
+                    buttonTertiaryAttack.enabled = true;
+                    break;
+                case "GRENADE":
+                    buttonGrenade.text = bind;
+                    buttonGrenade.enabled = true;
+                    break;
+                case "RELOAD":
+                    buttonReload.text = bind;
+                    buttonReload.enabled = true;
+                    break;
+                case "QUICK_SWAP":
+                    buttonQuickSwap.text = bind;
+                    buttonQuickSwap.enabled = true;
+                    break;
+                case "MOVE_FORWARD":
+                    buttonMoveForward.text = bind;
+                    buttonMoveForward.enabled = true;
+                    break;
+                case "MOVE_BACK":
+                    buttonMoveBack.text = bind;
+                    buttonMoveBack.enabled = true;
+                    break;
+                case "MOVE_LEFT":
+                    buttonMoveLeft.text = bind;
+                    buttonMoveLeft.enabled = true;
+                    break;
+                case "MOVE_RIGHT":
+                    buttonMoveRight.text = bind;
+                    buttonMoveRight.enabled = true;
+                    break;
+                case "JUMP":
+                    buttonJump.text = bind;
+                    buttonJump.enabled = true;
+                    break;
+                case "CONSOLE":
+                    buttonConsole.text = bind;
+                    buttonConsole.enabled = true;
+                    break;
+                case "CROUCH":
+                    buttonCrouch.text = bind;
+                    buttonCrouch.enabled = true;
+                    break;
+                case "SPRINT":
+                    buttonSprint.text = bind;
+                    buttonSprint.enabled = true;
+                    break;
+                case "INTERACT":
+                    buttonInteract.text = bind;
+                    buttonInteract.enabled = true;
+                    break;
+                case "FLASHLIGHT":
+                    buttonFlashlight.text = bind;
+                    buttonFlashlight.enabled = true;
+                    break;
+                case "COVER_MOUTH":
+                    buttonCoverMouth.text = bind;
+                    buttonCoverMouth.enabled = true;
+                    break;
+                case "QUICK_SAVE":
+                    buttonQuickSave.text = bind;
+                    buttonQuickSave.enabled = true;
+                    break;
+                case "QUICK_LOAD":
+                    buttonQuickLoad.text = bind;
+                    buttonQuickLoad.enabled = true;
+                    break;
+                case "NOCLIP":
+                    buttonNoclip.text = bind;
+                    buttonNoclip.enabled = true;
+                    break;
+                case "VIEWM_INSPECT":
+                    buttonViewmodelInspect.text = bind;
+                    buttonViewmodelInspect.enabled = true;
+                    break;
+                case "ZOOM":
+                    buttonZoom.text = bind;
+                    buttonZoom.enabled = true;
+                    break;
+            }
         }
     }
 
@@ -240,7 +335,11 @@ Window {
             width: 50
             text: qsTr("Options")
             Layout.fillWidth: true
-            onClicked: gameMenu.buttonOptionsClicked()
+            onClicked: function() {
+                menu.visible = false;
+                options.visible = true;
+                gameMenu.buttonOptionsClicked();
+            }
         }
 
         Button {
@@ -269,6 +368,654 @@ Window {
             text: qsTr("Quit")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonQuitClicked()
+        }
+    }
+
+    Rectangle {
+        id: options
+        visible: false
+        anchors.fill: parent
+        color: "#CC000000"
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            Item {
+                height: childrenRect.height
+                Layout.fillWidth: true
+
+                TabBar {
+                    id: tabBar
+                    width: 600
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    TabButton {
+                        id: tabMouse
+                        text: qsTr("Mouse")
+                    }
+
+                    TabButton {
+                        id: tabInputMapping
+                        text: qsTr("Input Mapping")
+                    }
+
+                    TabButton {
+                        id: tabAudio
+                        text: qsTr("Audio")
+                    }
+
+                    TabButton {
+                        id: tabVideo
+                        text: qsTr("Video")
+                    }
+                }
+
+                Button {
+                    anchors.right: parent.right
+                    width: 100
+                    text: qsTr("Close")
+                    onClicked: function() {
+                        options.visible = false;
+                        menu.visible = true;
+                    }
+                }
+            }
+
+            StackLayout {
+                currentIndex: tabBar.currentIndex
+
+                Item {
+                    id: mouse
+
+                    GridLayout {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        columns: 3
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Warning: Changes are only applied after loading a save or starting a new game!")
+                            Layout.columnSpan: 3
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Mouse Sensitivity")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: mouseSensitivity
+                            from: 1
+                            to: 100
+                            value: 50
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: mouseSensitivity.value
+                            Layout.preferredWidth: 20
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Horizontal Inverted")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        CheckBox {
+                            id: invertedX
+                        }
+
+                        Item {}
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Vertical Inverted")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        CheckBox {
+                            id: invertedY
+                        }
+
+                        Item {}
+                    }
+                }
+
+                Item {
+                    id: inputMapping
+
+                    GridLayout {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        columns: 4
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Warning: Changes are only applied after loading a save or starting a new game!")
+                            Layout.columnSpan: parent.columns
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Primary Attack")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonPrimaryAttack
+                            text: "MOUSE1"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("PRIMARY_ATTACK")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Grenade")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonGrenade
+                            text: "G"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("GRENADE")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Secondary Attack")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonSecondaryAttack
+                            text: "MOUSE2"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("SECONDARY_ATTACK")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Reload")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonReload
+                            text: "R"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("RELOAD")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Tertiary Attack")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonTertiaryAttack
+                            text: "MOUSE3"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("TERTIARY_ATTACK")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Quick Swap")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonQuickSwap
+                            text: "Q"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("QUICK_SWAP")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Move Forward")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonMoveForward
+                            text: "W"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("MOVE_FORWARD")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Jump")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonJump
+                            text: "SPACE"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("JUMP")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Move Back")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonMoveBack
+                            text: "S"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("MOVE_BACK")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Console")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonConsole
+                            text: "C"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("CONSOLE")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Move Left")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonMoveLeft
+                            text: "A"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("MOVE_LEFT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Crouch")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonCrouch
+                            text: "CTRL"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("CROUCH")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Move Right")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonMoveRight
+                            text: "D"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("MOVE_RIGHT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Sprint")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonSprint
+                            text: "SHIFT"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("SPRINT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Interact")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonInteract
+                            text: "E"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("INTERACT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Flashlight")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonFlashlight
+                            text: "F"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("FLASHLIGHT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Cover Motuh")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonCoverMouth
+                            text: "H"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("COVER_MOUTH")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Inspect Weapon")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonViewmodelInspect
+                            text: "T"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("VIEWM_INSPECT")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Quick Save")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonQuickSave
+                            text: "F5"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("QUICK_SAVE")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Noclip")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonNoclip
+                            text: "V"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("NOCLIP")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Quick Load")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonQuickLoad
+                            text: "F9"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("QUICK_LOAD")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Zoom")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonZoom
+                            text: "Z"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("ZOOM")
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: audio
+
+                    GridLayout {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        columns: 3
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Master Volume")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: masterVolume
+                            from: 0
+                            to: 100
+                            value: 100
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: masterVolume.value
+                            Layout.preferredWidth: 20
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Game")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: gameVolume
+                            from: 0
+                            to: 100
+                            value: 100
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: gameVolume.value
+                            Layout.preferredWidth: 20
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Combat Music")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: combatMusicVolume
+                            from: 0
+                            to: 100
+                            value: 100
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: combatMusicVolume.value
+                            Layout.preferredWidth: 20
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Character Voice")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: characterVoiceVolume
+                            from: 0
+                            to: 100
+                            value: 100
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: characterVoiceVolume.value
+                            Layout.preferredWidth: 20
+                        }
+                    }
+                }
+
+                Item {
+                    id: video
+
+                    GridLayout {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        columns: 3
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Graphics Preset")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        ComboBox {
+                            id: graphicsPreset
+                            model: ["Low", "Medium", "High", "Ultra"]
+                            currentIndex: 2
+                        }
+
+                        Item {}
+
+                        Label {
+                            color: "white"
+                            text: qsTr("FOV")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Slider {
+                            id: fov
+                            from: 60
+                            to: 110
+                            value: 80
+                            stepSize: 1
+                            snapMode: Slider.SnapAlways
+                            Layout.preferredWidth: 200
+                        }
+
+                        Label {
+                            color: "white"
+                            text: fov.value
+                            Layout.preferredWidth: 20
+                        }
+                    }
+                }
+            }
         }
     }
 

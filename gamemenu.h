@@ -37,6 +37,7 @@ public slots:
     void loadSave(const QString &fileName);
     void newGame(const QString &mapName, bool addonMap);
     void toggleAddon(const QString &fileName);
+    void recordInput(const QString &input);
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
@@ -48,8 +49,10 @@ signals:
     void addonAdded(const QString &name, const QString &fileName);
     void addonMapsAdded(const QStringList &maps, bool addonEnabled);
     void addonToggled();
+    void inputRecorded(const QString &inputName, const QString &bind);
 
 private:
+    bool eventFilter(QObject *object, QEvent *event) override;
     QSettings settings;
     QQuickWindow *window;
     HWND hWnd;
@@ -65,6 +68,7 @@ private:
     bool loadingMode = false;
     bool gamePaused = false;
     QList<Addon> addons;
+    QString recordInputName = "";
 };
 
 #endif // LAUNCHER_H
