@@ -40,6 +40,24 @@ void GameMenu::gameStarted(QQuickWindow *w)
                             QStringList localAddons = resultString.split("local: ");
                             QStringList subscribedAddons = resultString.split("subscribed: ");
 
+                            // Addon info
+                            resultString = localAddons.at(0);
+                            resultString.remove("\t");
+                            static QRegularExpression subscribedRegEx("subscribed.*$");
+                            resultString.remove(subscribedRegEx);
+                            QStringList info = resultString.split(" =");
+
+                            if (info.at(0) == "mounted") {
+                                addons.last().mounted = info.at(1).startsWith(" YES");
+                            } else if (info.at(0) == "enabled") {
+                                addons.last().enabled = info.at(1).startsWith(" YES");
+                            } else if (info.at(0) == "maps") {
+                                resultString = info.at(1);
+                                resultString.remove(" ");
+                                info = resultString.split(",");
+                                addons.last().maps = info;
+                            }
+
                             if (localAddons.size() == 2) {
                                 // New local addon
                                 resultString = localAddons.at(1);
@@ -52,20 +70,6 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                 Addon addon;
                                 addon.fileName = resultString;
                                 addons.append(addon);
-                            } else {
-                                // Addon info
-                                resultString = localAddons.at(0);
-                                resultString.remove("\t");
-                                resultString.remove(QRegularExpression("subscribed.*$"));
-                                QStringList info = resultString.split(" = ");
-
-                                if (info[0] == "mounted") {
-                                    addons.last().mounted = info[1].startsWith("YES");
-                                } else if (info[0] == "enabled") {
-                                    addons.last().enabled = info[1].startsWith("YES");
-                                } else if (info[0] == "maps") {
-                                    addons.last().maps = info[1];
-                                }
                             }
                         }
                     }
@@ -76,7 +80,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
                     } else {
                         QStringList result = resultString.split("[MainMenu] ");
                         if (result.size() > 1) {
-                            if (result[1] == "main_menu_mode") {
+                            if (result.at(1) == "main_menu_mode") {
                                 pauseMenuMode = false;
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, false);
@@ -91,17 +95,17 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                 // Get list of addon
                                 addons.clear();
                                 runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
-                            } else if (result[1] == "pause_menu_mode") {
+                            } else if (result.at(1) == "pause_menu_mode") {
                                 pauseMenuMode = true;
                                 loadingMode = false;
                                 window->setFlag(Qt::WindowTransparentForInput, true);
                                 emit visibilityStateChanged(VisibilityState::HUD);
-                            } else if (result[1] == "addon_list") {
+                            } else if (result.at(1) == "addon_list") {
                                 listingAddons = true;
                             } else {
-                                result = result[1].split(" ");
-                                if (result[0] == "player_health") {
-                                    emit hudHealthChanged(hudHealth = result[1].toInt());
+                                result = result.at(1).split(" ");
+                                if (result.at(0) == "player_health") {
+                                    emit hudHealthChanged(hudHealth = result.at(1).toInt());
                                 }
                             }
                         }
@@ -222,6 +226,11 @@ void GameMenu::buttonLoadGameClicked()
 
 void GameMenu::buttonNewGameClicked()
 {
+    if (!pauseMenuMode) {
+        for (const Addon &addon : addons) {
+            emit addonMapsAdded(addon.maps, addon.enabled);
+        }
+    }
     emit newGameSelected();
 }
 
@@ -257,12 +266,16 @@ void GameMenu::loadSave(const QString &fileName)
     }
 }
 
-void GameMenu::newGame(const QString &mapName)
+void GameMenu::newGame(const QString &mapName, bool addonMap)
 {
     if (mapName == "cancel") {
         emit visibilityStateChanged(pauseMenuMode ? VisibilityState::PauseMenu : VisibilityState::MainMenu);
     } else {
-        runGameCommand("map " + mapName);
+        if (addonMap) {
+            runGameCommand("addon_play " + mapName);
+        } else {
+            runGameCommand("map " + mapName);
+        }
     }
 }
 

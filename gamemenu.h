@@ -14,7 +14,7 @@ struct Addon {
     QString fileName;
     bool mounted;
     bool enabled;
-    QString maps;
+    QStringList maps;
 };
 
 class GameMenu : public QObject
@@ -35,7 +35,7 @@ public slots:
     void buttonAddonsClicked();
     void buttonQuitClicked();
     void loadSave(const QString &fileName);
-    void newGame(const QString &mapName);
+    void newGame(const QString &mapName, bool addonMap);
     void toggleAddon(const QString &fileName);
 
 signals:
@@ -46,6 +46,7 @@ signals:
     void newGameSelected();
     void noSaveFilesDetected();
     void addonAdded(const QString &name, const QString &fileName);
+    void addonMapsAdded(const QStringList &maps, bool addonEnabled);
     void addonToggled();
 
 private:

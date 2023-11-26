@@ -60,6 +60,9 @@ Window {
                     savesModel.clear();
                     savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
                     onAddonToggled();
+                    addonMapsModel.clear();
+                    addonMapsModel.append({ chapterName: "Cancel", chapterMapName: "cancel", mapEnabled: true });
+                    addonMapsModel.append({ chapterName: "Original Game", chapterMapName: "original_game", mapEnabled: true });
                     break;
             }
         }
@@ -76,6 +79,13 @@ Window {
         }
         function onAddonAdded(name, fileName) {
             addonsModel.append({ addonName: name, addonFileName: fileName })
+        }
+        function onAddonMapsAdded(maps, enabled) {
+            maps.forEach(function(map) {
+                if (map !== "") {
+                    addonMapsModel.append({ chapterName: map, chapterMapName: map, addonMap: true, mapEnabled: enabled });
+                }
+            });
         }
         function onAddonToggled() {
             addonsModel.clear();
@@ -116,18 +126,23 @@ Window {
     ListModel {
         id: chaptersModel
 
-        ListElement { chapterName: "Cancel"; chapterMapName: "cancel"; }
-        ListElement { chapterName: "Entanglement"; chapterMapName: "a1_intro_world" }
-        ListElement { chapterName: "The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance" }
-        ListElement { chapterName: "Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel" }
-        ListElement { chapterName: "Superweapon"; chapterMapName: "a3_station_street" }
-        ListElement { chapterName: "The Northern Star"; chapterMapName: "a3_hotel_lobby_basement" }
-        ListElement { chapterName: "Arms Race"; chapterMapName: "a3_c17_processing_plant" }
-        ListElement { chapterName: "Jeff"; chapterMapName: "a3_distillery" }
-        ListElement { chapterName: "Captivity"; chapterMapName: "a4_c17_zoo" }
-        ListElement { chapterName: "Revelations"; chapterMapName: "a4_c17_tanker_yard" }
-        ListElement { chapterName: "Breaking and Entering"; chapterMapName: "a4_c17_water_tower" }
-        ListElement { chapterName: "Point Extraction"; chapterMapName: "a5_vault" }
+        ListElement { chapterName: "Cancel"; chapterMapName: "cancel"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Addon Maps"; chapterMapName: "addon_maps"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Entanglement"; chapterMapName: "a1_intro_world"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Superweapon"; chapterMapName: "a3_station_street"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "The Northern Star"; chapterMapName: "a3_hotel_lobby_basement"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Arms Race"; chapterMapName: "a3_c17_processing_plant"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Jeff"; chapterMapName: "a3_distillery"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Captivity"; chapterMapName: "a4_c17_zoo"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Revelations"; chapterMapName: "a4_c17_tanker_yard"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Breaking and Entering"; chapterMapName: "a4_c17_water_tower"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Point Extraction"; chapterMapName: "a5_vault"; addonMap: false; mapEnabled: true; }
+    }
+
+    ListModel {
+        id: addonMapsModel
     }
 
     ListView {
@@ -139,9 +154,18 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
         model: chaptersModel
         delegate: Button {
+            enabled: mapEnabled
             width: 200
             text: chapterName
-            onClicked: gameMenu.newGame(chapterMapName)
+            onClicked: function() {
+                if (chapterMapName === "addon_maps") {
+                    chaptersListView.model = addonMapsModel
+                } else if (chapterMapName === "original_game") {
+                    chaptersListView.model = chaptersModel
+                } else {
+                    gameMenu.newGame(chapterMapName, addonMap);
+                }
+            }
         }
     }
 
