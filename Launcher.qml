@@ -157,9 +157,8 @@ Window {
             TextField {
                 id: launchOptionsTextField
                 width: 434
-                text: "-vsync -console -vconsole"
                 focus: true
-                Component.onCompleted: launcher.customLaunchOptions = text
+                text: launcher.customLaunchOptions
                 onTextChanged: launcher.customLaunchOptions = text
             }
         }

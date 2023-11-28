@@ -6,6 +6,10 @@ Launcher::Launcher(QObject *parent)
     : QObject{parent}
 {
     checkValidInstallation();
+    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync").toString();
+    connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
+        settings.setValue("customLaunchOptions", m_customLaunchOptions);
+    });
 }
 
 void Launcher::editKeyBinds() // Opens the bindings.lua file
