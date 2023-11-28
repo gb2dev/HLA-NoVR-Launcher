@@ -44,7 +44,7 @@ signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
     void hudHealthChanged(int hudHealth);
     void visibilityStateChanged(GameMenu::VisibilityState v);
-    void saveAdded(const QString &name, const QString &timeDate, const QString &fileName);
+    void saveAdded(const QString &name, const QString &dateTime, const QString &fileName);
     void newGameSelected();
     void noSaveFilesDetected();
     void addonAdded(const QString &name, const QString &fileName);
@@ -54,7 +54,7 @@ signals:
     void convarLoaded(const QString &convar, const QString &value);
 
 private:
-    QFile mainMenuExecFile = QFile("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/scripts/vscripts/main_menu_exec.lua");
+    QFile mainMenuExecFile;
     bool eventFilter(QObject *object, QEvent *event) override;
     QSettings settings;
     QQuickWindow *window;

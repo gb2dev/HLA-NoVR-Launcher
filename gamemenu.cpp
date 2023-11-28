@@ -8,6 +8,7 @@
 GameMenu::GameMenu(QObject *parent)
     : QObject{parent}
 {
+    mainMenuExecFile.setFileName(settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/main_menu_exec.lua");
     connect(qApp, &QCoreApplication::aboutToQuit, this, [this](){
         stopRead = true;
         mainMenuExecFile.close();
@@ -25,7 +26,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
     QFuture<void> future = QtConcurrent::run([this]{
         bool skipBuffered = true;
         bool listingAddons = false;
-        QFile file("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/console.log");
+        QFile file(settings.value("installLocation").toString() + "/game/hlvr/console.log");
         file.resize(0);
         file.open(QIODevice::ReadOnly);
         QTextStream in(&file);
@@ -185,7 +186,7 @@ void GameMenu::update()
 
 void GameMenu::runGameScript(const QString &script)
 {
-    QFile file("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/scripts/vscripts/main_menu_exec.lua");
+    QFile file(settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/main_menu_exec.lua");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
     out << script;
@@ -263,7 +264,7 @@ void GameMenu::readConvarsFile()
     convars.open(QIODevice::Text | QIODevice::ReadOnly);
     QTextStream in(&convars);
     while (!in.atEnd()) {
-        QString line = in.readLine();
+        const QString line = in.readLine();
         static QRegularExpression convarRegEx("\"(.*)\"[ \t]*\"(.*)\"");
         QRegularExpressionMatch match = convarRegEx.match(line);
         if (match.hasMatch()) {
@@ -326,8 +327,8 @@ void GameMenu::buttonLoadGameClicked()
             name.replace("quick", "Quicksave");
             name.replace("01", "");
             name.replace("02", "");
-            QDateTime timeDate = saveInfo.lastModified();
-            emit saveAdded(name, timeDate.toString(), fileName);
+            QDateTime dateTime = saveInfo.lastModified();
+            emit saveAdded(name, dateTime.toString(), fileName);
         }
     }
 }

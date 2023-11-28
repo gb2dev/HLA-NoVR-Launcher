@@ -61,7 +61,7 @@ Window {
                     options.visible = false;
                     buttonAddons.visible = true;
                     savesModel.clear();
-                    savesModel.append({ saveName: "Cancel", saveTimeDate: "", saveFileName: "cancel" });
+                    savesModel.append({ saveName: "Cancel", saveDateTime: "", saveFileName: "cancel" });
                     onAddonToggled();
                     addonMapsModel.clear();
                     addonMapsModel.append({ chapterName: "Cancel", chapterMapName: "cancel", mapEnabled: true });
@@ -69,8 +69,8 @@ Window {
                     break;
             }
         }
-        function onSaveAdded(name, timeDate, fileName) {
-            savesModel.append({ saveName: name, saveTimeDate: timeDate, saveFileName: fileName })
+        function onSaveAdded(name, dateTime, fileName) {
+            savesModel.append({ saveName: name, saveDateTime: dateTime, saveFileName: fileName })
         }
         function onNewGameSelected() {
             chaptersListView.visible = true;
@@ -248,7 +248,7 @@ Window {
                 }
                 Label {
                     visible: saveFileName !== "cancel"
-                    text: saveTimeDate
+                    text: saveDateTime
                     verticalAlignment: Text.AlignLeft
                 }
             }

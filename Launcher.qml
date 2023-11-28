@@ -1,3 +1,4 @@
+import QtCore
 import QtMultimedia
 import QtQuick
 import QtQuick.Controls
@@ -18,14 +19,14 @@ Window {
     onClosing: (close) => {
         if (!playButton.enabled) {
             close.accepted = false;
-            errorLabel.text = "Installation in progress!\nPlease wait.";
+            errorLabel.text = qsTr("Installation in progress!\nPlease wait.");
             error.open();
         }
     }
 
-    Component.onCompleted: function() {
+    Component.onCompleted: {
         if (audioWarning) {
-            errorLabel.text = "Warning: Only Stereo/Mono audio devices are supported by the game!";
+            errorLabel.text = qsTr("Warning: Only Stereo/Mono audio devices are supported by the game!");
             error.open();
         }
     }
@@ -34,41 +35,44 @@ Window {
         id: connections
         target: launcher
         function onUpdateModInstalling() {
-            playButton.text = "Installing...";
-        }
-        function onUpdateModFinished() {
-            playButton.text = "Update/Install NoVR";
-            playButton.enabled = true;
-            quitButton.enabled = true;
-            error.close();
+            playButton.text = qsTr("Installing...");
         }
         function onErrorMessage(message) {
-            connections.onUpdateModFinished()
+            playButton.text = "Play";
+            playButton.enabled = true;
+            quitButton.enabled = true;
             errorLabel.text = message;
             error.open();
+        }
+        function onInstallationSelectionNeeded() {
+            playButton.text = qsTr("Play");
+            folderDialog.open();
         }
     }
 
     FolderDialog {
         id: folderDialog
-        currentFolder: "file:///C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx"
         onAccepted: {
             launcher.updateMod(folderDialog.selectedFolder)
             if (launcher.validInstallation) {
                 playButton.text = "Downloading...";
-                playButton.enabled = false;
-                quitButton.enabled = false;
             } else {
-                errorLabel.text = "Half-Life: Alyx installation not found!\nPlease try again.";
+                playButton.enabled = true;
+                quitButton.enabled = true;
+                errorLabel.text = qsTr("Half-Life: Alyx installation not found!\nPlease try again.");
                 error.open();
             }
+        }
+        onRejected: {
+            playButton.enabled = true;
+            quitButton.enabled = true;
         }
     }
 
     Popup {
         id: error
         anchors.centerIn: parent
-        height: 100
+        height: contentChildren.height
         width: 600
         modal: true
         focus: true
@@ -111,8 +115,13 @@ Window {
             height: 34
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Play")
-            enabled: launcher.validInstallation
-            onClicked: launcher.playGame()
+            onClicked: {
+                playButton.text = qsTr("Downloading...");
+                playButton.enabled = false;
+                quitButton.enabled = false;
+
+                launcher.updateMod()
+            }
         }
 
         Button {
@@ -134,11 +143,11 @@ Window {
             color: "white"
             text: qsTr("Custom launch options:")
             font.bold: true
-            layer.enabled: true
+            /*layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
                 shadowBlur: 0.2
-            }
+            }*/
         }
 
         TextField {

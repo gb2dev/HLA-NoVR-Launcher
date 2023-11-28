@@ -1,3 +1,8 @@
+
+#ifndef DOWNLOADMANAGER_H
+#define DOWNLOADMANAGER_H
+
+
 #include <QUrl>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -51,3 +56,5 @@ signals:
 private:
     QNetworkAccessManager *manager;
 };
+
+#endif // DOWNLOADMANAGER_H

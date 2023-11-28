@@ -12,7 +12,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "downloadmanager.h"
 #include "gamemenu.h"
 #include "launcher.h"
 
