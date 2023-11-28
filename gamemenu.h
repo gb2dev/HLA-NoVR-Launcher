@@ -38,6 +38,7 @@ public slots:
     void newGame(const QString &mapName, bool addonMap);
     void toggleAddon(const QString &fileName);
     void recordInput(const QString &input);
+    void changeOptions(const QStringList &options);
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
@@ -49,9 +50,11 @@ signals:
     void addonAdded(const QString &name, const QString &fileName);
     void addonMapsAdded(const QStringList &maps, bool addonEnabled);
     void addonToggled();
-    void inputRecorded(const QString &inputName, const QString &bind);
+    void bindingChanged(const QString &name, const QString &bind);
+    void convarLoaded(const QString &convar, const QString &value);
 
 private:
+    QFile mainMenuExecFile = QFile("C:/Program Files (x86)/Steam/steamapps/common/Half-Life Alyx/game/hlvr/scripts/vscripts/main_menu_exec.lua");
     bool eventFilter(QObject *object, QEvent *event) override;
     QSettings settings;
     QQuickWindow *window;
@@ -69,6 +72,10 @@ private:
     bool gamePaused = false;
     QList<Addon> addons;
     QString recordInputName = "";
+    void writeToBindingsFile(const QString &key, const QVariant &value);
+    void readBindingsFile();
+    void readConvarsFile();
+    void writeToSaveCfg(const QString &key, const QString &value);
 };
 
-#endif // LAUNCHER_H
+#endif // GAMEMENU_H

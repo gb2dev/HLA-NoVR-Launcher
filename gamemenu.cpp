@@ -10,11 +10,14 @@ GameMenu::GameMenu(QObject *parent)
 {
     connect(qApp, &QCoreApplication::aboutToQuit, this, [this](){
         stopRead = true;
+        mainMenuExecFile.close();
     });
 }
 
 void GameMenu::gameStarted(QQuickWindow *w)
 {
+    readConvarsFile();
+
     window = w;
 
     hWnd = (HWND)window->winId();
@@ -28,10 +31,8 @@ void GameMenu::gameStarted(QQuickWindow *w)
         QTextStream in(&file);
         while (!stopRead) {
             while (!in.atEnd()) {
-                if (skipBuffered) {
-                    qDebug() << in.readLine();
-                } else {
-                    QString resultString = in.readLine();
+                QString resultString = in.readLine();
+                if (!skipBuffered) {
                     if (listingAddons) {
                         if (resultString.contains("default_enabled_addons_list")) {
                             listingAddons = false;
@@ -78,34 +79,41 @@ void GameMenu::gameStarted(QQuickWindow *w)
                         gamePaused = false;
                         emit visibilityStateChanged(VisibilityState::Hidden);
                     } else {
-                        QStringList result = resultString.split("[MainMenu] ");
-                        if (result.size() > 1) {
-                            if (result.at(1) == "main_menu_mode") {
-                                pauseMenuMode = false;
-                                loadingMode = false;
-                                window->setFlag(Qt::WindowTransparentForInput, false);
-                                emit visibilityStateChanged(VisibilityState::MainMenu);
+                        // Check difficulty
+                        static QRegularExpression skillRegEx("skill_hlvr(\\d).cfg");
+                        QRegularExpressionMatch match = skillRegEx.match(resultString);
+                        if (match.hasMatch()) {
+                            emit convarLoaded("skill", match.captured(1));
+                        } else {
+                            QStringList result = resultString.split("[MainMenu] ");
+                            if (result.size() > 1) {
+                                if (result.at(1) == "main_menu_mode") {
+                                    pauseMenuMode = false;
+                                    loadingMode = false;
+                                    window->setFlag(Qt::WindowTransparentForInput, false);
+                                    emit visibilityStateChanged(VisibilityState::MainMenu);
 
-                                // Check if there are no save files
-                                QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
-                                if (savesDirectory.entryList().isEmpty()) {
-                                    emit noSaveFilesDetected();
-                                }
+                                    // Check if there are no save files
+                                    QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
+                                    if (savesDirectory.entryList().isEmpty()) {
+                                        emit noSaveFilesDetected();
+                                    }
 
-                                // Get list of addon
-                                addons.clear();
-                                runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
-                            } else if (result.at(1) == "pause_menu_mode") {
-                                pauseMenuMode = true;
-                                loadingMode = false;
-                                window->setFlag(Qt::WindowTransparentForInput, true);
-                                emit visibilityStateChanged(VisibilityState::HUD);
-                            } else if (result.at(1) == "addon_list") {
-                                listingAddons = true;
-                            } else {
-                                result = result.at(1).split(" ");
-                                if (result.at(0) == "player_health") {
-                                    emit hudHealthChanged(hudHealth = result.at(1).toInt());
+                                    // Get list of addon
+                                    addons.clear();
+                                    runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
+                                } else if (result.at(1) == "pause_menu_mode") {
+                                    pauseMenuMode = true;
+                                    loadingMode = false;
+                                    window->setFlag(Qt::WindowTransparentForInput, true);
+                                    emit visibilityStateChanged(VisibilityState::HUD);
+                                } else if (result.at(1) == "addon_list") {
+                                    listingAddons = true;
+                                } else {
+                                    result = result.at(1).split(" ");
+                                    if (result.at(0) == "player_health") {
+                                        emit hudHealthChanged(hudHealth = result.at(1).toInt());
+                                    }
                                 }
                             }
                         }
@@ -169,6 +177,8 @@ void GameMenu::update()
 
             SetWindowLongPtr(hWnd, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
             window->show();
+            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+            SetForegroundWindow(targetWindow);
         }
     }
 }
@@ -187,6 +197,104 @@ void GameMenu::runGameScript(const QString &script)
 void GameMenu::runGameCommand(const QString &command)
 {
     runGameScript("SendToConsole(\"" + command + "\")");
+}
+
+void GameMenu::writeToBindingsFile(const QString &key, const QVariant &value)
+{
+    const QString path = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua";
+    QFile bindings(path);
+    bindings.open(QIODevice::Text | QIODevice::ReadWrite);
+    QTextStream in(&bindings);
+    QStringList lines;
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line.startsWith(key)) {
+            QString valueString = "= ";
+
+            switch (value.userType()) {
+                case QMetaType::Bool:
+                    valueString += value.toString();
+                    break;
+
+                case QMetaType::Int:
+                    valueString += QString::number(value.toInt());
+                    break;
+
+                case QMetaType::Float:
+                    valueString += QString::number(value.toFloat());
+                    break;
+
+                case QMetaType::QString:
+                    valueString += "\"" + value.toString() + "\"";
+                    break;
+            }
+
+            static QRegularExpression valueRegEx("=.*$");
+            line.replace(valueRegEx, valueString);
+        }
+        lines.append(line);
+    }
+    bindings.resize(0);
+    QTextStream out(&bindings);
+    for (const QString &line : lines) {
+        out << line << "\n";
+    }
+    bindings.close();
+}
+
+void GameMenu::readBindingsFile()
+{
+    const QString path = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua";
+    QFile bindings(path);
+    bindings.open(QIODevice::Text | QIODevice::ReadOnly);
+    QTextStream in(&bindings);
+    while (!in.atEnd()) {
+        QString line = in.readLine().remove(" ").remove("\"");
+        QStringList keyValue = line.split("=");
+        emit bindingChanged(keyValue.at(0), keyValue.at(1));
+    }
+    bindings.close();
+}
+
+void GameMenu::readConvarsFile()
+{
+    const QString path = settings.value("installLocation").toString() + "/game/hlvr/cfg/machine_convars.vcfg";
+    QFile convars(path);
+    convars.open(QIODevice::Text | QIODevice::ReadOnly);
+    QTextStream in(&convars);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        static QRegularExpression convarRegEx("\"(.*)\"[ \t]*\"(.*)\"");
+        QRegularExpressionMatch match = convarRegEx.match(line);
+        if (match.hasMatch()) {
+            emit convarLoaded(match.captured(1), match.captured(2));
+        }
+    }
+    convars.close();
+}
+
+void GameMenu::writeToSaveCfg(const QString &key, const QString &value)
+{
+    const QString path = settings.value("installLocation").toString() + "/game/hlvr/SAVE/personal.cfg";
+    QFile saveCfg(path);
+    saveCfg.open(QIODevice::Text | QIODevice::ReadWrite);
+    QTextStream in(&saveCfg);
+    QStringList lines;
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        static QRegularExpression convarRegEx("\"(.*)\"[ \t]*\"(.*)\"");
+        QRegularExpressionMatch match = convarRegEx.match(line);
+        if (match.captured(1) == key) {
+            line.replace(match.captured(2), value);
+        }
+        lines.append(line);
+    }
+    saveCfg.resize(0);
+    QTextStream out(&saveCfg);
+    for (const QString &line : lines) {
+        out << line << "\n";
+    }
+    saveCfg.close();
 }
 
 void GameMenu::buttonPlayClicked()
@@ -236,7 +344,7 @@ void GameMenu::buttonNewGameClicked()
 
 void GameMenu::buttonOptionsClicked()
 {
-    //QDesktopServices::openUrl(QUrl("file:///" + settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua"));
+    readBindingsFile();
 }
 
 void GameMenu::buttonMainMenuClicked()
@@ -310,6 +418,28 @@ void GameMenu::recordInput(const QString &inputName)
     SetFocus(hWnd);
 }
 
+void GameMenu::changeOptions(const QStringList &options)
+{
+    if (!options.isEmpty()) {
+        QString commands;
+        for (const QString &command : options) {
+            commands += command + ";";
+
+            if (command.startsWith("mouse_pitchyaw_sensitivity")) {
+                writeToBindingsFile("MOUSE_SENSITIVITY", command.split(" ").at(1).toFloat());
+            } else if (command.startsWith("mouse_invert_y")) {
+                writeToBindingsFile("INVERT_MOUSE_Y", command.split(" ").at(1) == "true");
+            } else if (command.startsWith("fov_desired")) {
+                writeToBindingsFile("FOV", command.split(" ").at(1).toFloat());
+            } else if (command.startsWith("skill")) {
+                writeToSaveCfg("setting.skill", command.split(" ").at(1));
+            }
+        }
+
+        runGameCommand(commands);
+    }
+}
+
 bool GameMenu::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress) {
@@ -359,28 +489,8 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
             }
         }
         key = key.toUpper();
-        emit inputRecorded(recordInputName, key);
-
-        // Write to bindings.lua file
-        const QString path = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/bindings.lua";
-        QFile bindings(path);
-        bindings.open(QIODevice::Text | QIODevice::ReadWrite);
-        QTextStream in(&bindings);
-        QStringList lines;
-        while (!in.atEnd()) {
-            QString line = in.readLine();
-            if (line.startsWith(recordInputName)) {
-                static QRegularExpression bindingRegEx("\"(.*?)\"");
-                line.replace(bindingRegEx, "\"" + key + "\"");
-            }
-            lines.append(line);
-        }
-        bindings.resize(0);
-        QTextStream out(&bindings);
-        for (const QString &line : lines) {
-            out << line << "\n";
-        }
-        bindings.close();
+        emit bindingChanged(recordInputName, key);
+        writeToBindingsFile(recordInputName, key);
 
         window->removeEventFilter(this);
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
@@ -390,12 +500,14 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
         int button = mouseEvent->button();
         if (button == Qt::MiddleButton) {
             button = 3;
-        } else if (button == Qt::ForwardButton) {
-            button = 4;
         } else if (button == Qt::BackButton) {
+            button = 4;
+        } else if (button == Qt::ForwardButton) {
             button = 5;
         }
-        emit inputRecorded(recordInputName, "MOUSE" + QString::number(button));
+        QString buttonString = "MOUSE" + QString::number(button);
+        emit bindingChanged(recordInputName, buttonString);
+        writeToBindingsFile(recordInputName, buttonString);
 
         window->removeEventFilter(this);
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);

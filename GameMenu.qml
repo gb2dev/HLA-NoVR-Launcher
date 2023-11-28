@@ -95,8 +95,14 @@ Window {
             addonsModel.append({ addonName: "Cancel", addonFileName: "cancel" });
             addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
         }
-        function onInputRecorded(inputName, bind) {
+        function onBindingChanged(inputName, bind) {
             switch (inputName) {
+                case "MOUSE_SENSITIVITY":
+                    mouseSensitivity.value = bind;
+                    break;
+                case "INVERT_MOUSE_Y":
+                    mouseInvertY.checked = bind === "true";
+                    break;
                 case "PRIMARY_ATTACK":
                     buttonPrimaryAttack.text = bind;
                     buttonPrimaryAttack.enabled = true;
@@ -184,6 +190,38 @@ Window {
                 case "ZOOM":
                     buttonZoom.text = bind;
                     buttonZoom.enabled = true;
+                    break;
+            }
+        }
+
+        function onConvarLoaded(convar, value) {
+            switch (convar) {
+                case "snd_gain":
+                    masterVolume.value = value * 100;
+                    break;
+                case "snd_gamevolume":
+                    gameVolume.value = value * 100;
+                    break;
+                case "snd_musicvolume":
+                    combatMusicVolume.value = value * 100;
+                    break;
+                case "snd_gamevoicevolume":
+                    characterVoiceVolume.value = value * 100;
+                    break;
+                case "mouse_pitchyaw_sensitivity":
+                    mouseSensitivity.value = value;
+                    break;
+                case "fov_desired":
+                    fov.value = value;
+                    break;
+                case "skill":
+                    difficultyLayout.children[parseInt(value) * 2].checked = true;
+                    break;
+                case "r_light_sensitivity_mode":
+                    lightSensitivityMode.checked = value === "1";
+                    break;
+                case "hlvr_closed_caption_type":
+                    subtitles.currentIndex = parseInt(value);
                     break;
             }
         }
@@ -285,7 +323,7 @@ Window {
 
     Timer {
         id: mainMenuTimer
-        interval: 5000
+        interval: 0//5000
         running: false
         repeat: false
         onTriggered: function() {
@@ -372,6 +410,8 @@ Window {
     }
 
     Rectangle {
+        property var apply: new Map()
+
         id: options
         visible: false
         anchors.fill: parent
@@ -388,6 +428,11 @@ Window {
                     id: tabBar
                     width: 600
                     anchors.horizontalCenter: parent.horizontalCenter
+
+                    TabButton {
+                        id: tabDifficulty
+                        text: qsTr("Difficulty")
+                    }
 
                     TabButton {
                         id: tabMouse
@@ -413,10 +458,12 @@ Window {
                 Button {
                     anchors.right: parent.right
                     width: 100
-                    text: qsTr("Close")
+                    text: qsTr("OK")
                     onClicked: function() {
                         options.visible = false;
                         menu.visible = true;
+                        gameMenu.changeOptions(Array.from(options.apply, ([key, value]) => key + " " + value));
+                        options.apply.clear()
                     }
                 }
             }
@@ -425,17 +472,65 @@ Window {
                 currentIndex: tabBar.currentIndex
 
                 Item {
+                    id: difficulty
+
+                    GridLayout {
+                        id: difficultyLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        columns: 2
+
+                        RadioButton {
+                            id: storyDifficulty
+                            onClicked: options.apply.set("skill", 0)
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Story")
+                            Layout.topMargin: -10
+                        }
+
+                        RadioButton {
+                            id: easyDifficulty
+                            onClicked: options.apply.set("skill", 1)
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Easy")
+                            Layout.topMargin: -10
+                        }
+
+                        RadioButton {
+                            id: normalDifficulty
+                            onClicked: options.apply.set("skill", 2)
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Normal")
+                            Layout.topMargin: -10
+                        }
+
+                        RadioButton {
+                            id: hardDifficulty
+                            onClicked: options.apply.set("skill", 3)
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Hard")
+                            Layout.topMargin: -10
+                        }
+                    }
+                }
+
+                Item {
                     id: mouse
 
                     GridLayout {
                         anchors.horizontalCenter: parent.horizontalCenter
                         columns: 3
-
-                        Label {
-                            color: "white"
-                            text: qsTr("Warning: Changes are only applied after loading a save or starting a new game!")
-                            Layout.columnSpan: 3
-                        }
 
                         Label {
                             color: "white"
@@ -450,7 +545,8 @@ Window {
                             value: 50
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("mouse_pitchyaw_sensitivity", value)
                         }
 
                         Label {
@@ -459,17 +555,17 @@ Window {
                             Layout.preferredWidth: 20
                         }
 
-                        Label {
+                        /*Label {
                             color: "white"
                             text: qsTr("Horizontal Inverted")
                             Layout.alignment: Qt.AlignRight
                         }
 
                         CheckBox {
-                            id: invertedX
+                            id: mouseInvertX
                         }
 
-                        Item {}
+                        Item {}*/
 
                         Label {
                             color: "white"
@@ -478,7 +574,8 @@ Window {
                         }
 
                         CheckBox {
-                            id: invertedY
+                            id: mouseInvertY
+                            onToggled: options.apply.set("mouse_invert_y", checked)
                         }
 
                         Item {}
@@ -772,7 +869,7 @@ Window {
 
                         Label {
                             color: "white"
-                            text: qsTr("Cover Motuh")
+                            text: qsTr("Cover Mouth")
                             Layout.alignment: Qt.AlignRight
                         }
 
@@ -894,7 +991,8 @@ Window {
                             value: 100
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("snd_gain", value / 100)
                         }
 
                         Label {
@@ -916,7 +1014,8 @@ Window {
                             value: 100
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("snd_gamevolume", value / 100)
                         }
 
                         Label {
@@ -938,7 +1037,8 @@ Window {
                             value: 100
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("snd_musicvolume", value / 100)
                         }
 
                         Label {
@@ -960,13 +1060,27 @@ Window {
                             value: 100
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("snd_gamevoicevolume", value / 100)
                         }
 
                         Label {
                             color: "white"
                             text: characterVoiceVolume.value
                             Layout.preferredWidth: 20
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Subtitles")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        ComboBox {
+                            id: subtitles
+                            model: ["Subtitles Off", "Subtitles On", "Subtitles and Closed Captions"]
+                            Layout.preferredWidth: 220
+                            onActivated: options.apply.set("hlvr_closed_caption_type", currentIndex)
                         }
                     }
                 }
@@ -980,14 +1094,27 @@ Window {
 
                         Label {
                             color: "white"
-                            text: qsTr("Graphics Preset")
+                            text: qsTr("Change Graphics Preset")
                             Layout.alignment: Qt.AlignRight
                         }
 
                         ComboBox {
                             id: graphicsPreset
-                            model: ["Low", "Medium", "High", "Ultra"]
-                            currentIndex: 2
+                            model: ["Unchanged", "Low", "Medium", "High", "Ultra"]
+                            onActivated: options.apply.set("set_video_config_level", currentIndex - 1)
+                        }
+
+                        Item {}
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Reduce strength and flickering of lights")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        CheckBox {
+                            id: lightSensitivityMode
+                            onToggled: options.apply.set("r_light_sensitivity_mode", checked ? 1 : 0)
                         }
 
                         Item {}
@@ -1005,7 +1132,8 @@ Window {
                             value: 80
                             stepSize: 1
                             snapMode: Slider.SnapAlways
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 220
+                            onValueChanged: options.apply.set("fov_desired", value)
                         }
 
                         Label {
