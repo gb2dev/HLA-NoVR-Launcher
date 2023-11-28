@@ -22,7 +22,6 @@ public:
     QQmlApplicationEngine *engine;
 
 public slots:
-    void editKeyBinds();
     void playGame();
     void updateMod(const QString &installLocation);
 

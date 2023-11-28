@@ -2,20 +2,21 @@ import QtMultimedia
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
+import QtQuick.Effects
 import QtQuick.Window
 
 Window {
     id: launcherWindow
     visible: true
-    color: "#000000"
-    maximumHeight: 408
-    minimumHeight: 408
-    maximumWidth: 976
-    minimumWidth: 976
+    color: "black"
+    maximumHeight: 800
+    minimumHeight: 800
+    maximumWidth: 1280
+    minimumWidth: 1280
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
     onClosing: (close) => {
-        if (!updateButton.enabled) {
+        if (!playButton.enabled) {
             close.accepted = false;
             errorLabel.text = "Installation in progress!\nPlease wait.";
             error.open();
@@ -33,13 +34,11 @@ Window {
         id: connections
         target: launcher
         function onUpdateModInstalling() {
-            updateButton.text = "Installing...";
+            playButton.text = "Installing...";
         }
         function onUpdateModFinished() {
-            updateButton.text = "Update/Install NoVR";
-            updateButton.enabled = true;
+            playButton.text = "Update/Install NoVR";
             playButton.enabled = true;
-            optionsButton.enabled = true;
             quitButton.enabled = true;
             error.close();
         }
@@ -56,10 +55,8 @@ Window {
         onAccepted: {
             launcher.updateMod(folderDialog.selectedFolder)
             if (launcher.validInstallation) {
-                updateButton.enabled = false;
-                updateButton.text = "Downloading...";
+                playButton.text = "Downloading...";
                 playButton.enabled = false;
-                optionsButton.enabled = false;
                 quitButton.enabled = false;
             } else {
                 errorLabel.text = "Half-Life: Alyx installation not found!\nPlease try again.";
@@ -96,84 +93,60 @@ Window {
 
     Column {
         id: column
-        width: 228
-        height: 400
-        anchors.left: parent.left
-        anchors.top: parent.top
-        spacing: 2
-        anchors.leftMargin: 34
-        anchors.topMargin: 188
+        anchors.centerIn: parent
+        spacing: 10
+
+        Image {
+            source: "file:///" + applicationDirPath + "/logo.png"
+        }
+
+        Item {
+            height: 10
+            width: parent.width
+        }
 
         Button {
             id: playButton
             width: 217
             height: 34
-            text: "Play NoVR"
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Play")
             enabled: launcher.validInstallation
-            onClicked: {
-                launcher.playGame()
-            }
-        }
-
-        Button {
-            id: updateButton
-            width: 217
-            height: 34
-            text: "Update/Install NoVR"
-            onClicked: folderDialog.open()
-        }
-
-        Button {
-            id: optionsButton
-            width: 217
-            height: 34
-            text: "Edit Controls/Key Binds"
-            enabled: launcher.validInstallation
-            onClicked: {
-                launcher.editKeyBinds()
-            }
+            onClicked: launcher.playGame()
         }
 
         Button {
             id: quitButton
             width: 217
             height: 34
-            text: "Quit"
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Quit")
             onClicked: Qt.quit()
-        }
-
-        Row {
-            id: row
-            width: 200
-            height: 400
-
-            TextField {
-                id: launchOptionsTextFieldLabel
-                width: 217
-                text: "Custom launch options:"
-                selectByMouse: false
-                readOnly: true
-            }
-            TextField {
-                id: launchOptionsTextField
-                width: 434
-                focus: true
-                text: launcher.customLaunchOptions
-                onTextChanged: launcher.customLaunchOptions = text
-            }
         }
     }
 
-    Label {
-        id: label
-        y: 463
-        width: 262
-        height: 15
-        color: "#ffffff"
-        text: "NoVR by GB_2 Development Team"
-        anchors.left: parent.left
+    Column {
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 4
-        anchors.leftMargin: 2
+        width: parent.width
+
+        Label {
+            id: launchOptionsTextFieldLabel
+            color: "white"
+            text: qsTr("Custom launch options:")
+            font.bold: true
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: 0.2
+            }
+        }
+
+        TextField {
+            id: launchOptionsTextField
+            width: parent.width
+            focus: true
+            text: launcher.customLaunchOptions
+            onTextChanged: launcher.customLaunchOptions = text
+        }
     }
 }

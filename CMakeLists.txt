@@ -4,11 +4,14 @@ project(HLA-NoVR-Launcher VERSION 2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Network Multimedia Concurrent)
+find_package(Qt6 6.6 REQUIRED COMPONENTS Quick Network Multimedia Concurrent)
 
 qt_standard_project_setup()
 
+set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc")
+
 qt_add_executable(HLA-NoVR-Launcher
+    ${app_icon_resource_windows}
     main.cpp
     launcher.h
     launcher.cpp
@@ -24,10 +27,6 @@ qt_add_qml_module(HLA-NoVR-Launcher
 )
 
 set_target_properties(HLA-NoVR-Launcher PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
