@@ -54,8 +54,15 @@ signals:
     void convarLoaded(const QString &convar, const QString &value);
 
 private:
-    QFile mainMenuExecFile;
     bool eventFilter(QObject *object, QEvent *event) override;
+    void runGameScript(const QString &script);
+    void runGameCommand(const QString &command);
+    void writeToBindingsFile(const QString &key, const QVariant &value);
+    void readBindingsFile();
+    void readConvarsFile();
+    void writeToSaveCfg(const QString &key, const QString &value);
+
+    QFile mainMenuExecFile;
     QSettings settings;
     QQuickWindow *window;
     HWND hWnd;
@@ -64,18 +71,12 @@ private:
     QFuture<void> future;
     bool stopRead = false;
     bool stopSearchingTargetWindow = false;
-    void runGameScript(const QString &script);
-    void runGameCommand(const QString &command);
     int hudHealth = 100;
     bool pauseMenuMode = false;
     bool loadingMode = false;
     bool gamePaused = false;
     QList<Addon> addons;
     QString recordInputName = "";
-    void writeToBindingsFile(const QString &key, const QVariant &value);
-    void readBindingsFile();
-    void readConvarsFile();
-    void writeToSaveCfg(const QString &key, const QString &value);
 };
 
 #endif // GAMEMENU_H

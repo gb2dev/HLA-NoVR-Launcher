@@ -2,9 +2,8 @@
 #include "launcher.h"
 
 Launcher::Launcher(QObject *parent)
-    : QObject{parent}
+    : QObject{parent}, nam(new QNetworkAccessManager(this))
 {
-    downloadManager = new DownloadManager(this);
     m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync").toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
@@ -13,6 +12,7 @@ Launcher::Launcher(QObject *parent)
 
 void Launcher::playGame() // Launches the game with the arguments
 {
+    qDebug() << "Launching game";
     //QDesktopServices::openUrl(QUrl("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + m_customLaunchOptions));
     //engine->load(QUrl(u"qrc:/HLA-NoVR-Launcher/GameMenu.qml"_qs));
     engine->rootObjects().at(0)->deleteLater();
@@ -34,20 +34,24 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
         }
 
         // Read installed version
-        const QString path = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/version.lua";
-        const QString installedModVersion = readModVersion(path);
+        const QString installedModVersionPath = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/version.lua";
+        const QString installedModVersion = readModVersion(installedModVersionPath);
 
         // Read available mod version
-        downloadManager->download(QUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua"), "version.lua");
-        connect(downloadManager, &DownloadManager::downloadFinished, this, [this, installedModVersion, &installLocation]() {
-            QString availableModVersion = readModVersion("version.lua");
+        const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
+
+        // Download newest mod version
+
+        // Update finished
+        //playGame();
+
+            /*QString availableModVersion = readModVersion("version.lua");
             if (installedModVersion == availableModVersion) {
                 playGame();
             } else {
                 // Download newest mod version
-                downloadManager->download(QUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip"), "main.zip");
+                const QUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip")
 
-                connect(downloadManager, &DownloadManager::downloadFinished, this, [=]() {
                     emit updateModInstalling();
                     QProcess *unzip = new QProcess(this);
                     unzip->setProgram("7za");
@@ -78,11 +82,8 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                     emit errorMessage(message);
                 });
             }
-        });
+        });*/
 
-        connect(downloadManager, &DownloadManager::downloadError, this, [this](const QString &message) {
-            emit errorMessage(message);
-        });
     } else if (installLocation.isEmpty()) {
         emit installationSelectionNeeded();
     }

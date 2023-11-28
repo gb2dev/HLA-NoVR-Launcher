@@ -15,7 +15,6 @@ qt_add_executable(HLA-NoVR-Launcher
     main.cpp
     launcher.h
     launcher.cpp
-    downloadmanager.h
     gamemenu.h
     gamemenu.cpp
 )

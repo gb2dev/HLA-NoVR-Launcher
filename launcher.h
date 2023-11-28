@@ -6,14 +6,13 @@
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
+#include <QNetworkAccessManager>
 #include <QObject>
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QRegularExpression>
 #include <QSettings>
 #include <QDebug>
-
-#include "downloadmanager.h"
 
 
 class Launcher : public QObject
@@ -40,7 +39,7 @@ private:
     void checkValidInstallation();
     const QString readModVersion(const QString &path);
 
-    DownloadManager *downloadManager;
+    QNetworkAccessManager *nam;
     QSettings settings;
     bool m_validInstallation;
     QString m_customLaunchOptions;

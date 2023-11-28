@@ -5,9 +5,9 @@
 #include <QJsonObject>
 #include <QAudioDevice>
 #include <QMediaDevices>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+//#include <QNetworkAccessManager>
+//#include <QNetworkRequest>
+//#include <QNetworkReply>
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Launcher.qml"_qs);
     } else {
-        QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
-        QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));
-        QNetworkReply *reply = networkManager->get(request);
+        //QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
+        //QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));
+        //QNetworkReply *reply = networkManager->get(request);
 
-        QObject::connect(reply, &QNetworkReply::finished, nullptr, [reply]() {
+        /*QObject::connect(reply, &QNetworkReply::finished, nullptr, [reply]() {
             if (reply->error()) {
                 QDesktopServices::openUrl(QUrl("update.bat"));
                 qApp->quit();
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
                     return;
                 }
             }
-        });
+        });*/
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Updating.qml"_qs);
     }
