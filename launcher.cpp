@@ -2,7 +2,7 @@
 #include "launcher.h"
 
 Launcher::Launcher(QObject *parent)
-    : QObject{parent}, nam(new QNetworkAccessManager(this))
+    : QObject{parent}
 {
     m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync").toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
@@ -37,10 +37,53 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
         const QString installedModVersionPath = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/version.lua";
         const QString installedModVersion = readModVersion(installedModVersionPath);
 
-        // Read available mod version
-        const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
-
         // Download newest mod version
+        auto future = QtConcurrent::run([this]() {
+            nam.reset(new QNetworkAccessManager);
+            nam->setTransferTimeout(10000);
+            nam->setStrictTransportSecurityEnabled(true);
+            nam->enableStrictTransportSecurityStore(true, QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/hsts/"));
+
+            const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
+            QNetworkRequest availableModVersionRequest(availableModVersionUrl);
+
+            return std::shared_ptr<QNetworkReply>(nam->get(availableModVersionRequest));
+        }).then([](std::shared_ptr<QNetworkReply> networkReply) {
+            qDebug() << networkReply->error();
+            networkReply->deleteLater();
+        });
+
+        /*QFuture<void> future = QtConcurrent::run([]() {
+            QEventLoop loop;
+
+            QNetworkAccessManager *nam = new QNetworkAccessManager;
+            const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
+            QNetworkRequest availableModVersionRequest(availableModVersionUrl);
+            QNetworkReply *availableModVersionReply = nam->get(availableModVersionRequest);
+            /*connect(availableModVersionReply, &QNetworkReply::downloadProgress, this, [](qint64 bytesReceived, qint64 bytesTotal) {
+                qDebug() << "Downloaded" + QString::number(bytesReceived) + " of " + QString::number(bytesTotal);
+            });
+            connect(availableModVersionReply, &QNetworkReply::finished, this, [availableModVersionReply]() {
+                availableModVersionReply->deleteLater();
+                qDebug() << "Download finished";
+            });
+            connect(availableModVersionReply, &QNetworkReply::errorOccurred, this, [](QNetworkReply::NetworkError errorCode) {
+                qDebug() << errorCode;
+            });
+            connect(availableModVersionReply, &QNetworkReply::sslErrors, this, [](const QList<QSslError> &errors) {
+            });
+            QtFuture::connect(availableModVersionReply, &QNetworkReply::finished).then([]() {
+                qDebug() << "yes";
+            });
+            loop.exec();
+        });*/
+
+
+        // QNetworkReply *reply = ...
+        // connect(reply, &QNetworkReply::finished, this, [reply]()) {
+        //     reply->deleteLater();
+        //     ...
+        // });
 
         // Update finished
         //playGame();

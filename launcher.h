@@ -7,11 +7,13 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QObject>
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QRegularExpression>
 #include <QSettings>
+#include <QtConcurrent>
 #include <QDebug>
 
 
@@ -39,7 +41,7 @@ private:
     void checkValidInstallation();
     const QString readModVersion(const QString &path);
 
-    QNetworkAccessManager *nam;
+    std::shared_ptr<QNetworkAccessManager> nam;
     QSettings settings;
     bool m_validInstallation;
     QString m_customLaunchOptions;
