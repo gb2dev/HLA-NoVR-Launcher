@@ -16,13 +16,13 @@ Window {
     minimumWidth: 1280
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
-    // onClosing: (close) => {
-    //     if (!playButton.enabled) {
-    //         close.accepted = false;
-    //         errorLabel.text = qsTr("Installation in progress!\nPlease wait.");
-    //         error.open();
-    //     }
-    // }
+    onClosing: (close) => {
+        if (!playButton.enabled) {
+            close.accepted = false;
+            errorLabel.text = qsTr("Installation in progress!\nPlease wait.");
+            error.open();
+        }
+    }
 
     Component.onCompleted: {
         if (audioWarning) {

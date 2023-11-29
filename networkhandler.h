@@ -13,7 +13,7 @@ class NetworkHandler : public QObject
     Q_OBJECT
 public:
     NetworkHandler() {
-        nam->setTransferTimeout(10000);
+        nam->setTransferTimeout(20000);
         nam->setStrictTransportSecurityEnabled(true);
         nam->enableStrictTransportSecurityStore(true, QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/hsts/"));
     }

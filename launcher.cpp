@@ -79,29 +79,29 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                             modReply->deleteLater();
 
                             // Install newest mod
-                            emit updateModInstalling();
-                            QProcess *unzip = new QProcess(networkHandler);
-                            unzip->setProgram("7za");
-                            unzip->setArguments({"x", "main.zip", "-y", "-x", "bindings.lua"});
-                            connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                                QProcess *move = new QProcess(networkHandler);
-                                move->setProgram("robocopy");
-                                move->setArguments({"HLA-NoVR-main", QUrl(settings.value("installLocation").toString()).toLocalFile(), "/S", "/IS"});
-                                move->start();
-                                connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                                    QDir("HLA-NoVR-main").removeRecursively();
-                                    QFile("main.zip").remove();
+                            QMetaObject::invokeMethod(this, [this]() {
+                                emit updateModInstalling();
+                                QProcess *unzip = new QProcess(this);
+                                unzip->setProgram("7za");
+                                unzip->setArguments({"x", "main.zip", "-y"});
+                                connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                                    QProcess *move = new QProcess(this);
+                                    move->setProgram("robocopy");
+                                    move->setArguments({"HLA-NoVR-launcher_2.0", settings.value("installLocation").toString(), "/S", "/IS"}); // UNDO THIS FOR RELEASE
+                                    move->start();
+                                    connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                                        QDir("HLA-NoVR-launcher_2.0").removeRecursively(); // UNDO THIS FOR RELEASE
+                                        QFile("main.zip").remove();
 
-                                    QMetaObject::invokeMethod(this, [this]() {
                                         playGame();
                                     });
                                 });
+                                connect(unzip, &QProcess::errorOccurred, unzip, [this](QProcess::ProcessError processError) {
+                                    emit errorMessage("An error occured while unpacking (" + QString::number(processError) + ")");
+                                    return;
+                                });
+                                unzip->start();
                             });
-                            connect(unzip, &QProcess::errorOccurred, unzip, [this](QProcess::ProcessError processError) {
-                                emit errorMessage("An error occured while unpacking (" + QString::number(processError) + ")");
-                                return;
-                            });
-                            unzip->start();
                         });
                     }, Qt::SingleShotConnection);
                     QMetaObject::invokeMethod(networkHandler, [this]() {
