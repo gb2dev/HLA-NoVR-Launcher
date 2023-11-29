@@ -17,6 +17,7 @@ qt_add_executable(HLA-NoVR-Launcher
     launcher.cpp
     gamemenu.h
     gamemenu.cpp
+    networkhandler.h
 )
 
 qt_add_qml_module(HLA-NoVR-Launcher

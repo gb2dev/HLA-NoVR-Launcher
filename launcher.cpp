@@ -4,6 +4,13 @@
 Launcher::Launcher(QObject *parent)
     : QObject{parent}
 {
+    networkHandler = new NetworkHandler;
+    networkHandler->moveToThread(&networkThread);
+    connect(qApp, &QCoreApplication::aboutToQuit, this, [this](){
+        networkHandler->deleteLater();
+    });
+    networkThread.start();
+
     m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync").toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
@@ -12,9 +19,9 @@ Launcher::Launcher(QObject *parent)
 
 void Launcher::playGame() // Launches the game with the arguments
 {
-    qDebug() << "Launching game";
-    //QDesktopServices::openUrl(QUrl("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + m_customLaunchOptions));
-    //engine->load(QUrl(u"qrc:/HLA-NoVR-Launcher/GameMenu.qml"_qs));
+    QDesktopServices::openUrl(QUrl("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + m_customLaunchOptions));
+    engine->load(QUrl(u"qrc:/HLA-NoVR-Launcher/GameMenu.qml"_qs));
+    networkHandler->deleteLater();
     engine->rootObjects().at(0)->deleteLater();
     deleteLater();
 }
@@ -33,100 +40,81 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
             return;
         }
 
-        // Read installed version
-        const QString installedModVersionPath = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/version.lua";
-        const QString installedModVersion = readModVersion(installedModVersionPath);
+        // Read installed mod version
+        const QString installedModVersionInfoPath = settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/version.lua";
+        QFile installedModVersionInfoFile(installedModVersionInfoPath);
+        installedModVersionInfoFile.open(QIODevice::Text | QIODevice::ReadWrite);
+        QTextStream in(&installedModVersionInfoFile);
+        const QString installedModVersionInfo = readModVersionInfo(in.readAll());
+        installedModVersionInfoFile.close();
 
-        // Download newest mod version
-        auto future = QtConcurrent::run([this]() {
-            nam.reset(new QNetworkAccessManager);
-            nam->setTransferTimeout(10000);
-            nam->setStrictTransportSecurityEnabled(true);
-            nam->enableStrictTransportSecurityStore(true, QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/hsts/"));
+        // Read newest mod version info
+        connect(networkHandler, &NetworkHandler::returnNetworkReply, networkHandler, [this, installedModVersionInfo](QNetworkReply *versionInfoReply) {
+            connect(versionInfoReply, &QNetworkReply::finished, versionInfoReply, [this, versionInfoReply, installedModVersionInfo]() {
+                versionInfoReply->deleteLater();
 
-            const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
-            QNetworkRequest availableModVersionRequest(availableModVersionUrl);
+                if (versionInfoReply->error() || readModVersionInfo(versionInfoReply->readAll()) == installedModVersionInfo) {
+                    QMetaObject::invokeMethod(this, [this]() {
+                        playGame();
+                    });
+                } else {
+                    // Download newest mod
+                    connect(networkHandler, &NetworkHandler::returnNetworkReply, networkHandler, [this](QNetworkReply *modReply) {
+                        connect(modReply, &QNetworkReply::finished, modReply, [this, modReply]() {
+                            if (modReply->error()) {
+                                emit errorMessage("Download error: " + modReply->errorString());
+                                modReply->deleteLater();
+                                return;
+                            }
 
-            return std::shared_ptr<QNetworkReply>(nam->get(availableModVersionRequest));
-        }).then([](std::shared_ptr<QNetworkReply> networkReply) {
-            qDebug() << networkReply->error();
-            networkReply->deleteLater();
-        });
+                            QFile file("main.zip");
+                            if (!file.open(QIODevice::WriteOnly)) {
+                                emit errorMessage("Failed to open file for writing");
+                                modReply->deleteLater();
+                                return;
+                            }
 
-        /*QFuture<void> future = QtConcurrent::run([]() {
-            QEventLoop loop;
+                            file.write(modReply->readAll());
+                            file.close();
+                            modReply->deleteLater();
 
-            QNetworkAccessManager *nam = new QNetworkAccessManager;
-            const QUrl availableModVersionUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
-            QNetworkRequest availableModVersionRequest(availableModVersionUrl);
-            QNetworkReply *availableModVersionReply = nam->get(availableModVersionRequest);
-            /*connect(availableModVersionReply, &QNetworkReply::downloadProgress, this, [](qint64 bytesReceived, qint64 bytesTotal) {
-                qDebug() << "Downloaded" + QString::number(bytesReceived) + " of " + QString::number(bytesTotal);
-            });
-            connect(availableModVersionReply, &QNetworkReply::finished, this, [availableModVersionReply]() {
-                availableModVersionReply->deleteLater();
-                qDebug() << "Download finished";
-            });
-            connect(availableModVersionReply, &QNetworkReply::errorOccurred, this, [](QNetworkReply::NetworkError errorCode) {
-                qDebug() << errorCode;
-            });
-            connect(availableModVersionReply, &QNetworkReply::sslErrors, this, [](const QList<QSslError> &errors) {
-            });
-            QtFuture::connect(availableModVersionReply, &QNetworkReply::finished).then([]() {
-                qDebug() << "yes";
-            });
-            loop.exec();
-        });*/
+                            // Install newest mod
+                            emit updateModInstalling();
+                            QProcess *unzip = new QProcess(networkHandler);
+                            unzip->setProgram("7za");
+                            unzip->setArguments({"x", "main.zip", "-y", "-x", "bindings.lua"});
+                            connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                                QProcess *move = new QProcess(networkHandler);
+                                move->setProgram("robocopy");
+                                move->setArguments({"HLA-NoVR-main", QUrl(settings.value("installLocation").toString()).toLocalFile(), "/S", "/IS"});
+                                move->start();
+                                connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                                    QDir("HLA-NoVR-main").removeRecursively();
+                                    QFile("main.zip").remove();
 
-
-        // QNetworkReply *reply = ...
-        // connect(reply, &QNetworkReply::finished, this, [reply]()) {
-        //     reply->deleteLater();
-        //     ...
-        // });
-
-        // Update finished
-        //playGame();
-
-            /*QString availableModVersion = readModVersion("version.lua");
-            if (installedModVersion == availableModVersion) {
-                playGame();
-            } else {
-                // Download newest mod version
-                const QUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip")
-
-                    emit updateModInstalling();
-                    QProcess *unzip = new QProcess(this);
-                    unzip->setProgram("7za");
-                    unzip->setArguments({"x", "main.zip", "-y"});
-
-                    connect(unzip, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                        qDebug() << "crash";
-                        QProcess *move = new QProcess(this);
-                        move->setProgram("robocopy");
-                        move->setArguments({"HLA-NoVR-main", QUrl(installLocation).toLocalFile(), "/S", "/IS"});
-                        move->start();
-
-                        connect(move, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                            QDir("HLA-NoVR-main").removeRecursively();
-                            QFile("main.zip").remove();
+                                    QMetaObject::invokeMethod(this, [this]() {
+                                        playGame();
+                                    });
+                                });
+                            });
+                            connect(unzip, &QProcess::errorOccurred, unzip, [this](QProcess::ProcessError processError) {
+                                emit errorMessage("An error occured while unpacking (" + QString::number(processError) + ")");
+                                return;
+                            });
+                            unzip->start();
                         });
+                    }, Qt::SingleShotConnection);
+                    QMetaObject::invokeMethod(networkHandler, [this]() {
+                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip");
+                        networkHandler->createNetworkReply(newestModUrl);
                     });
-
-                    connect(unzip, &QProcess::errorOccurred, this, [this](QProcess::ProcessError processError) {
-                        emit errorMessage("An error occured while unpacking");
-                        return;
-                    });
-
-                    unzip->start();
-                });
-
-                connect(downloadManager, &DownloadManager::downloadError, this, [this](const QString &message) {
-                    emit errorMessage(message);
-                });
-            }
-        });*/
-
+                }
+            });
+        }, Qt::SingleShotConnection);
+        QMetaObject::invokeMethod(networkHandler, [this]() {
+            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
+            networkHandler->createNetworkReply(newestModVersionInfoUrl);
+        });
     } else if (installLocation.isEmpty()) {
         emit installationSelectionNeeded();
     }
@@ -149,19 +137,12 @@ void Launcher::checkValidInstallation() // Checks for a valid installation by ch
     emit validInstallationChanged();
 }
 
-const QString Launcher::readModVersion(const QString &path)
+const QString Launcher::readModVersionInfo(const QString &content)
 {
-    QFile installedVersion(path);
-    installedVersion.open(QIODevice::Text | QIODevice::ReadOnly);
-    QTextStream in(&installedVersion);
-    while (!in.atEnd()) {
-        const QString line = in.readLine();
-        static QRegularExpression dateTimeRegex("[a-zA-Z]{3} \\d{2} \\d{2}:\\d{2}");
-        QRegularExpressionMatch match = dateTimeRegex.match(line);
-        if (match.hasMatch()) {
-            return match.captured(0);
-        }
+    static QRegularExpression dateTimeRegex("[a-zA-Z]{3} \\d{2} \\d{2}:\\d{2}");
+    QRegularExpressionMatch match = dateTimeRegex.match(content);
+    if (match.hasMatch()) {
+        return match.captured(0);
     }
-    installedVersion.close();
     return QString();
 }

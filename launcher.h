@@ -16,6 +16,8 @@
 #include <QtConcurrent>
 #include <QDebug>
 
+#include "networkhandler.h"
+
 
 class Launcher : public QObject
 {
@@ -39,9 +41,10 @@ signals:
 
 private:
     void checkValidInstallation();
-    const QString readModVersion(const QString &path);
+    const QString readModVersionInfo(const QString &path);
 
-    std::shared_ptr<QNetworkAccessManager> nam;
+    QThread networkThread;
+    NetworkHandler *networkHandler;
     QSettings settings;
     bool m_validInstallation;
     QString m_customLaunchOptions;
