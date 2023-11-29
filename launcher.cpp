@@ -105,14 +105,14 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                         });
                     }, Qt::SingleShotConnection);
                     QMetaObject::invokeMethod(networkHandler, [this]() {
-                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip");
+                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/launcher_2.0.zip"); // UNDO THIS FOR RELEASE
                         networkHandler->createNetworkReply(newestModUrl);
                     });
                 }
             });
         }, Qt::SingleShotConnection);
         QMetaObject::invokeMethod(networkHandler, [this]() {
-            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main_menu_test/game/hlvr/scripts/vscripts/version.lua");
+            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/launcher_2.0/game/hlvr/scripts/vscripts/version.lua"); // UNDO THIS FOR RELEASE
             networkHandler->createNetworkReply(newestModVersionInfoUrl);
         });
     } else if (installLocation.isEmpty()) {

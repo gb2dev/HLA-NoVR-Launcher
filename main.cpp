@@ -5,9 +5,6 @@
 #include <QJsonObject>
 #include <QAudioDevice>
 #include <QMediaDevices>
-//#include <QNetworkAccessManager>
-//#include <QNetworkRequest>
-//#include <QNetworkReply>
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -41,11 +38,11 @@ int main(int argc, char *argv[])
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Launcher.qml"_qs);
     } else {
-        //QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
-        //QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));
-        //QNetworkReply *reply = networkManager->get(request);
+        QNetworkAccessManager *networkManager = new QNetworkAccessManager(&app);
+        QNetworkRequest request(QUrl("https://api.github.com/repos/bfeber/HLA-NoVR-Launcher/releases/latest"));
+        QNetworkReply *reply = networkManager->get(request);
 
-        /*QObject::connect(reply, &QNetworkReply::finished, nullptr, [reply]() {
+        QObject::connect(reply, &QNetworkReply::finished, qApp, [reply]() {
             if (reply->error()) {
                 QDesktopServices::openUrl(QUrl("update.bat"));
                 qApp->quit();
@@ -58,22 +55,48 @@ int main(int argc, char *argv[])
                 qApp->quit();
                 return;
             } else {
-                if (VERSION != doc.object().value("tag_name").toString()) {
-                    DownloadManager *downloadManager = new DownloadManager;
-                    downloadManager->download(QUrl("https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip"), "HLA-NoVR-Launcher.zip");
+                if (false/*VERSION != doc.object().value("tag_name").toString()*/) { // UNDO THIS FOR RELEASE
+                    QThread networkThread;
+                    NetworkHandler *networkHandler = new NetworkHandler;
+                    networkHandler->moveToThread(&networkThread);
+                    QObject::connect(qApp, &QCoreApplication::aboutToQuit, qApp, [networkHandler](){
+                        networkHandler->deleteLater();
+                    });
+                    networkThread.start();
 
-                    QObject::connect(downloadManager, &DownloadManager::downloadFinished, nullptr, [=]() {
-                        QProcess *unzip = new QProcess;
-                        unzip->setProgram("7za");
-                        unzip->setArguments({"x", "HLA-NoVR-Launcher.zip", "-aoa", "-oUpdate"});
-                        unzip->start();
+                    QObject::connect(networkHandler, &NetworkHandler::returnNetworkReply, networkHandler, [](QNetworkReply *reply) {
+                        QObject::connect(reply, &QNetworkReply::finished, reply, [reply]() {
+                            if (reply->error()) {
+                                reply->deleteLater();
+                                return;
+                            }
 
-                        QObject::connect(unzip, &QProcess::finished, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                            QFile("HLA-NoVR-Launcher.zip").remove();
-                            QDesktopServices::openUrl(QUrl("update.bat"));
-                            qApp->quit();
-                            return;
+                            QFile file("HLA-NoVR-Launcher.zip");
+                            if (!file.open(QIODevice::WriteOnly)) {
+                                reply->deleteLater();
+                                return;
+                            }
+
+                            file.write(reply->readAll());
+                            file.close();
+                            reply->deleteLater();
+
+                            QProcess *unzip = new QProcess;
+                            unzip->setProgram("7za");
+                            unzip->setArguments({"x", "HLA-NoVR-Launcher.zip", "-aoa", "-oUpdate"});
+                            unzip->start();
+
+                            QObject::connect(unzip, &QProcess::finished, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                                QFile("HLA-NoVR-Launcher.zip").remove();
+                                QDesktopServices::openUrl(QUrl("update.bat"));
+                                qApp->quit();
+                                return;
+                            });
                         });
+                    }, Qt::SingleShotConnection);
+                    QMetaObject::invokeMethod(networkHandler, [networkHandler]() {
+                        const QUrl url("https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip");
+                        networkHandler->createNetworkReply(url);
                     });
                 } else {
                     QDesktopServices::openUrl(QUrl("update.bat"));
@@ -81,7 +104,7 @@ int main(int argc, char *argv[])
                     return;
                 }
             }
-        });*/
+        });
 
         url = QUrl(u"qrc:/HLA-NoVR-Launcher/Updating.qml"_qs);
     }
