@@ -6,12 +6,14 @@
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
+#include <QGuiApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QRegularExpression>
+#include <QScreen>
 #include <QSettings>
 #include <QtConcurrent>
 #include <QDebug>

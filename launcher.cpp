@@ -11,7 +11,8 @@ Launcher::Launcher(QObject *parent)
     });
     networkThread.start();
 
-    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync").toString();
+    QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
+    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync -w " + QString::number(screenGeometry.width()) + " -h " + QString::number(screenGeometry.height())).toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
     });
