@@ -1,5 +1,6 @@
 
 #include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -17,7 +18,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("HLA-NoVR");
     app.setApplicationName("Launcher");
-    app.setFont(QFont("Raju"));
+    app.setFont(QFont("Dinish"));
+
+    QFontDatabase::addApplicationFont("Dinish-Regular.otf");
+    QFontDatabase::addApplicationFont("Dinish-Bold.otf");
+    QFontDatabase::addApplicationFont("Dinish-Italic.otf");
 
     QQmlApplicationEngine engine;
     QUrl url;
