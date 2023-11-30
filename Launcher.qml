@@ -143,11 +143,11 @@ Window {
             color: "white"
             text: qsTr("Custom launch options:")
             font.bold: true
-            /*layer.enabled: true
+            layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
                 shadowBlur: 0.2
-            }*/
+            }
         }
 
         TextField {
