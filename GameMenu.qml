@@ -323,7 +323,7 @@ Window {
 
     Timer {
         id: mainMenuTimer
-        interval: 0//5000
+        interval: 5000
         running: false
         repeat: false
         onTriggered: function() {

@@ -87,10 +87,10 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                                 connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                                     QProcess *move = new QProcess(this);
                                     move->setProgram("robocopy");
-                                    move->setArguments({"HLA-NoVR-launcher_2.0", settings.value("installLocation").toString(), "/S", "/IS"}); // UNDO THIS FOR RELEASE
+                                    move->setArguments({"HLA-NoVR-main", settings.value("installLocation").toString(), "/S", "/IS"});
                                     move->start();
                                     connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                                        QDir("HLA-NoVR-launcher_2.0").removeRecursively(); // UNDO THIS FOR RELEASE
+                                        QDir("HLA-NoVR-main").removeRecursively();
                                         QFile("main.zip").remove();
 
                                         playGame();
@@ -105,14 +105,14 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                         });
                     }, Qt::SingleShotConnection);
                     QMetaObject::invokeMethod(networkHandler, [this]() {
-                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/launcher_2.0.zip"); // UNDO THIS FOR RELEASE
+                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip");
                         networkHandler->createNetworkReply(newestModUrl);
                     });
                 }
             });
         }, Qt::SingleShotConnection);
         QMetaObject::invokeMethod(networkHandler, [this]() {
-            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/launcher_2.0/game/hlvr/scripts/vscripts/version.lua"); // UNDO THIS FOR RELEASE
+            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main/game/hlvr/scripts/vscripts/version.lua");
             networkHandler->createNetworkReply(newestModVersionInfoUrl);
         });
     } else if (installLocation.isEmpty()) {
