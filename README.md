@@ -2,7 +2,9 @@
 Launcher for Half-Life: Alyx NoVR
 
 ## Installation and Usage
-[Download the latest release](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip). Then extract the files and open the `HLA-NoVR-Launcher.exe`
+[Download the latest release.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip)
+
+Then extract the files and open the `HLA-NoVR-Launcher.exe`
 
 In case you need to select a folder after clicking "Play" in the launcher, select your Half-Life: Alyx installation folder (the one with the folders `game` and `content` inside).
 
