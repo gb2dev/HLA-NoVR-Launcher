@@ -11,10 +11,6 @@ Window {
     minimumWidth: 1280
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
-    onClosing: (close) => {
-        close.accepted = false;
-    }
-
     Label {
         anchors.centerIn: parent
         font.pointSize: 24

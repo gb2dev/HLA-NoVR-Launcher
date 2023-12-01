@@ -67,16 +67,13 @@ int main(int argc, char *argv[])
                     QNetworkReply *launcherReply = networkManager->get(launcherRequest);
 
                     QObject::connect(launcherReply, &QNetworkReply::finished, launcherReply, [launcherReply]() {
-                        launcherReply->deleteLater();
-
-                        if (launcherReply->error()) {
-                            launcherReply->deleteLater();
-                            return;
-                        }
-
                         QFile file("HLA-NoVR-Launcher.zip");
-                        if (!file.open(QIODevice::WriteOnly)) {
+
+                        if (launcherReply->error() || !file.open(QIODevice::WriteOnly)) {
                             launcherReply->deleteLater();
+                            QFile("HLA-NoVR-Launcher.zip").remove();
+                            QDesktopServices::openUrl(QUrl("update.bat"));
+                            qApp->quit();
                             return;
                         }
 
