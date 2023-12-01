@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
                 qApp->quit();
                 return;
             } else {
-                if (false/*VERSION != doc.object().value("tag_name").toString()*/) { // UNDO THIS FOR RELEASE
+                if (VERSION != doc.object().value("tag_name").toString()) {
                     QThread networkThread;
                     NetworkHandler *networkHandler = new NetworkHandler;
                     networkHandler->moveToThread(&networkThread);
