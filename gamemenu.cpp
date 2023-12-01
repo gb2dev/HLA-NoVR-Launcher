@@ -379,7 +379,12 @@ void GameMenu::buttonLoadGameClicked()
 
 void GameMenu::buttonSaveGameClicked()
 {
-    runGameCommand("save_manual");
+    if (GetForegroundWindow() == targetWindow) {
+        gamePaused = false;
+        window->setFlag(Qt::WindowTransparentForInput, true);
+        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause;save_manual");
+        emit visibilityStateChanged(VisibilityState::HUD);
+    }
 }
 
 void GameMenu::buttonNewGameClicked()
