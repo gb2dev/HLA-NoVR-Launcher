@@ -6,6 +6,8 @@ Launcher for Half-Life: Alyx NoVR
 
 In case you need to select a folder after clicking "Play" in the launcher, select your Half-Life: Alyx installation folder (the one with the folders `game` and `content` inside).
 
+Note: Only official copies of the game bought on Steam are supported.
+
 ## Credits
 The awesome background video was made by [Half Peeps](https://www.youtube.com/@HALFPEEPS).
 
