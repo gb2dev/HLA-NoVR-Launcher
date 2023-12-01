@@ -95,14 +95,27 @@ void GameMenu::gameStarted(QQuickWindow *w)
                                     emit visibilityStateChanged(VisibilityState::MainMenu);
 
                                     // Check if there are no save files
-                                    QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
-                                    if (savesDirectory.entryList().isEmpty()) {
+                                    bool saveFilesDetected = false;
+                                    for (int i = -1; i < 10; i++) {
+                                        QString slot = "";
+                                        if (i != -1) {
+                                            slot = "/s" + QString::number(i) + "/";
+                                        }
+                                        QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE" + slot, "*.sav", QDir::Time, QDir::Files);
+                                        QFileInfoList savesDirectoryContents = savesDirectory.entryInfoList();
+                                        if (!savesDirectoryContents.isEmpty()) {
+                                            saveFilesDetected = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!saveFilesDetected) {
                                         emit noSaveFilesDetected();
                                     }
 
-                                    // Get list of addon
+                                    // Get list of addon, reset save slot
                                     addons.clear();
-                                    runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list\")");
+                                    runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
                                 } else if (result.at(1) == "pause_menu_mode") {
                                     pauseMenuMode = true;
                                     loadingMode = false;
@@ -308,10 +321,40 @@ void GameMenu::buttonPlayClicked()
             emit visibilityStateChanged(VisibilityState::HUD);
         }
     } else {
-        QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE", "*.sav", QDir::Time, QDir::Files);
-        QString name = savesDirectory.entryList().at(0);
+        // Get the newest save file in each slot
+        QFileInfoList saveFiles;
+        for (int i = -1; i < 10; i++) {
+            QString slot = "";
+            if (i != -1) {
+                slot = "/s" + QString::number(i) + "/";
+            }
+            QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE" + slot, "*.sav", QDir::Time, QDir::Files);
+            QFileInfoList savesDirectoryContents = savesDirectory.entryInfoList();
+            if (!savesDirectoryContents.isEmpty()) {
+                saveFiles.append(savesDirectoryContents.first());
+            }
+        }
+
+        // Of those save files, get the newest one
+        QFileInfo newestSaveFile = saveFiles.first();
+        QDateTime newestSaveFileDateTime = newestSaveFile.lastModified();
+        for (const QFileInfo &saveFile : saveFiles) {
+            QDateTime saveFileDateTime = saveFile.lastModified();
+            if (saveFile.lastModified() > newestSaveFileDateTime) {
+                newestSaveFile = saveFile;
+                newestSaveFileDateTime = saveFileDateTime;
+            }
+        }
+        QString name = newestSaveFile.fileName();
         name.remove(".sav");
-        runGameCommand("load " + name);
+
+        // Load save file from the correct slot
+        QStringList fileStructure = newestSaveFile.filePath().split("/");
+        QString slot = fileStructure.at(fileStructure.size() - 2);
+        if (!slot.startsWith("s")) {
+            slot = "\\\"\\\"";
+        }
+        runGameCommand("save_set_subdirectory " + slot + ";load " + name);
     }
 }
 
@@ -323,6 +366,7 @@ void GameMenu::buttonLoadGameClicked()
         const QString fileName = saveInfo.fileName().remove(".sav");
         QString name = fileName;
         if (!name.contains("autosavedangerous")) {
+            name.replace("manual", "Manual Save");
             name.replace("autosave", "Autosave");
             name.replace("quick", "Quicksave");
             name.replace("01", "");
@@ -331,6 +375,11 @@ void GameMenu::buttonLoadGameClicked()
             emit saveAdded(name, dateTime.toString(), fileName);
         }
     }
+}
+
+void GameMenu::buttonSaveGameClicked()
+{
+    runGameCommand("save_manual");
 }
 
 void GameMenu::buttonNewGameClicked()

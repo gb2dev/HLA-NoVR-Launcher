@@ -29,6 +29,7 @@ public slots:
     void update();
     void buttonPlayClicked();
     void buttonLoadGameClicked();
+    void buttonSaveGameClicked();
     void buttonNewGameClicked();
     void buttonOptionsClicked();
     void buttonMainMenuClicked();
@@ -77,6 +78,7 @@ private:
     bool gamePaused = false;
     QList<Addon> addons;
     QString recordInputName = "";
+    int saveSlot = -1;
 };
 
 #endif // GAMEMENU_H

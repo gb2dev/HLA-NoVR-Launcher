@@ -37,6 +37,7 @@ Window {
                 case 2: // PauseMenu
                     menu.visible = true;
                     buttonPlay.visible = true;
+                    buttonSaveGame.visible = true;
                     buttonLoadGame.visible = true;
                     buttonMainMenu.visible = true;
                     buttonAddons.visible = false;
@@ -328,6 +329,7 @@ Window {
         repeat: false
         onTriggered: function() {
             menu.visible = true;
+            buttonSaveGame.visible = false;
             buttonMainMenu.visible = false;
             labelHudHealth.visible = false;
         }
@@ -340,12 +342,20 @@ Window {
         height: 100
         anchors.centerIn: parent
 
-        Button { // TODO: Hide if no save file yet
+        Button {
             id: buttonPlay
             width: 50
             text: qsTr("Continue")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonPlayClicked();
+        }
+
+        Button {
+            id: buttonSaveGame
+            width: 50
+            text: qsTr("Save Game")
+            Layout.fillWidth: true
+            onClicked: gameMenu.buttonSaveGameClicked();
         }
 
         Button {
