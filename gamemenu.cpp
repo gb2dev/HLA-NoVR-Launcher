@@ -146,7 +146,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
     connect(timerTargetWindow, &QTimer::timeout, this, [this]() {
         stopSearchingTargetWindow = true;
     });
-    timerTargetWindow->start(60000);
+    timerTargetWindow->start(120000);
 }
 
 void GameMenu::update()
@@ -157,8 +157,10 @@ void GameMenu::update()
             if (GetClientRect(targetWindow, &rect)) {
                 ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.left));
                 ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.right));
-                window->setGeometry(rect.left, rect.top, rect.right - rect.left,
-                                    rect.bottom - rect.top);
+                window->setGeometry(rect.left / window->devicePixelRatio(),
+                                    rect.top / window->devicePixelRatio(),
+                                    (rect.right - rect.left) / window->devicePixelRatio(),
+                                    (rect.bottom - rect.top) / window->devicePixelRatio());
             } else {
                 qDebug() << "GetClientRect failed";
                 qApp->quit();
