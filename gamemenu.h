@@ -12,6 +12,7 @@
 
 #ifdef Q_OS_UNIX
 #include <X11/keysym.h>
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #undef Bool
 #endif

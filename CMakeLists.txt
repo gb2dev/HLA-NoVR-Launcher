@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(HLA-NoVR-Launcher VERSION 2.1.2 LANGUAGES CXX)
 
@@ -31,6 +31,10 @@ if(NOT WIN32)
     SET(CMAKE_CXX_FLAGS "-lX11")
     set_target_properties(HLA-NoVR-Launcher PROPERTIES
         OUTPUT_NAME HLA-NoVR-Launcher-Linux
+    )
+    add_custom_target(PatchedInstall
+        COMMAND "${CMAKE_COMMAND}" --build . --target install
+        COMMAND sh -c "patchelf --set-rpath '\\$$ORIGIN' ${CMAKE_INSTALL_PREFIX}/lib/*"
     )
 endif()
 

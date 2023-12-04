@@ -157,8 +157,10 @@ void GameMenu::update()
             SetForegroundWindow(targetWindow);
 #else
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
-            //window->show();
             XSetTransientForHint(display, thisWindow, targetWindow);
+            unsigned char data = 1;
+            XChangeProperty(display, thisWindow, XInternAtom(display, "GAMESCOPE_EXTERNAL_OVERLAY", False), XA_CARDINAL, 32,
+                            PropModeReplace, &data, 1);
 #endif
 
             QFuture<void> future = QtConcurrent::run([this]{
@@ -231,6 +233,9 @@ void GameMenu::update()
                                             loadingMode = false;
                                             window->setFlag(Qt::WindowTransparentForInput, false);
                                             emit visibilityStateChanged(VisibilityState::MainMenu);
+
+                                            XWindowAttributes windowAttributes;
+                                            XGetWindowAttributes(display, targetWindow, &windowAttributes);
 
                                             // Check if there are no save files
                                             bool saveFilesDetected = false;
