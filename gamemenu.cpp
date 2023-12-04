@@ -234,9 +234,6 @@ void GameMenu::update()
                                             window->setFlag(Qt::WindowTransparentForInput, false);
                                             emit visibilityStateChanged(VisibilityState::MainMenu);
 
-                                            XWindowAttributes windowAttributes;
-                                            XGetWindowAttributes(display, targetWindow, &windowAttributes);
-
                                             // Check if there are no save files
                                             bool saveFilesDetected = false;
                                             for (int i = -1; i < 10; i++) {
