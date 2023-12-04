@@ -26,6 +26,14 @@ qt_add_qml_module(HLA-NoVR-Launcher
     QML_FILES Launcher.qml GameMenu.qml Updating.qml
 )
 
+# Avoid collision between executable name and QML module directory (QTBUG-98568).
+if(NOT WIN32)
+    SET(CMAKE_CXX_FLAGS "-lX11")
+    set_target_properties(HLA-NoVR-Launcher PROPERTIES
+        OUTPUT_NAME HLA-NoVR-Launcher-Linux
+    )
+endif()
+
 set_target_properties(HLA-NoVR-Launcher PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
@@ -34,8 +42,19 @@ target_link_libraries(HLA-NoVR-Launcher
     PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia Qt6::Concurrent
 )
 
+# Install the executable into "${CMAKE_INSTALL_PREFIX}/bin".
 install(TARGETS HLA-NoVR-Launcher
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+# Generate the deployment script for the target MyApp.
+qt_generate_deploy_qml_app_script(
+    TARGET HLA-NoVR-Launcher
+    FILENAME_VARIABLE deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+)
+
+# Call the deployment script on "cmake --install".
+install(SCRIPT ${deploy_script})
 
 target_compile_definitions(HLA-NoVR-Launcher PRIVATE VERSION="${PROJECT_VERSION}")

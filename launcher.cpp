@@ -83,12 +83,24 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                             QMetaObject::invokeMethod(this, [this]() {
                                 emit updateModInstalling();
                                 QProcess *unzip = new QProcess(this);
+#ifdef Q_OS_WIN
                                 unzip->setProgram("7za");
                                 unzip->setArguments({"x", "main.zip", "-y"});
+#else
+                                unzip->setProgram("unzip");
+                                unzip->setArguments({"-o", "main.zip"});
+#endif
+
                                 connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                                     QProcess *move = new QProcess(this);
+#ifdef Q_OS_WIN
                                     move->setProgram("robocopy");
                                     move->setArguments({"HLA-NoVR-main", settings.value("installLocation").toString(), "/S", "/IS"});
+#else
+                                    move->setProgram("rsync");
+                                    move->setArguments({"-a", "HLA-NoVR-main/game", settings.value("installLocation").toString()});
+                                    qDebug() << move->arguments();
+#endif
                                     move->start();
                                     connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                                         QDir("HLA-NoVR-main").removeRecursively();

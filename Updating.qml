@@ -12,6 +12,7 @@ Window {
     title: qsTr("Half-Life: Alyx NoVR Launcher")
 
     Label {
+        color: "black"
         anchors.centerIn: parent
         font.pointSize: 24
         text: "Updating Launcher..."

@@ -3,11 +3,56 @@
 
 #include <QGuiApplication>
 
+#ifdef Q_OS_WIN
 #include <Windows.h>
+#else
+Window GameMenu::window_from_name_search(Window current, char const *needle) {
+    Window retval, root, parent, *children;
+    unsigned children_count;
+    char *name = NULL;
+
+    /* Check if this window has the name we seek */
+    if(XFetchName(display, current, &name) > 0) {
+        int r = strcmp(needle, name);
+        XFree(name);
+        if(r == 0) {
+            return current;
+        }
+    }
+
+    retval = 0;
+
+    /* If it does not: check all subwindows recursively. */
+    if(0 != XQueryTree(display, current, &root, &parent, &children, &children_count)) {
+        unsigned i;
+        for(i = 0; i < children_count; ++i) {
+            Window win = window_from_name_search(children[i], needle);
+
+            if(win != 0) {
+                retval = win;
+                break;
+            }
+        }
+
+        XFree(children);
+    }
+
+    return retval;
+}
+
+// frontend function: open display connection, start searching from the root window.
+Window GameMenu::window_from_name(char const *name) {
+    Window w = window_from_name_search(XDefaultRootWindow(display), name);
+    return w;
+}
+#endif
 
 GameMenu::GameMenu(QObject *parent)
     : QObject{parent}
 {
+#ifdef Q_OS_UNIX
+    display = XOpenDisplay(NULL);
+#endif
     mainMenuExecFile.setFileName(settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/main_menu_exec.lua");
     connect(qApp, &QCoreApplication::aboutToQuit, this, [this](){
         stopRead = true;
@@ -21,122 +66,11 @@ void GameMenu::gameStarted(QQuickWindow *w)
 
     window = w;
 
-    hWnd = (HWND)window->winId();
-
-    QFuture<void> future = QtConcurrent::run([this]{
-        bool skipBuffered = true;
-        bool listingAddons = false;
-        QFile file(settings.value("installLocation").toString() + "/game/hlvr/console.log");
-        file.resize(0);
-        file.open(QIODevice::ReadOnly);
-        QTextStream in(&file);
-        while (!stopRead) {
-            while (!in.atEnd()) {
-                QString resultString = in.readLine();
-                if (!skipBuffered) {
-                    if (listingAddons) {
-                        if (resultString.contains("default_enabled_addons_list")) {
-                            listingAddons = false;
-                        } else {
-                            resultString = resultString.sliced(15);
-                            QStringList localAddons = resultString.split("local: ");
-                            QStringList subscribedAddons = resultString.split("subscribed: ");
-
-                            // Addon info
-                            resultString = localAddons.at(0);
-                            resultString.remove("\t");
-                            static QRegularExpression subscribedRegEx("subscribed.*$");
-                            resultString.remove(subscribedRegEx);
-                            QStringList info = resultString.split(" =");
-
-                            if (info.at(0) == "mounted") {
-                                addons.last().mounted = info.at(1).startsWith(" YES");
-                            } else if (info.at(0) == "enabled") {
-                                addons.last().enabled = info.at(1).startsWith(" YES");
-                            } else if (info.at(0) == "maps") {
-                                resultString = info.at(1);
-                                resultString.remove(" ");
-                                info = resultString.split(",");
-                                addons.last().maps = info;
-                            }
-
-                            if (localAddons.size() == 2) {
-                                // New local addon
-                                resultString = localAddons.at(1);
-                                Addon addon;
-                                addon.fileName = resultString;
-                                addons.append(addon);
-                            } else if (subscribedAddons.size() == 2) {
-                                // New subscribed addon
-                                resultString = subscribedAddons.at(1);
-                                Addon addon;
-                                addon.fileName = resultString;
-                                addons.append(addon);
-                            }
-                        }
-                    }
-                    if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
-                        loadingMode = true;
-                        gamePaused = false;
-                        emit visibilityStateChanged(VisibilityState::Hidden);
-                    } else {
-                        // Check difficulty
-                        static QRegularExpression skillRegEx("skill_hlvr(\\d).cfg");
-                        QRegularExpressionMatch match = skillRegEx.match(resultString);
-                        if (match.hasMatch()) {
-                            emit convarLoaded("skill", match.captured(1));
-                        } else {
-                            QStringList result = resultString.split("[MainMenu] ");
-                            if (result.size() > 1) {
-                                if (result.at(1) == "main_menu_mode") {
-                                    pauseMenuMode = false;
-                                    loadingMode = false;
-                                    window->setFlag(Qt::WindowTransparentForInput, false);
-                                    emit visibilityStateChanged(VisibilityState::MainMenu);
-
-                                    // Check if there are no save files
-                                    bool saveFilesDetected = false;
-                                    for (int i = -1; i < 10; i++) {
-                                        QString slot = "";
-                                        if (i != -1) {
-                                            slot = "/s" + QString::number(i) + "/";
-                                        }
-                                        QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE" + slot, "*.sav", QDir::Time, QDir::Files);
-                                        QFileInfoList savesDirectoryContents = savesDirectory.entryInfoList();
-                                        if (!savesDirectoryContents.isEmpty()) {
-                                            saveFilesDetected = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!saveFilesDetected) {
-                                        emit noSaveFilesDetected();
-                                    }
-
-                                    // Get list of addon, reset save slot
-                                    addons.clear();
-                                    runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
-                                } else if (result.at(1) == "pause_menu_mode") {
-                                    pauseMenuMode = true;
-                                    loadingMode = false;
-                                    window->setFlag(Qt::WindowTransparentForInput, true);
-                                    emit visibilityStateChanged(VisibilityState::HUD);
-                                } else if (result.at(1) == "addon_list") {
-                                    listingAddons = true;
-                                } else {
-                                    result = result.at(1).split(" ");
-                                    if (result.at(0) == "player_health") {
-                                        emit hudHealthChanged(hudHealth = result.at(1).toInt());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            skipBuffered = false;
-        }
-    });
+#ifdef Q_OS_WIN
+    thisWindow = (HWND)window->winId();
+#else
+    thisWindow = window->winId();
+#endif
 
     QTimer* timerUpdate = new QTimer(this);
     connect(timerUpdate, &QTimer::timeout, this, &GameMenu::update);
@@ -153,6 +87,7 @@ void GameMenu::update()
 {
     if (stopSearchingTargetWindow) {
         if (targetWindow) {
+#ifdef Q_OS_WIN
             RECT rect;
             if (GetClientRect(targetWindow, &rect)) {
                 ClientToScreen(targetWindow, reinterpret_cast<POINT*>(&rect.left));
@@ -161,13 +96,32 @@ void GameMenu::update()
                                     rect.top / window->devicePixelRatio(),
                                     (rect.right - rect.left) / window->devicePixelRatio(),
                                     (rect.bottom - rect.top) / window->devicePixelRatio());
+#else
+            int windowTopLeft[2];
+            XTranslateCoordinates(display, targetWindow, XDefaultRootWindow(display), 0, 0, &windowTopLeft[0], &windowTopLeft[1], &thisWindow);
+            XWindowAttributes windowAttributes;
+            XGetWindowAttributes(display, targetWindow, &windowAttributes);
+            if (windowAttributes.width != 0) {
+                window->setGeometry(windowTopLeft[0], windowTopLeft[1], windowAttributes.width, windowAttributes.height);
+#endif
             } else {
                 qDebug() << "GetClientRect failed";
                 qApp->quit();
             }
 
+#ifdef Q_OS_WIN
             bool escape_current = GetKeyState(VK_ESCAPE) < 0;
             if (escape_current && !escPrevious && GetForegroundWindow() == targetWindow) {
+#else
+            char keys_return[32] = {0};
+            KeyCode targetCode = XKeysymToKeycode(display, XK_Escape);
+            int targetByte = targetCode / 8;
+            int targetBit = targetCode % 8;
+            int targetMask = 0x01 << targetBit;
+            XQueryKeymap(display, keys_return);
+            bool escape_current = keys_return[targetByte] & targetMask;
+            if (escape_current && !escPrevious) {
+#endif
                 if (pauseMenuMode && !loadingMode) {
                     if (gamePaused) {
                         gamePaused = false;
@@ -187,14 +141,140 @@ void GameMenu::update()
             qApp->quit();
         }
     } else {
+#ifdef Q_OS_WIN
         targetWindow = FindWindowA("SDL_app", "Half-Life: Alyx");
+#else
+        targetWindow = window_from_name("Half-Life: Alyx");
+#endif
+
         if (targetWindow) {
             stopSearchingTargetWindow = true;
 
-            SetWindowLongPtr(hWnd, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
+#ifdef Q_OS_WIN
+            SetWindowLongPtr(thisWindow, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
             window->show();
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
             SetForegroundWindow(targetWindow);
+#else
+            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+            //window->show();
+            XSetTransientForHint(display, thisWindow, targetWindow);
+#endif
+
+            QFuture<void> future = QtConcurrent::run([this]{
+                bool skipBuffered = true;
+                bool listingAddons = false;
+                QFile file(settings.value("installLocation").toString() + "/game/hlvr/console.log");
+                file.resize(0);
+                file.open(QIODevice::ReadOnly);
+                QTextStream in(&file);
+                while (!stopRead) {
+                    while (!in.atEnd()) {
+                        QString resultString = in.readLine();
+                        if (!skipBuffered) {
+                            if (listingAddons) {
+                                if (resultString.contains("default_enabled_addons_list")) {
+                                    listingAddons = false;
+                                } else {
+                                    resultString = resultString.sliced(15);
+                                    QStringList localAddons = resultString.split("local: ");
+                                    QStringList subscribedAddons = resultString.split("subscribed: ");
+
+                                    // Addon info
+                                    resultString = localAddons.at(0);
+                                    resultString.remove("\t");
+                                    static QRegularExpression subscribedRegEx("subscribed.*$");
+                                    resultString.remove(subscribedRegEx);
+                                    QStringList info = resultString.split(" =");
+
+                                    if (info.at(0) == "mounted") {
+                                        addons.last().mounted = info.at(1).startsWith(" YES");
+                                    } else if (info.at(0) == "enabled") {
+                                        addons.last().enabled = info.at(1).startsWith(" YES");
+                                    } else if (info.at(0) == "maps") {
+                                        resultString = info.at(1);
+                                        resultString.remove(" ");
+                                        info = resultString.split(",");
+                                        addons.last().maps = info;
+                                    }
+
+                                    if (localAddons.size() == 2) {
+                                        // New local addon
+                                        resultString = localAddons.at(1);
+                                        Addon addon;
+                                        addon.fileName = resultString;
+                                        addons.append(addon);
+                                    } else if (subscribedAddons.size() == 2) {
+                                        // New subscribed addon
+                                        resultString = subscribedAddons.at(1);
+                                        Addon addon;
+                                        addon.fileName = resultString;
+                                        addons.append(addon);
+                                    }
+                                }
+                            }
+                            if (resultString.contains("CHostStateMgr::QueueNewRequest( Loading (") || resultString.contains("CHostStateMgr::QueueNewRequest( Restoring Save (")) {
+                                loadingMode = true;
+                                gamePaused = false;
+                                emit visibilityStateChanged(VisibilityState::Hidden);
+                            } else {
+                                // Check difficulty
+                                static QRegularExpression skillRegEx("skill_hlvr(\\d).cfg");
+                                QRegularExpressionMatch match = skillRegEx.match(resultString);
+                                if (match.hasMatch()) {
+                                    emit convarLoaded("skill", match.captured(1));
+                                } else {
+                                    QStringList result = resultString.split("[MainMenu] ");
+                                    if (result.size() > 1) {
+                                        if (result.at(1) == "main_menu_mode") {
+                                            pauseMenuMode = false;
+                                            loadingMode = false;
+                                            window->setFlag(Qt::WindowTransparentForInput, false);
+                                            emit visibilityStateChanged(VisibilityState::MainMenu);
+
+                                            // Check if there are no save files
+                                            bool saveFilesDetected = false;
+                                            for (int i = -1; i < 10; i++) {
+                                                QString slot = "";
+                                                if (i != -1) {
+                                                    slot = "/s" + QString::number(i) + "/";
+                                                }
+                                                QDir savesDirectory(settings.value("installLocation").toString() + "/game/hlvr/SAVE" + slot, "*.sav", QDir::Time, QDir::Files);
+                                                QFileInfoList savesDirectoryContents = savesDirectory.entryInfoList();
+                                                if (!savesDirectoryContents.isEmpty()) {
+                                                    saveFilesDetected = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (!saveFilesDetected) {
+                                                emit noSaveFilesDetected();
+                                            }
+
+                                            // Get list of addon, reset save slot
+                                            addons.clear();
+                                            runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
+                                        } else if (result.at(1) == "pause_menu_mode") {
+                                            pauseMenuMode = true;
+                                            loadingMode = false;
+                                            window->setFlag(Qt::WindowTransparentForInput, true);
+                                            emit visibilityStateChanged(VisibilityState::HUD);
+                                        } else if (result.at(1) == "addon_list") {
+                                            listingAddons = true;
+                                        } else {
+                                            result = result.at(1).split(" ");
+                                            if (result.at(0) == "player_health") {
+                                                emit hudHealthChanged(hudHealth = result.at(1).toInt());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    skipBuffered = false;
+                }
+            });
         }
     }
 }
@@ -206,8 +286,12 @@ void GameMenu::runGameScript(const QString &script)
     QTextStream out(&file);
     out << script;
     file.close();
+#ifdef Q_OS_WIN
     SendMessage(targetWindow, WM_KEYDOWN, VK_F24, 0);
     SendMessage(targetWindow, WM_KEYUP, VK_F24, 0);
+#else
+    QProcess::startDetached("xdotool", {"key", "F24"});
+#endif
 }
 
 void GameMenu::runGameCommand(const QString &command)
@@ -316,7 +400,11 @@ void GameMenu::writeToSaveCfg(const QString &key, const QString &value)
 void GameMenu::buttonPlayClicked()
 {
     if (pauseMenuMode) {
+#ifdef Q_OS_WIN
         if (GetForegroundWindow() == targetWindow) {
+#else
+        if (true) {
+#endif
             gamePaused = false;
             window->setFlag(Qt::WindowTransparentForInput, true);
             runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
@@ -381,7 +469,11 @@ void GameMenu::buttonLoadGameClicked()
 
 void GameMenu::buttonSaveGameClicked()
 {
+#ifdef Q_OS_WIN
     if (GetForegroundWindow() == targetWindow) {
+#else
+    if (true) {
+#endif
         gamePaused = false;
         window->setFlag(Qt::WindowTransparentForInput, true);
         runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause;save_manual");
@@ -472,7 +564,9 @@ void GameMenu::recordInput(const QString &inputName)
     recordInputName = inputName;
     window->installEventFilter(this);
     window->setFlag(Qt::WindowDoesNotAcceptFocus, false);
-    SetFocus(hWnd);
+#ifdef Q_OS_WIN
+    SetFocus(thisWindow);
+#endif
 }
 
 void GameMenu::changeOptions(const QStringList &options)
@@ -499,7 +593,10 @@ void GameMenu::changeOptions(const QStringList &options)
 
 bool GameMenu::eventFilter(QObject *object, QEvent *event)
 {
+#pragma push_macro("KeyPress")
+#undef KeyPress
     if (event->type() == QEvent::KeyPress) {
+#pragma pop_macro("KeyPress")
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QString key = keyEvent->text();
         int keyNumber = keyEvent->key();
@@ -551,7 +648,9 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
 
         window->removeEventFilter(this);
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+#ifdef Q_OS_WIN
         SetFocus(targetWindow);
+#endif
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         int button = mouseEvent->button();
@@ -568,7 +667,9 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
 
         window->removeEventFilter(this);
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+#ifdef Q_OS_WIN
         SetFocus(targetWindow);
+#endif
     }
     return false;
 }

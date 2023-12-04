@@ -10,6 +10,12 @@
 #include <QSettings>
 #include <QDebug>
 
+#ifdef Q_OS_UNIX
+#include <X11/keysym.h>
+#include <X11/Xlib.h>
+#undef Bool
+#endif
+
 struct Addon {
     QString fileName;
     bool mounted;
@@ -66,8 +72,16 @@ private:
     QFile mainMenuExecFile;
     QSettings settings;
     QQuickWindow *window;
-    HWND hWnd;
+#ifdef Q_OS_WIN
+    HWND thisWindow;
     HWND targetWindow;
+#else
+    Display *display;
+    Window window_from_name_search(Window current, char const *needle);
+    Window window_from_name(char const *name);
+    Window thisWindow;
+    Window targetWindow;
+#endif
     bool escPrevious = false;
     QFuture<void> future;
     bool stopRead = false;
