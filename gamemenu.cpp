@@ -97,11 +97,11 @@ void GameMenu::update()
                                     (rect.right - rect.left) / window->devicePixelRatio(),
                                     (rect.bottom - rect.top) / window->devicePixelRatio());
 #else
-            int windowTopLeft[2];
-            XTranslateCoordinates(display, targetWindow, XDefaultRootWindow(display), 0, 0, &windowTopLeft[0], &windowTopLeft[1], &thisWindow);
-            XWindowAttributes windowAttributes;
-            XGetWindowAttributes(display, targetWindow, &windowAttributes);
-            if (windowAttributes.width != 0) {
+            if (window_from_name("Half-Life: Alyx") != 0) {
+                int windowTopLeft[2];
+                XTranslateCoordinates(display, targetWindow, XDefaultRootWindow(display), 0, 0, &windowTopLeft[0], &windowTopLeft[1], &thisWindow);
+                XWindowAttributes windowAttributes;
+                XGetWindowAttributes(display, targetWindow, &windowAttributes);
                 window->setGeometry(windowTopLeft[0], windowTopLeft[1], windowAttributes.width, windowAttributes.height);
 #endif
             } else {
@@ -158,9 +158,6 @@ void GameMenu::update()
 #else
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
             XSetTransientForHint(display, thisWindow, targetWindow);
-            unsigned char data = 1;
-            XChangeProperty(display, thisWindow, XInternAtom(display, "GAMESCOPE_EXTERNAL_OVERLAY", False), XA_CARDINAL, 32,
-                            PropModeReplace, &data, 1);
 #endif
 
             QFuture<void> future = QtConcurrent::run([this]{
