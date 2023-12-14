@@ -54,7 +54,8 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
             connect(versionInfoReply, &QNetworkReply::finished, versionInfoReply, [this, versionInfoReply, installedModVersionInfo]() {
                 versionInfoReply->deleteLater();
 
-                if (versionInfoReply->error() || readModVersionInfo(versionInfoReply->readAll()) == installedModVersionInfo) {
+                QString newestModVersion = readModVersionInfo(versionInfoReply->readAll());
+                if (versionInfoReply->error() || newestModVersion == installedModVersionInfo) {
                     QMetaObject::invokeMethod(this, [this]() {
                         playGame();
                     });
@@ -99,7 +100,6 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
 #else
                                     move->setProgram("rsync");
                                     move->setArguments({"-a", "HLA-NoVR-main/game", settings.value("installLocation").toString()});
-                                    qDebug() << move->arguments();
 #endif
                                     move->start();
                                     connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {

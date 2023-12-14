@@ -5,7 +5,7 @@ import QtQuick.Layouts
 
 Window {
     id: gameMenuWindow
-    visible: true
+    visible: false
     flags: Qt.FramelessWindowHint | Qt.Popup
     color: "transparent"
 

@@ -14,6 +14,7 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #undef Bool
 #endif
 
@@ -63,8 +64,8 @@ signals:
 
 private:
     bool eventFilter(QObject *object, QEvent *event) override;
-    void runGameScript(const QString &script);
-    void runGameCommand(const QString &command);
+    void runGameScript(const QString &script, bool focusLauncher = true);
+    void runGameCommand(const QString &command, bool focusLauncher = true);
     void writeToBindingsFile(const QString &key, const QVariant &value);
     void readBindingsFile();
     void readConvarsFile();

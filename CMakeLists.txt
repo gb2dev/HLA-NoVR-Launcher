@@ -28,7 +28,8 @@ qt_add_qml_module(HLA-NoVR-Launcher
 
 # Avoid collision between executable name and QML module directory (QTBUG-98568).
 if(NOT WIN32)
-    SET(CMAKE_CXX_FLAGS "-lX11")
+    target_link_libraries(HLA-NoVR-Launcher
+    PRIVATE X11)
     set_target_properties(HLA-NoVR-Launcher PROPERTIES
         OUTPUT_NAME HLA-NoVR-Launcher-Linux
     )

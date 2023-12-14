@@ -126,7 +126,7 @@ void GameMenu::update()
                     if (gamePaused) {
                         gamePaused = false;
                         window->setFlag(Qt::WindowTransparentForInput, true);
-                        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
+                        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause", false);
                         emit visibilityStateChanged(VisibilityState::HUD);
                     } else {
                         gamePaused = true;
@@ -150,13 +150,12 @@ void GameMenu::update()
         if (targetWindow) {
             stopSearchingTargetWindow = true;
 
-#ifdef Q_OS_WIN
-            SetWindowLongPtr(thisWindow, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
             window->show();
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+#ifdef Q_OS_WIN
+            SetWindowLongPtr(thisWindow, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
             SetForegroundWindow(targetWindow);
 #else
-            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
             XSetTransientForHint(display, thisWindow, targetWindow);
 #endif
 
@@ -250,13 +249,14 @@ void GameMenu::update()
                                                 emit noSaveFilesDetected();
                                             }
 
-                                            // Get list of addon, reset save slot
+                                            // Get list of addons, reset save slot
                                             addons.clear();
                                             runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
                                         } else if (result.at(1) == "pause_menu_mode") {
                                             pauseMenuMode = true;
                                             loadingMode = false;
                                             window->setFlag(Qt::WindowTransparentForInput, true);
+                                            runGameScript(" ", false);
                                             emit visibilityStateChanged(VisibilityState::HUD);
                                         } else if (result.at(1) == "addon_list") {
                                             listingAddons = true;
@@ -278,7 +278,7 @@ void GameMenu::update()
     }
 }
 
-void GameMenu::runGameScript(const QString &script)
+void GameMenu::runGameScript(const QString &script, bool focusLauncher)
 {
     QFile file(settings.value("installLocation").toString() + "/game/hlvr/scripts/vscripts/main_menu_exec.lua");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -286,16 +286,34 @@ void GameMenu::runGameScript(const QString &script)
     out << script;
     file.close();
 #ifdef Q_OS_WIN
-    SendMessage(targetWindow, WM_KEYDOWN, VK_F24, 0);
-    SendMessage(targetWindow, WM_KEYUP, VK_F24, 0);
+    SendMessage(targetWindow, WM_KEYDOWN, VK_PAUSE, 0);
+    SendMessage(targetWindow, WM_KEYUP, VK_PAUSE, 0);
 #else
-    QProcess::startDetached("xdotool", {"key", "F24"});
+    QProcess p;
+    p.setProgram("xdotool");
+    p.setArguments({"search", "--desktop", "0", "--name", "Half-Life: Alyx", "windowactivate"});
+    p.start();
+    p.waitForFinished();
+    p.setArguments({"search", "--desktop", "0", "--name", "Half-Life: Alyx", "windowfocus"});
+    p.start();
+    p.waitForFinished();
+    p.setArguments({"key", "Pause"});
+    p.start();
+    p.waitForFinished();
+    if (focusLauncher) {
+        p.setArguments({"search", "--desktop", "0", "--class", "Launcher", "windowactivate"});
+        p.start();
+        p.waitForFinished();
+        p.setArguments({"search", "--desktop", "0", "--class", "Launcher", "windowfocus"});
+        p.start();
+        p.waitForFinished();
+    }
 #endif
 }
 
-void GameMenu::runGameCommand(const QString &command)
+void GameMenu::runGameCommand(const QString &command, bool focusLauncher)
 {
-    runGameScript("SendToConsole(\"" + command + "\")");
+    runGameScript("SendToConsole(\"" + command + "\")", focusLauncher);
 }
 
 void GameMenu::writeToBindingsFile(const QString &key, const QVariant &value)
@@ -406,7 +424,7 @@ void GameMenu::buttonPlayClicked()
 #endif
             gamePaused = false;
             window->setFlag(Qt::WindowTransparentForInput, true);
-            runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause");
+            runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause", false);
             emit visibilityStateChanged(VisibilityState::HUD);
         }
     } else {
@@ -475,7 +493,7 @@ void GameMenu::buttonSaveGameClicked()
 #endif
         gamePaused = false;
         window->setFlag(Qt::WindowTransparentForInput, true);
-        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause;save_manual");
+        runGameCommand("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause;save_manual", false);
         emit visibilityStateChanged(VisibilityState::HUD);
     }
 }
