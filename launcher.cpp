@@ -12,7 +12,13 @@ Launcher::Launcher(QObject *parent)
     networkThread.start();
 
     QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
-    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync -w " + QString::number(screenGeometry.width()) + " -h " + QString::number(screenGeometry.height())).toString();
+    int screenWidth = screenGeometry.width();
+    int screenHeight = screenGeometry.height();
+    if (QString(qgetenv("XDG_CURRENT_DESKTOP")) == "gamescope") {
+        screenWidth--;
+    }
+
+    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync -w " + QString::number(screenWidth) + " -h " + QString::number(screenHeight)).toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
     });
