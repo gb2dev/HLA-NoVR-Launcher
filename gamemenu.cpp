@@ -157,6 +157,9 @@ void GameMenu::update()
             SetForegroundWindow(targetWindow);
 #else
             XSetTransientForHint(display, thisWindow, targetWindow);
+            if (QString(qgetenv("XDG_CURRENT_DESKTOP")) != "gamescope") {
+                window->setFlag(Qt::Popup, false);
+            }
 #endif
 
             QFuture<void> future = QtConcurrent::run([this]{
