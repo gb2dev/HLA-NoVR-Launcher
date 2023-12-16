@@ -655,7 +655,7 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
             key = "RIGHTARROW";
         } else if (keyNumber == Qt::Key_Delete) {
             key = "DEL";
-        } else if (keyNumber >= Qt::Key_F1 && keyNumber <= Qt::Key_F23) {
+        } else if (keyNumber >= Qt::Key_F1 && keyNumber <= Qt::Key_F24) {
             key = "F" + QString::number(keyNumber - 0x0100002F);
         } else {
             if (key.isEmpty()) {
