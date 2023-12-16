@@ -4,7 +4,7 @@ project(HLA-NoVR-Launcher VERSION 2.3 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.6 REQUIRED COMPONENTS Quick Network Multimedia Concurrent)
+find_package(Qt6 6.6 REQUIRED COMPONENTS Quick Network Multimedia Concurrent QuickControls2)
 
 qt_standard_project_setup()
 
@@ -44,7 +44,7 @@ set_target_properties(HLA-NoVR-Launcher PROPERTIES
 )
 
 target_link_libraries(HLA-NoVR-Launcher
-    PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia Qt6::Concurrent
+    PRIVATE Qt6::Quick Qt6::Network Qt6::Multimedia Qt6::Concurrent Qt6::QuickControls2
 )
 
 # Install the executable into "${CMAKE_INSTALL_PREFIX}/bin".

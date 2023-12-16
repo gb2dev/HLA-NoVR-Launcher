@@ -11,6 +11,7 @@
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 
 #include "gamemenu.h"
 #include "launcher.h"
@@ -18,6 +19,8 @@
 int main(int argc, char *argv[])
 {
     qputenv("QT_ENABLE_HIGHDPI_SCALING", "0");
+
+    QQuickStyle::setStyle("Fusion");
 
     QGuiApplication app(argc, argv);
     app.setOrganizationName("HLA-NoVR");

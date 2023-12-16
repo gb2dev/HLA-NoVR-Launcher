@@ -26,6 +26,7 @@ class Launcher : public QObject
     Q_OBJECT
     Q_PROPERTY(bool validInstallation MEMBER m_validInstallation NOTIFY validInstallationChanged)
     Q_PROPERTY(QString customLaunchOptions MEMBER m_customLaunchOptions NOTIFY customLaunchOptionsChanged)
+    Q_PROPERTY(QString modBranch MEMBER m_modBranch NOTIFY modBranchChanged)
 public:
     explicit Launcher(QObject *parent = nullptr);
     QQmlApplicationEngine *engine;
@@ -39,6 +40,7 @@ signals:
     void errorMessage(const QString &message);
     void validInstallationChanged();
     void customLaunchOptionsChanged();
+    void modBranchChanged();
     void installationSelectionNeeded();
 
 private:
@@ -50,6 +52,7 @@ private:
     QSettings settings;
     bool m_validInstallation;
     QString m_customLaunchOptions;
+    QString m_modBranch;
 };
 
 #endif // LAUNCHER_H

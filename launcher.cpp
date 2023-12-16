@@ -22,6 +22,11 @@ Launcher::Launcher(QObject *parent)
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
     });
+
+    m_modBranch = settings.value("modBranch", "main").toString();
+    connect(this, &Launcher::modBranchChanged, this, [this] {
+        settings.setValue("modBranch", m_modBranch);
+    });
 }
 
 void Launcher::playGame() // Launches the game with the arguments
@@ -75,7 +80,7 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                                 return;
                             }
 
-                            QFile file("main.zip");
+                            QFile file(m_modBranch + ".zip");
                             if (!file.open(QIODevice::WriteOnly)) {
                                 emit errorMessage("Failed to open file for writing");
                                 modReply->deleteLater();
@@ -92,25 +97,25 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                                 QProcess *unzip = new QProcess(this);
 #ifdef Q_OS_WIN
                                 unzip->setProgram("7za");
-                                unzip->setArguments({"x", "main.zip", "-y"});
+                                unzip->setArguments({"x", m_modBranch + ".zip", "-y"});
 #else
                                 unzip->setProgram("unzip");
-                                unzip->setArguments({"-o", "main.zip"});
+                                unzip->setArguments({"-o", m_modBranch + ".zip"});
 #endif
 
                                 connect(unzip, &QProcess::finished, unzip, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                                     QProcess *move = new QProcess(this);
 #ifdef Q_OS_WIN
                                     move->setProgram("robocopy");
-                                    move->setArguments({"HLA-NoVR-main", settings.value("installLocation").toString(), "/S", "/IS"});
+                                    move->setArguments({"HLA-NoVR-" + m_modBranch, settings.value("installLocation").toString(), "/S", "/IS"});
 #else
                                     move->setProgram("rsync");
-                                    move->setArguments({"-a", "HLA-NoVR-main/game", settings.value("installLocation").toString()});
+                                    move->setArguments({"-a", "HLA-NoVR-" + m_modBranch + "/game", settings.value("installLocation").toString()});
 #endif
                                     move->start();
                                     connect(move, &QProcess::finished, move, [this](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                                        QDir("HLA-NoVR-main").removeRecursively();
-                                        QFile("main.zip").remove();
+                                        QDir("HLA-NoVR-" + m_modBranch).removeRecursively();
+                                        QFile(m_modBranch + ".zip").remove();
 
                                         playGame();
                                     });
@@ -124,14 +129,14 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
                         });
                     }, Qt::SingleShotConnection);
                     QMetaObject::invokeMethod(networkHandler, [this]() {
-                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/main.zip");
+                        const QUrl newestModUrl("https://github.com/bfeber/HLA-NoVR/archive/refs/heads/" + m_modBranch +".zip");
                         networkHandler->createNetworkReply(newestModUrl);
                     });
                 }
             });
         }, Qt::SingleShotConnection);
         QMetaObject::invokeMethod(networkHandler, [this]() {
-            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/main/game/hlvr/scripts/vscripts/version.lua");
+            const QUrl newestModVersionInfoUrl("https://raw.githubusercontent.com/bfeber/HLA-NoVR/" + m_modBranch + "/game/hlvr/scripts/vscripts/version.lua");
             networkHandler->createNetworkReply(newestModVersionInfoUrl);
         });
     } else if (installLocation.isEmpty()) {
