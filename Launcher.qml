@@ -111,7 +111,7 @@ Window {
 
         Button {
             id: playButton
-            width: 217
+            width: 200
             height: 34
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Play")
@@ -126,7 +126,7 @@ Window {
 
         Button {
             id: quitButton
-            width: 217
+            width: 200
             height: 34
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Quit")

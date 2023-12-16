@@ -236,21 +236,23 @@ Window {
         id: savesListView
         anchors.top: menu.top
         anchors.bottom: parent.bottom
-        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
+        width: 400
+        spacing: 5
         model: savesModel
         delegate: Button {
             width: 400
             contentItem: Column {
-                Label {
+                Text {
+                    width: parent.width
                     font.bold: saveFileName !== "cancel"
                     text: saveName
-                    verticalAlignment: saveFileName === "cancel" ? Text.AlignHCenter : Text.AlignLeft
+                    horizontalAlignment: (saveFileName === "cancel") ? Text.AlignHCenter : Text.AlignLeft
                 }
-                Label {
+                Text {
                     visible: saveFileName !== "cancel"
                     text: saveDateTime
-                    verticalAlignment: Text.AlignLeft
+                    horizontalAlignment: Text.AlignLeft
                 }
             }
             onClicked: gameMenu.loadSave(saveFileName)
@@ -260,19 +262,19 @@ Window {
     ListModel {
         id: chaptersModel
 
-        ListElement { chapterName: "Cancel"; chapterMapName: "cancel"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Addon Maps"; chapterMapName: "addon_maps"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 1 - Entanglement"; chapterMapName: "a1_intro_world"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 2 - The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 3 - Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 4 - Superweapon"; chapterMapName: "a3_station_street"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 5 - The Northern Star"; chapterMapName: "a3_hotel_lobby_basement"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 6 - Arms Race"; chapterMapName: "a3_c17_processing_plant"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 7 - Jeff"; chapterMapName: "a3_distillery"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 8 - Captivity"; chapterMapName: "a4_c17_zoo"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 9 - Revelations"; chapterMapName: "a4_c17_tanker_yard"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 10 - Breaking and Entering"; chapterMapName: "a4_c17_water_tower"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Chapter 11 - Point Extraction"; chapterMapName: "a5_vault"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: ""; chapterName: "Cancel"; chapterMapName: "cancel"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: ""; chapterName: "Addon Maps"; chapterMapName: "addon_maps"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 1"; chapterName: "Entanglement"; chapterMapName: "a1_intro_world"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 2"; chapterName: "The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 3"; chapterName: "Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 4"; chapterName: "Superweapon"; chapterMapName: "a3_station_street"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 5"; chapterName: "The Northern Star"; chapterMapName: "a3_hotel_lobby_basement"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 6"; chapterName: "Arms Race"; chapterMapName: "a3_c17_processing_plant"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 7"; chapterName: "Jeff"; chapterMapName: "a3_distillery"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 8"; chapterName: "Captivity"; chapterMapName: "a4_c17_zoo"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 9"; chapterName: "Revelations"; chapterMapName: "a4_c17_tanker_yard"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 10"; chapterName: "Breaking and Entering"; chapterMapName: "a4_c17_water_tower"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterNumber: "Chapter 11"; chapterName: "Point Extraction"; chapterMapName: "a5_vault"; addonMap: false; mapEnabled: true; }
     }
 
     ListModel {
@@ -284,13 +286,26 @@ Window {
         visible: false
         anchors.top: menu.top
         anchors.bottom: parent.bottom
-        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
+        width: 400
+        spacing: 5
         model: chaptersModel
         delegate: Button {
             enabled: mapEnabled
             width: 400
-            text: chapterName
+            contentItem: Column {
+                Text {
+                    visible: chapterNumber !== ""
+                    width: parent.width
+                    font.bold: true
+                    text: chapterNumber
+                }
+                Text {
+                    width: parent.width
+                    text: chapterName
+                    horizontalAlignment: (chapterNumber === "") ? Text.AlignHCenter : Text.AlignLeft
+                }
+            }
             onClicked: function() {
                 if (chapterMapName === "addon_maps") {
                     chaptersListView.model = addonMapsModel
@@ -313,6 +328,7 @@ Window {
         anchors.top: menu.top
         anchors.bottom: parent.bottom
         width: 400
+        spacing: 5
         anchors.horizontalCenter: parent.horizontalCenter
         model: addonsModel
         delegate: Button {
@@ -335,16 +351,18 @@ Window {
         }
     }
 
-    ColumnLayout {
+    Column {
         id: menu
         visible: false
-        width: 100
-        height: 100
+        width: 200
         anchors.centerIn: parent
+        anchors.verticalCenterOffset: -60
+        spacing: 5
 
         Button {
             id: buttonPlay
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Continue")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonPlayClicked();
@@ -352,7 +370,8 @@ Window {
 
         Button {
             id: buttonSaveGame
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Save Game")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonSaveGameClicked();
@@ -360,7 +379,8 @@ Window {
 
         Button {
             id: buttonLoadGame
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Load Game")
             Layout.fillWidth: true
             onClicked: function() {
@@ -372,7 +392,8 @@ Window {
 
         Button {
             id: buttonNewGmae
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("New Game")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonNewGameClicked();
@@ -380,7 +401,8 @@ Window {
 
         Button {
             id: buttonOptions
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Options")
             Layout.fillWidth: true
             onClicked: function() {
@@ -392,7 +414,8 @@ Window {
 
         Button {
             id: buttonMainMenu
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Main Menu")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonMainMenuClicked()
@@ -400,7 +423,8 @@ Window {
 
         Button {
             id: buttonAddons
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Addons")
             Layout.fillWidth: true
             onClicked: function() {
@@ -412,7 +436,8 @@ Window {
 
         Button {
             id: buttonQuit
-            width: 50
+            width: 200
+            height: 34
             text: qsTr("Quit")
             Layout.fillWidth: true
             onClicked: gameMenu.buttonQuitClicked()
