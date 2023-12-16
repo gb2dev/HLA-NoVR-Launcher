@@ -236,11 +236,11 @@ Window {
         id: savesListView
         anchors.top: menu.top
         anchors.bottom: parent.bottom
-        width: 200
+        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
         model: savesModel
         delegate: Button {
-            width: 200
+            width: 400
             contentItem: Column {
                 Label {
                     font.bold: saveFileName !== "cancel"
@@ -262,17 +262,17 @@ Window {
 
         ListElement { chapterName: "Cancel"; chapterMapName: "cancel"; addonMap: false; mapEnabled: true; }
         ListElement { chapterName: "Addon Maps"; chapterMapName: "addon_maps"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Entanglement"; chapterMapName: "a1_intro_world"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Superweapon"; chapterMapName: "a3_station_street"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "The Northern Star"; chapterMapName: "a3_hotel_lobby_basement"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Arms Race"; chapterMapName: "a3_c17_processing_plant"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Jeff"; chapterMapName: "a3_distillery"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Captivity"; chapterMapName: "a4_c17_zoo"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Revelations"; chapterMapName: "a4_c17_tanker_yard"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Breaking and Entering"; chapterMapName: "a4_c17_water_tower"; addonMap: false; mapEnabled: true; }
-        ListElement { chapterName: "Point Extraction"; chapterMapName: "a5_vault"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 1 - Entanglement"; chapterMapName: "a1_intro_world"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 2 - The Quarantine Zone"; chapterMapName: "a2_quarantine_entrance"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 3 - Is or Will Be"; chapterMapName: "a2_headcrabs_tunnel"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 4 - Superweapon"; chapterMapName: "a3_station_street"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 5 - The Northern Star"; chapterMapName: "a3_hotel_lobby_basement"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 6 - Arms Race"; chapterMapName: "a3_c17_processing_plant"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 7 - Jeff"; chapterMapName: "a3_distillery"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 8 - Captivity"; chapterMapName: "a4_c17_zoo"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 9 - Revelations"; chapterMapName: "a4_c17_tanker_yard"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 10 - Breaking and Entering"; chapterMapName: "a4_c17_water_tower"; addonMap: false; mapEnabled: true; }
+        ListElement { chapterName: "Chapter 11 - Point Extraction"; chapterMapName: "a5_vault"; addonMap: false; mapEnabled: true; }
     }
 
     ListModel {
@@ -284,12 +284,12 @@ Window {
         visible: false
         anchors.top: menu.top
         anchors.bottom: parent.bottom
-        width: 200
+        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
         model: chaptersModel
         delegate: Button {
             enabled: mapEnabled
-            width: 200
+            width: 400
             text: chapterName
             onClicked: function() {
                 if (chapterMapName === "addon_maps") {
@@ -312,11 +312,11 @@ Window {
         visible: false
         anchors.top: menu.top
         anchors.bottom: parent.bottom
-        width: 200
+        width: 400
         anchors.horizontalCenter: parent.horizontalCenter
         model: addonsModel
         delegate: Button {
-            width: 200
+            width: 400
             text: addonName
             onClicked: gameMenu.toggleAddon(addonFileName)
         }
