@@ -6,7 +6,7 @@ import QtQuick.Layouts
 Window {
     id: gameMenuWindow
     visible: false
-    flags: Qt.FramelessWindowHint | Qt.Popup
+    flags: Qt.FramelessWindowHint
     color: "transparent"
 
     Component.onCompleted: gameMenu.gameStarted(this)

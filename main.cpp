@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_WIN
         QAudioDevice info(QMediaDevices::defaultAudioOutput());
-        qDebug() << info.channelConfiguration();
         rootContext->setContextProperty("audioWarning", info.maximumChannelCount() > 2);
 #else
         rootContext->setContextProperty("audioWarning", false);

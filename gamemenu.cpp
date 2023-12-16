@@ -68,6 +68,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
 
 #ifdef Q_OS_WIN
     thisWindow = (HWND)window->winId();
+    window->setProperty("visible", true);
 #else
     thisWindow = window->winId();
 #endif
@@ -150,17 +151,17 @@ void GameMenu::update()
         if (targetWindow) {
             stopSearchingTargetWindow = true;
 
-            window->show();
-            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
 #ifdef Q_OS_WIN
             SetWindowLongPtr(thisWindow, GWLP_HWNDPARENT, (LONG_PTR)targetWindow);
             SetForegroundWindow(targetWindow);
 #else
             XSetTransientForHint(display, thisWindow, targetWindow);
-            if (QString(qgetenv("XDG_CURRENT_DESKTOP")) != "gamescope") {
-                window->setFlag(Qt::Popup, false);
+            if (QString(qgetenv("XDG_CURRENT_DESKTOP")) == "gamescope") {
+                window->setFlag(Qt::Popup, true);
             }
+            window->show();
 #endif
+            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
 
             QFuture<void> future = QtConcurrent::run([this]{
                 bool skipBuffered = true;
