@@ -65,8 +65,8 @@ Window {
                     savesModel.append({ saveName: "Cancel", saveDateTime: "", saveFileName: "cancel" });
                     onAddonToggled();
                     addonMapsModel.clear();
-                    addonMapsModel.append({ chapterName: "Cancel", chapterMapName: "cancel", mapEnabled: true });
-                    addonMapsModel.append({ chapterName: "Original Game", chapterMapName: "original_game", mapEnabled: true });
+                    addonMapsModel.append({ chapterNumber: "", chapterName: "Cancel", chapterMapName: "cancel", mapEnabled: true });
+                    addonMapsModel.append({ chapterNumber: "", chapterName: "Original Game", chapterMapName: "original_game", mapEnabled: true });
                     break;
             }
         }
