@@ -658,6 +658,8 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
             key = "DEL";
         } else if (keyNumber >= Qt::Key_F1 && keyNumber <= Qt::Key_F24) {
             key = "F" + QString::number(keyNumber - 0x0100002F);
+        } else if (keyNumber == Qt::Key_Backslash) {
+            key = "\\\\";
         } else {
             if (key.isEmpty()) {
                 key = "UNSUPPORTED";

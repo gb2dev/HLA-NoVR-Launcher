@@ -97,6 +97,10 @@ Window {
             addonsModel.append({ addonName: "Workshop", addonFileName: "workshop" });
         }
         function onBindingChanged(inputName, bind) {
+            if (bind === "\\\\") {
+                bind = "\\";
+            }
+
             switch (inputName) {
                 case "MOUSE_SENSITIVITY":
                     mouseSensitivity.value = bind;
