@@ -94,6 +94,7 @@ private:
     bool gamePaused = false;
     QList<Addon> addons;
     QString recordInputName = "";
+    bool recordingInput = false;
     int saveSlot = -1;
 };
 

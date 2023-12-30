@@ -65,6 +65,7 @@ void GameMenu::gameStarted(QQuickWindow *w)
     readConvarsFile();
 
     window = w;
+    window->installEventFilter(this);
 
 #ifdef Q_OS_WIN
     thisWindow = (HWND)window->winId();
@@ -583,7 +584,7 @@ void GameMenu::toggleAddon(const QString &fileName)
 void GameMenu::recordInput(const QString &inputName)
 {
     recordInputName = inputName;
-    window->installEventFilter(this);
+    recordingInput = true;
     window->setFlag(Qt::WindowDoesNotAcceptFocus, false);
 #ifdef Q_OS_WIN
     SetFocus(thisWindow);
@@ -616,7 +617,7 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
 {
 #pragma push_macro("KeyPress")
 #undef KeyPress
-    if (event->type() == QEvent::KeyPress) {
+    if (event->type() == QEvent::KeyPress && recordingInput) {
 #pragma pop_macro("KeyPress")
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QString key = keyEvent->text();
@@ -669,30 +670,36 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
         emit bindingChanged(recordInputName, key);
         writeToBindingsFile(recordInputName, key);
 
-        window->removeEventFilter(this);
+        recordingInput = false;
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
 #ifdef Q_OS_WIN
         SetFocus(targetWindow);
 #endif
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        int button = mouseEvent->button();
-        if (button == Qt::MiddleButton) {
-            button = 3;
-        } else if (button == Qt::BackButton) {
-            button = 4;
-        } else if (button == Qt::ForwardButton) {
-            button = 5;
-        }
-        QString buttonString = "MOUSE" + QString::number(button);
-        emit bindingChanged(recordInputName, buttonString);
-        writeToBindingsFile(recordInputName, buttonString);
 
-        window->removeEventFilter(this);
-        window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+        if (recordingInput) {
+            int button = mouseEvent->button();
+            if (button == Qt::MiddleButton) {
+                button = 3;
+            } else if (button == Qt::BackButton) {
+                button = 4;
+            } else if (button == Qt::ForwardButton) {
+                button = 5;
+            }
+            QString buttonString = "MOUSE" + QString::number(button);
+            emit bindingChanged(recordInputName, buttonString);
+            writeToBindingsFile(recordInputName, buttonString);
+
+            recordingInput = false;
+            window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
 #ifdef Q_OS_WIN
-        SetFocus(targetWindow);
+            SetFocus(targetWindow);
 #endif
+        }
+
+        SetForegroundWindow(targetWindow);
+        SetFocus(targetWindow);
     }
     return false;
 }
