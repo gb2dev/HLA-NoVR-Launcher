@@ -27,7 +27,9 @@ qt_add_qml_module(HLA-NoVR-Launcher
 )
 
 # Avoid collision between executable name and QML module directory (QTBUG-98568).
-if(NOT WIN32)
+if(WIN32)
+    set_target_properties(HLA-NoVR-Launcher PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\" /SUBSYSTEM:WINDOWS")
+else()
     target_link_libraries(HLA-NoVR-Launcher
     PRIVATE X11)
     set_target_properties(HLA-NoVR-Launcher PROPERTIES
