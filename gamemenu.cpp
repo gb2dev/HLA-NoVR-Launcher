@@ -227,7 +227,7 @@ void GameMenu::update()
                                 if (match.hasMatch()) {
                                     emit convarLoaded("skill", match.captured(1));
                                 } else {
-                                    QStringList result = resultString.split("[MainMenu] ");
+                                    QStringList result = resultString.split("[GameMenu] ");
                                     if (result.size() > 1) {
                                         if (result.at(1) == "main_menu_mode") {
                                             pauseMenuMode = false;
@@ -256,7 +256,7 @@ void GameMenu::update()
 
                                             // Get list of addons, reset save slot
                                             addons.clear();
-                                            runGameScript("print(\"[MainMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
+                                            runGameScript("print(\"[GameMenu] addon_list\");SendToConsole(\"addon_list;save_clear_subdirectory\")");
                                         } else if (result.at(1) == "pause_menu_mode") {
                                             pauseMenuMode = true;
                                             loadingMode = false;
@@ -265,6 +265,10 @@ void GameMenu::update()
                                             emit visibilityStateChanged(VisibilityState::HUD);
                                         } else if (result.at(1) == "addon_list") {
                                             listingAddons = true;
+                                        } else if (result.at(1).startsWith("hacking_puzzle_")) {
+                                            emit hackingPuzzleStarted(result.at(1).split("_").last());
+                                            window->setFlag(Qt::WindowTransparentForInput, false);
+                                            runGameCommand("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;mouse_disableinput 1");
                                         } else {
                                             result = result.at(1).split(" ");
                                             if (result.at(0) == "player_health") {
@@ -606,11 +610,25 @@ void GameMenu::changeOptions(const QStringList &options)
                 writeToBindingsFile("FOV", command.split(" ").at(1).toFloat());
             } else if (command.startsWith("skill")) {
                 writeToSaveCfg("setting.skill", command.split(" ").at(1));
+            } else if (command.startsWith("commentary")) {
+                writeToSaveCfg("setting.commentary", command.split(" ").at(1));
             }
         }
 
         runGameCommand(commands);
     }
+}
+
+void GameMenu::hackFailed()
+{
+    runGameCommand("novr_hacking_puzzle_failed;gameui_allowescape;gameui_preventescapetoshow;gameui_hide;mouse_disableinput 0", false);
+    window->setFlag(Qt::WindowTransparentForInput, true);
+}
+
+void GameMenu::hackSuccess()
+{
+    runGameCommand("novr_hacking_puzzle_success;gameui_allowescape;gameui_preventescapetoshow;gameui_hide;mouse_disableinput 0", false);
+    window->setFlag(Qt::WindowTransparentForInput, true);
 }
 
 bool GameMenu::eventFilter(QObject *object, QEvent *event)
@@ -672,9 +690,6 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
 
         recordingInput = false;
         window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
-#ifdef Q_OS_WIN
-        SetFocus(targetWindow);
-#endif
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
@@ -693,13 +708,13 @@ bool GameMenu::eventFilter(QObject *object, QEvent *event)
 
             recordingInput = false;
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
-#ifdef Q_OS_WIN
-            SetFocus(targetWindow);
-#endif
         }
 
+#ifdef Q_OS_WIN
         SetForegroundWindow(targetWindow);
         SetFocus(targetWindow);
+#endif
     }
+
     return false;
 }

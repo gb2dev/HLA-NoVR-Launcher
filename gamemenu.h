@@ -48,6 +48,8 @@ public slots:
     void toggleAddon(const QString &fileName);
     void recordInput(const QString &input);
     void changeOptions(const QStringList &options);
+    void hackFailed();
+    void hackSuccess();
 
 signals:
     void pauseMenuModeChanged(bool pauseMenuMode);
@@ -61,6 +63,7 @@ signals:
     void addonToggled();
     void bindingChanged(const QString &name, const QString &bind);
     void convarLoaded(const QString &convar, const QString &value);
+    void hackingPuzzleStarted(const QString &type);
 
 private:
     bool eventFilter(QObject *object, QEvent *event) override;

@@ -44,7 +44,7 @@ Window {
                     savesListView.visible = false;
                     chaptersListView.visible = false;
                     savesModel.clear();
-                    savesModel.append({ saveName: "Cancel", saveFileName: "cancel" });
+                    savesModel.append({ saveName: "Cancel", saveDateTime: "", saveFileName: "cancel" });
                     break;
                 case 3: // MainMenu
                     if (chaptersListView.visible) {
@@ -196,9 +196,20 @@ Window {
                     buttonZoom.text = bind;
                     buttonZoom.enabled = true;
                     break;
+                case "USE_HEALTHPEN":
+                    buttonUseHealthPen.text = bind;
+                    buttonUseHealthPen.enabled = true;
+                    break;
+                case "DROP_ITEM":
+                    buttonUseHealthPen.text = bind;
+                    buttonUseHealthPen.enabled = true;
+                    break;
+                case "UNEQUIP_WEARABLE":
+                    buttonUseHealthPen.text = bind;
+                    buttonUseHealthPen.enabled = true;
+                    break;
             }
         }
-
         function onConvarLoaded(convar, value) {
             switch (convar) {
                 case "snd_gain":
@@ -227,6 +238,13 @@ Window {
                     break;
                 case "hlvr_closed_caption_type":
                     subtitles.currentIndex = parseInt(value);
+                    break;
+            }
+        }
+        function onHackingPuzzleStarted(type) {
+            switch (type) {
+                case "trace":
+                    hackingPuzzleTrace.visible = true;
                     break;
             }
         }
@@ -260,6 +278,22 @@ Window {
                 }
             }
             onClicked: gameMenu.loadSave(saveFileName)
+        }
+    }
+
+    RowLayout {
+        visible: chaptersListView.visible
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+
+        Switch {
+            id: switchCommentary
+            onClicked: checked ? gameMenu.changeOptions(["commentary 1"]) : gameMenu.changeOptions(["commentary 0"])
+        }
+
+        Label {
+            color: "white"
+            text: qsTr("Developer Commentary (Spoilers)")
         }
     }
 
@@ -526,7 +560,6 @@ Window {
                         Label {
                             color: "white"
                             text: qsTr("Story")
-                            Layout.topMargin: -10
                         }
 
                         RadioButton {
@@ -537,7 +570,6 @@ Window {
                         Label {
                             color: "white"
                             text: qsTr("Easy")
-                            Layout.topMargin: -10
                         }
 
                         RadioButton {
@@ -548,7 +580,6 @@ Window {
                         Label {
                             color: "white"
                             text: qsTr("Normal")
-                            Layout.topMargin: -10
                         }
 
                         RadioButton {
@@ -559,7 +590,6 @@ Window {
                         Label {
                             color: "white"
                             text: qsTr("Hard")
-                            Layout.topMargin: -10
                         }
                     }
                 }
@@ -1007,6 +1037,57 @@ Window {
                                 gameMenu.recordInput("ZOOM")
                             }
                         }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Use Health Pen (Wrist Pockets)")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonUseHealthPen
+                            text: "B"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("USE_HEALTHPEN")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Drop Item (Wrist Pockets)")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonDropItem
+                            text: "X"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("DROP_ITEM")
+                            }
+                        }
+
+                        Label {
+                            color: "white"
+                            text: qsTr("Unequip Wearable")
+                            Layout.alignment: Qt.AlignRight
+                        }
+
+                        Button {
+                            id: buttonUnequipWearable
+                            text: "U"
+                            Layout.preferredWidth: 100
+                            onClicked: function() {
+                                enabled = false;
+                                text = "...";
+                                gameMenu.recordInput("UNEQUIP_WEARABLE")
+                            }
+                        }
                     }
                 }
 
@@ -1193,5 +1274,181 @@ Window {
         color: "red"
         anchors.left: parent.left
         anchors.bottom: parent.bottom
+    }
+
+    Item {
+        id: hackingPuzzleTrace
+        visible: false
+        anchors.centerIn: parent
+        width: 500
+        height: 500
+
+        property real done: 0
+
+        property int circleCount: 10
+        property real circleRadius: 20
+        property real minDistance: 100
+
+        ListModel {
+            id: circlesModel
+        }
+
+        Component.onCompleted: generateCircles();
+
+        onVisibleChanged: {
+            if (!visible) {
+                done = 0;
+                goal1.x = 0;
+                goal1.y = 0;
+                mouseArea1.drag.target = goal1;
+                goal2.x = width - circleRadius * 2;
+                goal2.y = height - circleRadius * 2;
+                mouseArea2.drag.target = goal2;
+            }
+        }
+
+        function generateRandomPosition() {
+            return {
+                x: Math.random() * (hackingPuzzleTrace.width - 2 * circleRadius) + circleRadius,
+                y: Math.random() * (hackingPuzzleTrace.height - 2 * circleRadius) + circleRadius
+            };
+        }
+
+        function distanceBetweenPoints(point1, point2) {
+            return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+        }
+
+        function generateValidPosition() {
+            var newCirclePosition;
+            do {
+                newCirclePosition = generateRandomPosition();
+            } while (positionIsValid(newCirclePosition));
+
+            circlesModel.append({x: newCirclePosition.x, y: newCirclePosition.y});
+        }
+
+        function positionIsValid(newPosition) {
+            for (var i = 0; i < circlesModel.count; ++i) {
+                var existingPosition = {x: circlesModel.get(i).x, y: circlesModel.get(i).y};
+                if (distanceBetweenPoints(newPosition, existingPosition) < minDistance) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function generateCircles() {
+            //circlesModel.append({x: 0, y: 0});
+            //circlesModel.append({x: parent.width - parent.circleRadius * 2, y: parent.height - parent.circleRadius * 2});
+            for (var i = 0; i < circleCount; ++i) {
+                generateValidPosition();
+            }
+            //circlesModel.remove(0);
+            //circlesModel.remove(0);
+        }
+
+        Repeater {
+            id: repeater
+            model: circlesModel
+
+            Rectangle {
+                width: parent.circleRadius * 2
+                height: parent.circleRadius * 2
+                radius: parent.circleRadius
+                color: "red"
+                x: model.x - parent.circleRadius
+                y: model.y - parent.circleRadius
+            }
+        }
+
+        Rectangle {
+            id: goal1
+            width: parent.circleRadius * 2
+            height: parent.circleRadius * 2
+            radius: parent.circleRadius
+            color: "blue"
+            x: 0
+            y: 0
+
+            MouseArea {
+                id: mouseArea1
+                anchors.fill: parent
+                drag.target: parent
+                drag.axis: Drag.XandYAxis
+                drag.minimumX: 0
+                drag.maximumX: hackingPuzzleTrace.width - hackingPuzzleTrace.circleRadius * 2
+                drag.minimumY: 0
+                drag.maximumY: hackingPuzzleTrace.height - hackingPuzzleTrace.circleRadius * 2
+                onPositionChanged: {
+                    if (hackingPuzzleTrace.done === 0) {
+                        if (Math.hypot(parent.x-goal2.x, parent.y-goal2.y) <= (parent.width)) {
+                            hackingPuzzleTrace.done = 1;
+                            drag.target = null;
+                        } else {
+                            for (var i = 0; i < hackingPuzzleTrace.circleCount; i++) {
+                                if (Math.hypot(parent.x-repeater.itemAt(i).x, parent.y-repeater.itemAt(i).y) <= (parent.width)) {
+                                    hackingPuzzleTrace.done = 2;
+                                    drag.target = null;
+                                }
+                            }
+                        }
+                    }
+                }
+                onReleased: {
+                    if (hackingPuzzleTrace.done === 1) {
+                        hackingPuzzleTrace.visible = false;
+                        gameMenu.hackSuccess();
+                    } else if (hackingPuzzleTrace.done === 2) {
+                        hackingPuzzleTrace.visible = false;
+                        gameMenu.hackFailed();
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            id: goal2
+            width: parent.circleRadius * 2
+            height: parent.circleRadius * 2
+            radius: parent.circleRadius
+            color: "blue"
+            x: parent.width - parent.circleRadius * 2
+            y: parent.height - parent.circleRadius * 2
+
+            MouseArea {
+                id: mouseArea2
+                anchors.fill: parent
+                drag.target: parent
+                drag.axis: Drag.XandYAxis
+                drag.minimumX: 0
+                drag.maximumX: hackingPuzzleTrace.width - hackingPuzzleTrace.circleRadius * 2
+                drag.minimumY: 0
+                drag.maximumY: hackingPuzzleTrace.height - hackingPuzzleTrace.circleRadius * 2
+                onPositionChanged: {
+                    if (hackingPuzzleTrace.done === 0) {
+                        if (Math.hypot(parent.x-goal1.x, parent.y-goal1.y) <= (parent.width)) {
+                            hackingPuzzleTrace.done = 1;
+                            drag.target = null;
+                        } else {
+                            for (var i = 0; i < hackingPuzzleTrace.circleCount; i++) {
+                                if (Math.hypot(parent.x-repeater.itemAt(i).x, parent.y-repeater.itemAt(i).y) <= (parent.width)) {
+                                    hackingPuzzleTrace.done = 2;
+                                    drag.target = null;
+                                }
+                            }
+                        }
+                    }
+                }
+                onReleased: {
+                    if (hackingPuzzleTrace.done === 1) {
+                        hackingPuzzleTrace.visible = false;
+                        gameMenu.hackSuccess();
+                    } else if (hackingPuzzleTrace.done === 2) {
+                        hackingPuzzleTrace.visible = false;
+                        gameMenu.hackFailed();
+                    }
+                }
+            }
+        }
     }
 }
