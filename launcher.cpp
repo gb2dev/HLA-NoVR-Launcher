@@ -18,7 +18,7 @@ Launcher::Launcher(QObject *parent)
         screenWidth--;
     }
 
-    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -vsync -w " + QString::number(screenWidth) + " -h " + QString::number(screenHeight)).toString();
+    m_customLaunchOptions = settings.value("customLaunchOptions", "-console -vconsole -w " + QString::number(screenWidth) + " -h " + QString::number(screenHeight)).toString();
     connect(this, &Launcher::customLaunchOptionsChanged, this, [this] {
         settings.setValue("customLaunchOptions", m_customLaunchOptions);
     });

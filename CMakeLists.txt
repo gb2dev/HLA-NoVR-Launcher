@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(HLA-NoVR-Launcher VERSION 2.4 LANGUAGES CXX)
+project(HLA-NoVR-Launcher VERSION 2.4.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.6 REQUIRED COMPONENTS Quick Network Multimedia Concurrent QuickControls2)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Network Multimedia Concurrent QuickControls2)
 
 qt_standard_project_setup()
 

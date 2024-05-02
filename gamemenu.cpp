@@ -554,11 +554,7 @@ void GameMenu::newGame(const QString &mapName, bool addonMap)
     if (mapName == "cancel") {
         emit visibilityStateChanged(pauseMenuMode ? VisibilityState::PauseMenu : VisibilityState::MainMenu);
     } else {
-        if (addonMap) {
-            runGameCommand("addon_play " + mapName);
-        } else {
-            runGameCommand("map " + mapName);
-        }
+        runGameCommand("addon_play " + mapName);
     }
 }
 
