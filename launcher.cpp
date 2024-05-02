@@ -66,8 +66,21 @@ void Launcher::updateMod(const QString &installLocation) // Takes the install lo
             connect(versionInfoReply, &QNetworkReply::finished, versionInfoReply, [this, versionInfoReply, installedModVersionInfo]() {
                 versionInfoReply->deleteLater();
 
+                bool installationCorrupted = true;
+                const QString cfgPath = settings.value("installLocation").toString() + "/game/hlvr/cfg/skill_manifest.cfg";
+                QFile cfg(cfgPath);
+                cfg.open(QIODevice::Text | QIODevice::ReadOnly);
+                QTextStream in(&cfg);
+                while (!in.atEnd()) {
+                    const QString line = in.readLine();
+                    if (line.contains("novr")) {
+                        installationCorrupted = false;
+                    }
+                }
+                cfg.close();
+
                 QString newestModVersion = readModVersionInfo(versionInfoReply->readAll());
-                if (versionInfoReply->error() || newestModVersion == installedModVersionInfo) {
+                if (!installationCorrupted && (versionInfoReply->error() || newestModVersion == installedModVersionInfo)) {
                     QMetaObject::invokeMethod(this, [this]() {
                         playGame();
                     });
