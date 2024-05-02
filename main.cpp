@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("HLA-NoVR");
     app.setApplicationName("Launcher");
     app.setFont(QFont("Dinish"));
+    app.setApplicationVersion(VERSION);
 
     QFontDatabase::addApplicationFont("Dinish-Regular.otf");
     QFontDatabase::addApplicationFont("Dinish-Bold.otf");

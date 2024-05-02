@@ -14,7 +14,7 @@ Window {
     minimumHeight: 800
     maximumWidth: 1280
     minimumWidth: 1280
-    title: qsTr("Half-Life: Alyx NoVR Launcher")
+    title: qsTr("Half-Life: Alyx NoVR Launcher") + " v" + `${Application.version}`
 
     onClosing: (close) => {
         if (!playButton.enabled) {
