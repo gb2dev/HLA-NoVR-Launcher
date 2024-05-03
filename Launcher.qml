@@ -10,10 +10,10 @@ Window {
     id: launcherWindow
     visible: true
     color: "black"
-    maximumHeight: 800
-    minimumHeight: 800
-    maximumWidth: 1280
-    minimumWidth: 1280
+    maximumHeight: 600
+    minimumHeight: 600
+    maximumWidth: 960
+    minimumWidth: 960
     title: qsTr("Half-Life: Alyx NoVR Launcher") + " v" + `${Application.version}`
 
     onClosing: (close) => {
