@@ -11,6 +11,11 @@ Window {
 
     Component.onCompleted: gameMenu.gameStarted(this)
 
+    SystemPalette {
+        id: systemPalette
+        colorGroup: SystemPalette.Active
+    }
+
     Connections {
         id: connections
         target: gameMenu
@@ -270,11 +275,13 @@ Window {
                     font.bold: saveFileName !== "cancel"
                     text: saveName
                     horizontalAlignment: (saveFileName === "cancel") ? Text.AlignHCenter : Text.AlignLeft
+                    color: systemPalette.buttonText
                 }
                 Text {
                     visible: saveFileName !== "cancel"
                     text: saveDateTime
                     horizontalAlignment: Text.AlignLeft
+                    color: systemPalette.buttonText
                 }
             }
             onClicked: gameMenu.loadSave(saveFileName)
@@ -337,11 +344,13 @@ Window {
                     width: parent.width
                     font.bold: true
                     text: chapterNumber
+                    color: systemPalette.buttonText
                 }
                 Text {
                     width: parent.width
                     text: chapterName
                     horizontalAlignment: (chapterNumber === "") ? Text.AlignHCenter : Text.AlignLeft
+                    color: systemPalette.buttonText
                 }
             }
             onClicked: function() {
