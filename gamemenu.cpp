@@ -163,6 +163,7 @@ void GameMenu::update()
             window->show();
 #endif
             window->setFlag(Qt::WindowDoesNotAcceptFocus, true);
+            qDebug() << "Found game window";
 
             QFuture<void> future = QtConcurrent::run([this]{
                 bool skipBuffered = true;
@@ -174,6 +175,7 @@ void GameMenu::update()
                 while (!stopRead) {
                     while (!in.atEnd()) {
                         QString resultString = in.readLine();
+                        qDebug() << resultString;
                         if (!skipBuffered) {
                             if (listingAddons) {
                                 if (resultString.contains("default_enabled_addons_list")) {

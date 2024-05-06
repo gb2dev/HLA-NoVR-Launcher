@@ -16,9 +16,24 @@
 #include "gamemenu.h"
 #include "launcher.h"
 
+void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    Q_UNUSED(context);
+
+    QFile outFile("log.txt");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+    QTextStream textStream(&outFile);
+    textStream << msg << Qt::endl;
+}
+
 int main(int argc, char *argv[])
 {
     qputenv("QT_ENABLE_HIGHDPI_SCALING", "0");
+
+    QFile outFile("log.txt");
+    outFile.resize(0);
+    qInstallMessageHandler(customMessageHandler);
 
     QQuickStyle::setStyle("Fusion");
 
