@@ -4,7 +4,7 @@ Launcher for Half-Life: Alyx NoVR
 ## Installation
 
 ### Windows
-[Download and run the installer.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Installer.exe)
+[Download and run the installer.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/download/2.4/HLA-NoVR-Launcher-Installer.exe)
 
 ---
 
