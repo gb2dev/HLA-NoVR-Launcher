@@ -16,11 +16,13 @@
 #include "gamemenu.h"
 #include "launcher.h"
 
+bool noUpdate = true;
+
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     Q_UNUSED(context);
 
-    QFile outFile("log.txt");
+    QFile outFile(noUpdate ? "log.txt" : "log_update.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 
     QTextStream textStream(&outFile);
@@ -30,10 +32,6 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
 int main(int argc, char *argv[])
 {
     qputenv("QT_ENABLE_HIGHDPI_SCALING", "0");
-
-    QFile outFile("log.txt");
-    outFile.resize(0);
-    qInstallMessageHandler(customMessageHandler);
 
     QQuickStyle::setStyle("Fusion");
 
@@ -50,7 +48,13 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     QUrl url;
 
-    if (app.arguments().contains("-noupdate")) {
+    noUpdate = app.arguments().contains("-noupdate");
+
+    QFile outFile(noUpdate ? "log.txt" : "log_update.txt");
+    outFile.resize(0);
+    qInstallMessageHandler(customMessageHandler);
+
+    if (noUpdate) {
         QQmlContext *rootContext = engine.rootContext();
         rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
@@ -78,8 +82,10 @@ int main(int argc, char *argv[])
             versionInfoReply->deleteLater();
 
             if (versionInfoReply->error()) {
+                qDebug() << "Can't find newest version";
 #ifdef Q_OS_WIN
-                QDesktopServices::openUrl(QUrl("update.bat"));
+                qApp->quit();
+                QProcess::startDetached(qApp->arguments()[0], qApp->arguments() << "-noupdate");
 #else
                 QProcess::startDetached("/bin/bash", {"update.sh"});
 #endif
@@ -90,7 +96,9 @@ int main(int argc, char *argv[])
             QJsonDocument doc = QJsonDocument::fromJson(versionInfoReply->readAll());
             if (doc.isNull()) {
 #ifdef Q_OS_WIN
-                QDesktopServices::openUrl(QUrl("update.bat"));
+                qDebug() << "Invalid newest version";
+                qApp->quit();
+                QProcess::startDetached(qApp->arguments()[0], qApp->arguments() << "-noupdate");
 #else
                 QProcess::startDetached("/bin/bash", {"update.sh"});
 #endif
@@ -98,17 +106,19 @@ int main(int argc, char *argv[])
                 return;
             } else {
                 if (VERSION != doc.object().value("tag_name").toString()) {
-                    QNetworkRequest launcherRequest(QUrl("https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.zip"));
+                    QNetworkRequest launcherRequest(QUrl("https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Installer.exe"));
                     QNetworkReply *launcherReply = networkManager->get(launcherRequest);
 
                     QObject::connect(launcherReply, &QNetworkReply::finished, launcherReply, [launcherReply]() {
-                        QFile file("HLA-NoVR-Launcher.zip");
+                        QFile file("HLA-NoVR-Launcher-Installer.exe");
 
                         if (launcherReply->error() || !file.open(QIODevice::WriteOnly)) {
+                            qDebug() << "Invalid update file";
                             launcherReply->deleteLater();
-                            QFile("HLA-NoVR-Launcher.zip").remove();
+                            QFile("HLA-NoVR-Launcher-Installer.exe").remove();
 #ifdef Q_OS_WIN
-                            QDesktopServices::openUrl(QUrl("update.bat"));
+                            qApp->quit();
+                            QProcess::startDetached(qApp->arguments()[0], qApp->arguments() << "-noupdate");
 #else
                             QProcess::startDetached("/bin/bash", {"update.sh"});
 #endif
@@ -120,20 +130,21 @@ int main(int argc, char *argv[])
                         file.close();
                         launcherReply->deleteLater();
 
-                        QProcess *unzip = new QProcess;
+                        QProcess *install = new QProcess;
 #ifdef Q_OS_WIN
-                        unzip->setProgram("7za");
-                        unzip->setArguments({"x", "HLA-NoVR-Launcher.zip", "-aoa", "-oUpdate"});
+                        qDebug() << "Installing update";
+                        install->setProgram("HLA-NoVR-Launcher-Installer.exe");
+                        install->setArguments({"/silent", "/norestartapplications"});
 #else
-                        unzip->setProgram("unzip");
-                        unzip->setArguments({"-o", "HLA-NoVR-Launcher-Linux.zip", "-d", "Update"});
+                        install->setProgram("unzip");
+                        install->setArguments({"-o", "HLA-NoVR-Launcher-Linux.zip", "-d", "Update"});
 #endif
-                        unzip->start();
+                        install->start();
 
-                        QObject::connect(unzip, &QProcess::finished, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
-                            QFile("HLA-NoVR-Launcher.zip").remove();
+                        QObject::connect(install, &QProcess::finished, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
+                            qDebug() << "Update installed: " + QString::number(exitCode);
+                            QFile("HLA-NoVR-Launcher-Installer.exe").remove();
 #ifdef Q_OS_WIN
-                            QDesktopServices::openUrl(QUrl("update.bat"));
 #else
                             QProcess::startDetached("/bin/bash", {"update.sh"});
 #endif
@@ -143,7 +154,8 @@ int main(int argc, char *argv[])
                     });
                 } else {
 #ifdef Q_OS_WIN
-                    QDesktopServices::openUrl(QUrl("update.bat"));
+                    qApp->quit();
+                    QProcess::startDetached(qApp->arguments()[0], qApp->arguments() << "-noupdate");
 #else
                     QProcess::startDetached("/bin/bash", {"update.sh"});
 #endif
