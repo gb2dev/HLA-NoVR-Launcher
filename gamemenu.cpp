@@ -275,6 +275,8 @@ void GameMenu::update()
                                             result = result.at(1).split(" ");
                                             if (result.at(0) == "player_health") {
                                                 emit hudHealthChanged(hudHealth = result.at(1).toInt());
+                                            } else if (result.at(0) == "give_achievement") {
+                                                QProcess::startDetached("SAM.Game.exe", {"546560", result.at(1)});
                                             }
                                         }
                                     }

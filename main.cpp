@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(customMessageHandler);
 
     if (noUpdate) {
+        QFile("HLA-NoVR-Launcher-Installer.exe").remove();
+
         QQmlContext *rootContext = engine.rootContext();
         rootContext->setContextProperty("applicationDirPath", app.applicationDirPath());
 
@@ -143,7 +145,6 @@ int main(int argc, char *argv[])
 
                         QObject::connect(install, &QProcess::finished, [=](int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit) {
                             qDebug() << "Update installed: " + QString::number(exitCode);
-                            QFile("HLA-NoVR-Launcher-Installer.exe").remove();
 #ifdef Q_OS_WIN
 #else
                             QProcess::startDetached("/bin/bash", {"update.sh"});
