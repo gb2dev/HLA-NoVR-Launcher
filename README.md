@@ -4,7 +4,7 @@ Launcher for Half-Life: Alyx NoVR
 ## Installation
 
 ### Windows
-[Download and run the installer.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/download/2.4/HLA-NoVR-Launcher-Installer.exe)
+[Download and run the installer.](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Installer.exe)
 
 ---
 
@@ -27,3 +27,5 @@ The awesome background video was made by [Half Peeps](https://www.youtube.com/@H
 
 ## License
 This program is licensed under the [LGPL](LICENSE.txt). It uses the [Qt library](https://github.com/bfeber/qt5) and parts of the [7-Zip program](www.7-zip.org), both also licensed under the [LGPL](LICENSE.txt).
+
+It also uses a custom version of [Steam Achievement Manager](https://github.com/gibbed/SteamAchievementManager), modified to give achievements from the command line.
