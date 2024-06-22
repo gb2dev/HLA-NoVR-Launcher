@@ -206,12 +206,12 @@ Window {
                     buttonUseHealthPen.enabled = true;
                     break;
                 case "DROP_ITEM":
-                    buttonUseHealthPen.text = bind;
-                    buttonUseHealthPen.enabled = true;
+                    buttonDropItem.text = bind;
+                    buttonDropItem.enabled = true;
                     break;
                 case "UNEQUIP_WEARABLE":
-                    buttonUseHealthPen.text = bind;
-                    buttonUseHealthPen.enabled = true;
+                    buttonUnequipWearable.text = bind;
+                    buttonUnequipWearable.enabled = true;
                     break;
             }
         }
