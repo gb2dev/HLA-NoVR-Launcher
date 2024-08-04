@@ -10,11 +10,7 @@ Launcher for Half-Life: Alyx NoVR
 
 ### Steam Deck/Linux
 
-Make sure you have the program `xdotool` installed.
-
-[Download the latest release](https://github.com/bfeber/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Linux.zip) and extract the files into a new empty folder.
-
-Execute `bin/HLA-NoVR-Launcher-Linux` in the extracted folder (do not use Wine or Proton for the Launcher, but the game itself should be installed with Proton enabled).
+If you use a Steam Deck/Linux, see the [FAQ](https://docs.google.com/document/d/1mlDz24iE1r4Lf16y5N9I37ZIvm4V0ie2Sxg1GBlcs10) for installation instructions.
 
 ## Important Information
 
