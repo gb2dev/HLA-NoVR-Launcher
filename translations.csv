@@ -1,0 +1,27 @@
+keys,en,de
+HLA-NoVR-Launcher,Half-Life: Alyx NoVR Launcher,
+PRIMARY_ATTACK,Primary Attack,Primärer Angriff
+SECONDARY_ATTACK,Secondary Attack,Sekundärer Angriff
+TERTIARY_ATTACK,Tertiary Attack,Tertiärer Angriff
+GRENADE,Grenade,Granate
+RELOAD,Reload,Nachladen
+QUICK_SWAP,Quick Swap,Schneller Wechsel
+MOVE_FORWARD,Move Forward,Vorwärts Bewegen
+MOVE_BACK,Move Backward,Rückwärts Bewegen
+MOVE_LEFT,Move Left,Links Bewegen
+MOVE_RIGHT,Move Right,Rechts Bewegen
+JUMP,Jump,Springen
+CONSOLE,Console,Konsole
+CROUCH,Crouch,Ducken
+SPRINT,Sprint,Sprinten
+INTERACT,Interact,Interagieren
+FLASHLIGHT,Flashlight,Taschenlampe
+COVER_MOUTH,Cover Mouth,Mund Verdecken
+QUICK_SAVE,Quick Save,Schnell Speichern
+QUICK_LOAD,Quick Load,Schnell Laden
+NOCLIP,Noclip,Noclip
+VIEWM_INSPECT,Inspect Weapon,Waffe Inspizieren
+ZOOM,Zoom,Zoom
+USE_HEALTHPEN,Use Health Pen,Gesundheitsstift Benutzen
+DROP_ITEM,Drop Item,Gegenstand Fallen Lassen
+UNEQUIP_WEARABLE,Unequip Wearable,Tragbares Fallen Lassen

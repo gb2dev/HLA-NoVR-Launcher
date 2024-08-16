@@ -1,0 +1,214 @@
+[gd_scene load_steps=6 format=3 uid="uid://cgyaej8krxe0b"]
+
+[ext_resource type="Script" path="res://launcher.gd" id="1_shr6a"]
+[ext_resource type="VideoStream" path="res://background.ogv" id="1_y0jwk"]
+[ext_resource type="Texture2D" uid="uid://ct4nc1c2qq8nb" path="res://logo.png" id="2_iewrg"]
+[ext_resource type="Texture2D" uid="uid://dg5h4cgdsy7x3" path="res://icons/volume.svg" id="4_bjwbo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sgfnl"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0, 0, 0, 1)
+
+[node name="Launcher" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_shr6a")
+
+[node name="ColorRectBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="LabelInfo" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -37.5
+offset_right = 225.0
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Updating..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ProgressBarDownloadLauncher" type="ProgressBar" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = 16.5
+offset_right = 100.0
+offset_bottom = 43.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VideoStreamPlayerBackground" type="VideoStreamPlayer" parent="Content"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -257.0
+offset_right = 1177.0
+offset_bottom = 600.0
+grow_horizontal = 2
+stream = ExtResource("1_y0jwk")
+expand = true
+
+[node name="TextureRectLogo" type="TextureRect" parent="Content"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 313.5
+offset_top = 150.0
+offset_right = 606.5
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_iewrg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 385.0
+offset_top = 300.0
+offset_right = 535.0
+offset_bottom = 366.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ProgressBarDownloadMod" type="ProgressBar" parent="Content/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ButtonPlay" type="Button" parent="Content/VBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Play"
+
+[node name="ButtonQuit" type="Button" parent="Content/VBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Quit"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 285.0
+offset_top = 426.0
+offset_right = 635.0
+offset_bottom = 550.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="LabelModBranch" type="Label" parent="Content/VBoxContainer2"]
+layout_mode = 2
+text = "Mod branch:"
+
+[node name="LineEditModBranch" type="LineEdit" parent="Content/VBoxContainer2"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainer2"]
+layout_mode = 2
+
+[node name="LabelCustomLaunchOptions" type="Label" parent="Content/VBoxContainer2"]
+layout_mode = 2
+text = "Custom launch options:"
+
+[node name="LineEditCustomLaunchOptions" type="LineEdit" parent="Content/VBoxContainer2"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+
+[node name="ButtonMute" type="Button" parent="Content"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = 528.0
+offset_right = 32.0
+offset_bottom = 560.0
+grow_vertical = 0
+toggle_mode = true
+icon = ExtResource("4_bjwbo")
+expand_icon = true
+
+[node name="AcceptDialog" type="AcceptDialog" parent="."]
+title = "Error"
+initial_position = 2
+size = Vector2i(500, 110)
+theme_override_styles/panel = SubResource("StyleBoxFlat_sgfnl")
+dialog_autowrap = true
+
+[node name="TimerDownloadProgressLauncher" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="TimerDownloadProgressMod" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="HTTPRequestLauncherHelper" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestLauncherVersion" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestLauncher" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestModVersion" type="HTTPRequest" parent="."]
+
+[node name="HTTPRequestMod" type="HTTPRequest" parent="."]
+
+[node name="FileDialogInstallation" type="FileDialog" parent="."]
+title = "Select the \"Half-Life Alyx\" folder (in the location where Steam installed the game)"
+size = Vector2i(303, 204)
+ok_button_text = "Select Current Folder"
+mode_overrides_title = false
+file_mode = 2
+use_native_dialog = true
+
+[connection signal="pressed" from="Content/VBoxContainer/ButtonPlay" to="." method="_on_button_play_pressed"]
+[connection signal="pressed" from="Content/VBoxContainer/ButtonQuit" to="." method="_on_button_quit_pressed"]
+[connection signal="pressed" from="Content/ButtonMute" to="." method="_on_button_mute_pressed"]
+[connection signal="timeout" from="TimerDownloadProgressLauncher" to="." method="_on_timer_download_progress_launcher_timeout"]
+[connection signal="timeout" from="TimerDownloadProgressMod" to="." method="_on_timer_download_progress_mod_timeout"]
+[connection signal="request_completed" from="HTTPRequestLauncherHelper" to="." method="_on_http_request_launcher_helper_request_completed"]
+[connection signal="request_completed" from="HTTPRequestLauncherVersion" to="." method="_on_http_request_launcher_version_request_completed"]
+[connection signal="request_completed" from="HTTPRequestLauncher" to="." method="_on_http_request_launcher_request_completed"]
+[connection signal="request_completed" from="HTTPRequestModVersion" to="." method="_on_http_request_mod_version_request_completed"]
+[connection signal="request_completed" from="HTTPRequestMod" to="." method="_on_http_request_mod_request_completed"]
+[connection signal="dir_selected" from="FileDialogInstallation" to="." method="_on_file_dialog_installation_dir_selected"]

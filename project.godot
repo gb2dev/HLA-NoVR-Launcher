@@ -1,0 +1,46 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="HLA-NoVR-Launcher"
+config/version="4.0"
+run/main_scene="res://launcher.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+run/max_fps=30
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=false
+config/icon="res://icon.png"
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=600
+window/size/resizable=false
+window/subwindows/embed_subwindows=false
+window/per_pixel_transparency/allowed=true
+
+[editor]
+
+run/main_run_args="-debug"
+
+[gui]
+
+theme/default_theme_scale=1.25
+theme/custom_font="res://fonts/DINish-Bold.otf"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://translations.de.translation", "res://translations.en.translation")
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

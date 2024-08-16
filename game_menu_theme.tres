@@ -1,0 +1,91 @@
+[gd_resource type="Theme" load_steps=17 format=3 uid="uid://b4at6eaeeebfa"]
+
+[ext_resource type="FontFile" uid="uid://m82rxpe6ov6v" path="res://fonts/DINish-Bold.otf" id="1_dt2r7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_urcwc"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.24, 0.20412, 0.1464, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gwcqh"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.858824, 0.670588, 0.0941176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t0q5o"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.81, 0.625725, 0.0729, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_symd7"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.33, 0.240185, 0.0957, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2jypf"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.86, 0.66865, 0.0946, 1)
+
+[sub_resource type="ImageTexture" id="ImageTexture_8fs48"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_aydnk"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_x5612"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wr4t"]
+bg_color = Color(0.807843, 0.623529, 0.0745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ss55h"]
+bg_color = Color(0.807843, 0.623529, 0.0745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a4gte"]
+content_margin_top = 20.0
+bg_color = Color(0.45098, 0.345098, 0.0392157, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbj26"]
+bg_color = Color(0.33, 0.240185, 0.0957, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ntxnr"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.81, 0.625725, 0.0729, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ic6l0"]
+bg_color = Color(0.858824, 0.670588, 0.0941176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w0qcc"]
+content_margin_left = 10.0
+bg_color = Color(0.45, 0.347625, 0.0405, 1)
+
+[resource]
+default_font = ExtResource("1_dt2r7")
+Button/styles/disabled = SubResource("StyleBoxFlat_urcwc")
+Button/styles/focus = SubResource("StyleBoxFlat_gwcqh")
+Button/styles/hover = SubResource("StyleBoxFlat_t0q5o")
+Button/styles/normal = SubResource("StyleBoxFlat_symd7")
+Button/styles/pressed = SubResource("StyleBoxFlat_2jypf")
+HSlider/icons/grabber = SubResource("ImageTexture_8fs48")
+HSlider/icons/grabber_disabled = SubResource("ImageTexture_aydnk")
+HSlider/icons/grabber_highlight = SubResource("ImageTexture_x5612")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_0wr4t")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_ss55h")
+HSlider/styles/slider = SubResource("StyleBoxFlat_a4gte")
+ScrollContainer/styles/panel = SubResource("StyleBoxFlat_gbj26")
+VBoxContainer/constants/separation = 0
+VScrollBar/styles/grabber = SubResource("StyleBoxFlat_ntxnr")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_ic6l0")
+VScrollBar/styles/scroll = SubResource("StyleBoxFlat_w0qcc")

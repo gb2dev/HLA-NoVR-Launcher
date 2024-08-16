@@ -1,0 +1,1551 @@
+[gd_scene load_steps=4 format=3 uid="uid://fwf3iyb1ma3i"]
+
+[ext_resource type="Script" path="res://game_menu.gd" id="1_w3wyu"]
+[ext_resource type="Theme" uid="uid://b4at6eaeeebfa" path="res://game_menu_theme.tres" id="2_712bg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dl8s3"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.811765, 0.627451, 0.0745098, 1)
+
+[node name="Window" type="Window"]
+transparent_bg = true
+title = "Game Menu"
+initial_position = 2
+size = Vector2i(960, 600)
+transient = true
+borderless = true
+transparent = true
+unfocusable = true
+script = ExtResource("1_w3wyu")
+
+[node name="Content" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_712bg")
+
+[node name="VBoxContainerMainMenu" type="VBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -145.0
+offset_right = 175.0
+offset_bottom = 145.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerMainMenu"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="ButtonContinue" type="Button" parent="Content/VBoxContainerMainMenu"]
+visible = false
+layout_mode = 2
+text = "Continue"
+
+[node name="ButtonGames" type="Button" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+text = "Load Game"
+
+[node name="ButtonStartNewGame" type="Button" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+text = "Start New Game"
+
+[node name="ButtonOptions" type="Button" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+text = "Options"
+
+[node name="ButtonAddons" type="Button" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+disabled = true
+text = "Addons"
+
+[node name="ButtonQuitGame" type="Button" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+text = "Quit Game"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerMainMenu"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerMainMenu/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerMainMenu/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="VBoxContainerGames" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerGames"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerGames/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Load Game"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerGames"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerGames/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonS0" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S0"
+
+[node name="ButtonS1" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S1"
+
+[node name="ButtonS2" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S2"
+
+[node name="ButtonS3" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S3"
+
+[node name="ButtonS4" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S4"
+
+[node name="ButtonS5" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S5"
+
+[node name="ButtonS6" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S6"
+
+[node name="ButtonS7" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S7"
+
+[node name="ButtonS8" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S8"
+
+[node name="ButtonS9" type="Button" parent="Content/VBoxContainerGames/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S9"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerGames"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerGames/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerGames/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerGames"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerGames"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerGames/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerLoadGameSlot" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerLoadGameSlot"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerLoadGameSlot/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Load Game Slot S#"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerLoadGameSlot"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerLoadGameSlot/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerLoadGameSlot"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerLoadGameSlot/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerLoadGameSlot/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerLoadGameSlot"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerLoadGameSlot"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerLoadGameSlot/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerSelectChapter" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerSelectChapter"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerSelectChapter/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Select Chapter"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerSelectChapter"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerSelectChapter/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonChapterType" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Original Game"
+
+[node name="ColorRectSeparator" type="ColorRect" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.45098, 0.34902, 0.0392157, 1)
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonChapter1" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 1: Entaglement"
+
+[node name="ButtonChapter2" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 2: The Quarantine Zone"
+
+[node name="ButtonChapter3" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 3: Is Or Will Be"
+
+[node name="ButtonChapter4" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 4: Superweapon"
+
+[node name="ButtonChapter5" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 5: The Northern Star"
+
+[node name="ButtonChapter6" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 6: Arms Race"
+
+[node name="ButtonChapter7" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 7: Jeff"
+
+[node name="ButtonChapter8" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 8: Captivity"
+
+[node name="ButtonChapter9" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 9: Revelations"
+
+[node name="ButtonChapter10" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 10: Breaking and Entering"
+
+[node name="ButtonChapter11" type="Button" parent="Content/VBoxContainerSelectChapter/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Chapter 11: Point Extraction"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerSelectChapter"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerSelectChapter/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerSelectChapter/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerSelectChapter"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerSelectChapter"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerSelectChapter/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerStartNewGame" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerStartNewGame"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerStartNewGame/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Start New Game"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerStartNewGame"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerStartNewGame/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonDifficulty" type="Button" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Difficulty: Normal"
+
+[node name="ButtonDevCommentary" type="Button" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Developer Commentary: OFF"
+
+[node name="ColorRectSeparator" type="ColorRect" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.45098, 0.34902, 0.0392157, 1)
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonStartGame" type="Button" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Start Game"
+
+[node name="ButtonStartGameWithAddons" type="Button" parent="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer/VBoxContainerButtons"]
+visible = false
+layout_mode = 2
+text = "Start Game With Addons"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerStartNewGame"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerStartNewGame/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerStartNewGame/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerStartNewGame"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerStartNewGame"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerStartNewGame/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerOptions" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerOptions"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerOptions/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Options"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptions"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerOptions/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonDifficulty" type="Button" parent="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons"]
+visible = false
+layout_mode = 2
+text = "Difficulty: Normal"
+
+[node name="ButtonMouse" type="Button" parent="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Mouse"
+
+[node name="ButtonInputMapping" type="Button" parent="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Input Mapping"
+
+[node name="ButtonAudio" type="Button" parent="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Audio"
+
+[node name="ButtonVideo" type="Button" parent="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Video"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerOptions"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerOptions/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerOptions/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerOptions"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerOptions"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerOptions/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerOptionsMouse" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerOptionsMouse"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerOptionsMouse/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Mouse"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsMouse"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsMouse/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainerMouse" type="MarginContainer" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelMouseSensitivity" type="Label" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse/VBoxContainer"]
+layout_mode = 2
+text = "Mouse Sensitivity"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderMouseSensitivity" type="HSlider" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 1.0
+max_value = 200.0
+value = 50.0
+
+[node name="LabelMouseSensitivity" type="Label" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "50"
+
+[node name="ButtonInvertX" type="Button" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Horizontal Inverted: OFF"
+
+[node name="ButtonInvertY" type="Button" parent="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Vertical Inverted: OFF"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerOptionsMouse"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerOptionsMouse/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerOptionsMouse/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerOptionsMouse"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerOptionsMouse"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerOptionsMouse/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerOptionsInputMapping" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerOptionsInputMapping"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerOptionsInputMapping/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Input Mapping"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsInputMapping"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerOptionsInputMapping/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerOptionsInputMapping"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerOptionsInputMapping/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerOptionsInputMapping/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerOptionsInputMapping"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerOptionsInputMapping" groups=["InputButton"]]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerOptionsInputMapping/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerOptionsAudio" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerOptionsAudio"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerOptionsAudio/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Audio"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsAudio"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ButtonSubtitles" type="Button" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Subtitles: SUBTITLES OFF"
+
+[node name="MarginContainerMasterVolume" type="MarginContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelMasterVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume/VBoxContainer"]
+layout_mode = 2
+text = "Master Volume"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderMasterVolume" type="HSlider" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LabelMasterVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "1.00"
+
+[node name="MarginContainerGameVolume" type="MarginContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelGameVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume/VBoxContainer"]
+layout_mode = 2
+text = "Game Volume"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderGameVolume" type="HSlider" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LabelGameVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "1.00"
+
+[node name="MarginContainerCombatMusicVolume" type="MarginContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelCombatMusicVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume/VBoxContainer"]
+layout_mode = 2
+text = "Combat Music Volume"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderCombatMusicVolume" type="HSlider" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LabelCombatMusicVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "1.00"
+
+[node name="MarginContainerCharacterVoiceVolume" type="MarginContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelCharacterVoiceVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume/VBoxContainer"]
+layout_mode = 2
+text = "Character Voice Volume"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderCharacterVoiceVolume" type="HSlider" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="LabelCharacterVoiceVolume" type="Label" parent="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "1.00"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerOptionsAudio"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerOptionsAudio/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerOptionsAudio/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerOptionsAudio"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerOptionsAudio"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerOptionsAudio/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerOptionsVideo" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerOptionsVideo"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerOptionsVideo/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Video"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsVideo"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsVideo/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainerFOV" type="MarginContainer" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="LabelFOV" type="Label" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV/VBoxContainer"]
+layout_mode = 2
+text = "FOV"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HSliderFOV" type="HSlider" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 80.0
+max_value = 110.0
+value = 90.0
+
+[node name="LabelFOV" type="Label" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "90"
+
+[node name="ButtonGraphicsPreset" type="Button" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Graphics Preset: DEFAULT"
+
+[node name="ButtonLightSensitivityMode" type="Button" parent="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Reduce Light Flickering: OFF"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerOptionsVideo"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerOptionsVideo/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerOptionsVideo/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerOptionsVideo"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerOptionsVideo"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerOptionsVideo/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[node name="VBoxContainerStartNewGameSlot" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerStartNewGameSlot"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerStartNewGameSlot/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Start New Game Slot"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerStartNewGameSlot"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonS0" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S0"
+
+[node name="ButtonS1" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S1"
+
+[node name="ButtonS2" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S2"
+
+[node name="ButtonS3" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S3"
+
+[node name="ButtonS4" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S4"
+
+[node name="ButtonS5" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S5"
+
+[node name="ButtonS6" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S6"
+
+[node name="ButtonS7" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S7"
+
+[node name="ButtonS8" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S8"
+
+[node name="ButtonS9" type="Button" parent="Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons"]
+layout_mode = 2
+text = "Slot S9"
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerStartNewGameSlot"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerStartNewGameSlot/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerStartNewGameSlot/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerStartNewGameSlot"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerStartNewGameSlot"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerStartNewGameSlot/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonContinue" to="." method="_on_button_continue_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonGames" to="Content/VBoxContainerMainMenu" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonGames" to="Content/VBoxContainerGames" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonStartNewGame" to="." method="_on_button_start_new_game_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonOptions" to="Content/VBoxContainerMainMenu" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonOptions" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonQuitGame" to="." method="_on_button_quit_game_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerGames/ButtonBack" to="Content/VBoxContainerMainMenu" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerGames/ButtonBack" to="Content/VBoxContainerGames" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerLoadGameSlot/ButtonBack" to="Content/VBoxContainerGames" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerLoadGameSlot/ButtonBack" to="Content/VBoxContainerLoadGameSlot" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerSelectChapter/ButtonBack" to="Content/VBoxContainerMainMenu" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerSelectChapter/ButtonBack" to="Content/VBoxContainerSelectChapter" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer/ButtonDifficulty" to="." method="_on_button_difficulty_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer/ButtonDevCommentary" to="." method="_on_button_dev_commentary_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGame/ScrollContainer/VBoxContainer/VBoxContainerButtons/ButtonStartGame" to="." method="_on_button_start_game_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGame/ButtonBack" to="Content/VBoxContainerSelectChapter" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGame/ButtonBack" to="Content/VBoxContainerStartNewGame" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonDifficulty" to="." method="_on_button_difficulty_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonMouse" to="Content/VBoxContainerOptions" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonMouse" to="Content/VBoxContainerOptionsMouse" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonInputMapping" to="Content/VBoxContainerOptions" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonInputMapping" to="Content/VBoxContainerOptionsInputMapping" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonAudio" to="Content/VBoxContainerOptions" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonAudio" to="Content/VBoxContainerOptionsAudio" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonVideo" to="Content/VBoxContainerOptions" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ScrollContainer/VBoxContainerButtons/ButtonVideo" to="Content/VBoxContainerOptionsVideo" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ButtonBack" to="Content/VBoxContainerMainMenu" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptions/ButtonBack" to="Content/VBoxContainerOptions" method="hide"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/MarginContainerMouse/VBoxContainer/HBoxContainer/HSliderMouseSensitivity" to="." method="_on_slider_mouse_sensitivity_value_changed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/ButtonInvertX" to="." method="_on_button_invert_x_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsMouse/ScrollContainer/VBoxContainer/ButtonInvertY" to="." method="_on_button_invert_y_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsMouse/ButtonBack" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsMouse/ButtonBack" to="Content/VBoxContainerOptionsMouse" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsInputMapping/ButtonBack" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsInputMapping/ButtonBack" to="Content/VBoxContainerOptionsInputMapping" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/ButtonSubtitles" to="." method="_on_button_subtitles_pressed"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerMasterVolume/VBoxContainer/HBoxContainer/HSliderMasterVolume" to="." method="_on_slider_master_volume_value_changed"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerGameVolume/VBoxContainer/HBoxContainer/HSliderGameVolume" to="." method="_on_slider_game_volume_value_changed"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCombatMusicVolume/VBoxContainer/HBoxContainer/HSliderCombatMusicVolume" to="." method="_on_slider_combat_music_volume_value_changed"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsAudio/ScrollContainer/VBoxContainer/MarginContainerCharacterVoiceVolume/VBoxContainer/HBoxContainer/HSliderCharacterVoiceVolume" to="." method="_on_slider_character_voice_volume_value_changed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsAudio/ButtonBack" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsAudio/ButtonBack" to="Content/VBoxContainerOptionsAudio" method="hide"]
+[connection signal="value_changed" from="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/MarginContainerFOV/VBoxContainer/HBoxContainer/HSliderFOV" to="." method="_on_slider_fov_value_changed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/ButtonGraphicsPreset" to="." method="_on_button_graphics_preset_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsVideo/ScrollContainer/VBoxContainer/ButtonLightSensitivityMode" to="." method="_on_button_light_sensitivity_mode_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsVideo/ButtonBack" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerOptionsVideo/ButtonBack" to="Content/VBoxContainerOptionsVideo" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGameSlot/ButtonBack" to="Content/VBoxContainerStartNewGame" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerStartNewGameSlot/ButtonBack" to="Content/VBoxContainerStartNewGameSlot" method="hide"]
