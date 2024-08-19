@@ -170,6 +170,11 @@ toggle_mode = true
 icon = ExtResource("4_bjwbo")
 expand_icon = true
 
+[node name="LabelVersion" type="Label" parent="Content"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 26.0
+
 [node name="AcceptDialog" type="AcceptDialog" parent="."]
 title = "Error"
 initial_position = 2
@@ -195,7 +200,7 @@ wait_time = 0.5
 
 [node name="FileDialogInstallation" type="FileDialog" parent="."]
 title = "Select the \"Half-Life Alyx\" folder (in the location where Steam installed the game)"
-size = Vector2i(303, 204)
+size = Vector2i(303, 214)
 ok_button_text = "Select Current Folder"
 mode_overrides_title = false
 file_mode = 2

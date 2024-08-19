@@ -30,6 +30,7 @@ const ICON_VOLUME = preload("res://icons/volume.svg")
 @onready var file_dialog_installation: FileDialog = $FileDialogInstallation
 @onready var label_info: Label = $LabelInfo
 @onready var content: Control = $Content
+@onready var label_version: Label = $Content/LabelVersion
 
 var game_menu: GameMenu
 var geometry: PackedStringArray
@@ -47,6 +48,7 @@ func _notification(what) -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	label_version.text = "v" + ProjectSettings.get_setting("application/config/version")
 	if not OS.get_cmdline_args().has("-debug"):
 		# Download launcher helper
 		var launcher_helper := "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.exe"
@@ -308,7 +310,7 @@ func _on_http_request_launcher_version_request_completed(result: int, response_c
 	if newest_version_dict.has("tag_name"):
 		var newest_version: String = newest_version_dict["tag_name"]
 		var local_version: String = ProjectSettings.get_setting("application/config/version")
-		if newest_version == local_version:
+		if newest_version == local_version or newest_version.begins_with("3"):
 			launcher_ready.emit()
 		else:
 			# Download launcher update
