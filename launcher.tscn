@@ -200,7 +200,7 @@ wait_time = 0.5
 
 [node name="FileDialogInstallation" type="FileDialog" parent="."]
 title = "Select the \"Half-Life Alyx\" folder (in the location where Steam installed the game)"
-size = Vector2i(303, 214)
+size = Vector2i(303, 222)
 ok_button_text = "Select Current Folder"
 mode_overrides_title = false
 file_mode = 2

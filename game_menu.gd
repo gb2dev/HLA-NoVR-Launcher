@@ -172,8 +172,10 @@ func receive_menu_command(command: PackedStringArray) -> void:
 		for control: Control in content.get_children():
 			control.visible = false
 		vbox_main_menu.visible = true
+		visible = true
 	elif command[1] == "hide":
-		content.visible = false
+		# content.visible = false
+		visible = false
 
 
 func send_game_command(command: String) -> void:

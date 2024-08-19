@@ -86,7 +86,6 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if not geometry.is_empty():
-		game_menu.visible = true
 		game_menu.position = Vector2(geometry[0].to_int(), geometry[1].to_int())
 		game_menu.size = Vector2(geometry[2].to_int(), geometry[3].to_int())
 
@@ -238,6 +237,7 @@ func _on_button_play_pressed() -> void:
 		game_menu = GAME_MENU_SCENE.instantiate()
 		game_menu.launcher = self
 		add_child(game_menu)
+		game_menu.visible = true
 		var thread = Thread.new()
 		thread.start(_thread_helper)
 	)
