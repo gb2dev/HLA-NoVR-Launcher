@@ -87,7 +87,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not geometry.is_empty():
 		game_menu.position = Vector2(geometry[0].to_int(), geometry[1].to_int())
-		game_menu.size = Vector2(geometry[2].to_int(), geometry[3].to_int())
+		game_menu.size = Vector2(geometry[2].to_int() + 1, geometry[3].to_int() + 1)
 
 
 func _input(event: InputEvent) -> void:
