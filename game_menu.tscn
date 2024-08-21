@@ -14,7 +14,6 @@ border_color = Color(0.811765, 0.627451, 0.0745098, 1)
 [node name="Window" type="Window"]
 transparent_bg = true
 title = "Game Menu"
-initial_position = 2
 size = Vector2i(960, 600)
 borderless = true
 transparent = true

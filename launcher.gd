@@ -37,6 +37,7 @@ var geometry: PackedStringArray
 var pid: int
 var installation_path: String
 var local_version_content: String
+var mod_needs_install := false
 
 
 func _notification(what) -> void:
@@ -62,14 +63,28 @@ func _ready() -> void:
 
 	launcher_ready.connect(func():
 		timer_download_progress_launcher.stop()
-		label_info.visible = true
+		setup_config()
+		content.visible = true
+		background_video.play()
+	, CONNECT_ONE_SHOT)
+
+	mod_ready_to_play.connect(func():
+		# Launch Game
+		custom_launch_options.text = custom_launch_options.text.replace("-fullscreen", "")
+		OS.shell_open("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + custom_launch_options.text + " -window")
+		game_menu = GAME_MENU_SCENE.instantiate()
+		game_menu.launcher = self
+		add_child(game_menu)
+		game_menu.visible = true
+		var thread = Thread.new()
+		thread.start(_thread_helper)
+		background_video.stop()
+		content.visible = false
 		label_info.text = "Please confirm the launch of the game on Steam.
 		If you accidentally canceled it or encounter any problems,
 		close the game and restart this launcher."
-		content.visible = true
-		background_video.play()
-		setup_config()
-	)
+		label_info.visible = true
+	, CONNECT_ONE_SHOT)
 
 	if OS.get_cmdline_args().has("-debug"):
 		launcher_ready.emit()
@@ -86,7 +101,8 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if not geometry.is_empty():
-		game_menu.position = Vector2(geometry[0].to_int(), geometry[1].to_int())
+		var screen_pos := DisplayServer.screen_get_position()
+		game_menu.position = Vector2(geometry[0].to_int() + screen_pos.x, geometry[1].to_int() + screen_pos.y)
 		game_menu.size = Vector2(geometry[2].to_int() + 1, geometry[3].to_int() + 1)
 
 
@@ -228,20 +244,6 @@ func _on_button_play_pressed() -> void:
 		accept_dialog.show()
 		return
 
-	mod_ready_to_play.connect(func():
-		# Launch Game
-		background_video.stop()
-		content.visible = false
-		custom_launch_options.text = custom_launch_options.text.replace("-fullscreen", "")
-		OS.shell_open("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + custom_launch_options.text + " -window")
-		game_menu = GAME_MENU_SCENE.instantiate()
-		game_menu.launcher = self
-		add_child(game_menu)
-		game_menu.visible = true
-		var thread = Thread.new()
-		thread.start(_thread_helper)
-	)
-
 	if OS.get_cmdline_args().has("-debug"):
 		mod_ready_to_play.emit()
 		return
@@ -249,7 +251,11 @@ func _on_button_play_pressed() -> void:
 	# Get local mod version
 	var local_version := installation_path + "/game/hlvr/scripts/vscripts/version.lua"
 	var file = FileAccess.open(local_version, FileAccess.READ)
-	local_version_content = "" if file == null else file.get_as_text()
+	local_version_content = ""
+	if file == null:
+		mod_needs_install = true
+	else:
+		local_version_content = file.get_as_text()
 
 	# Request newest mod version
 	var newest_version := "https://raw.githubusercontent.com/gb2dev/HLA-NoVR/" + mod_branch.text + "/game/hlvr/scripts/vscripts/version.lua"
@@ -320,7 +326,7 @@ func _on_http_request_launcher_version_request_completed(result: int, response_c
 			if error != OK:
 				accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error
 				accept_dialog.show()
-				launcher_ready.emit()
+			launcher_ready.emit()
 	else:
 		accept_dialog.dialog_text = "Could not get latest launcher version." % result
 		accept_dialog.show()
@@ -351,7 +357,8 @@ func _on_http_request_mod_version_request_completed(result: int, response_code: 
 	if result != HTTPRequest.RESULT_SUCCESS:
 		accept_dialog.dialog_text = "An error (%s) occurred in the HTTP request." % result
 		accept_dialog.show()
-		mod_ready_to_play.emit()
+		if not mod_needs_install:
+			mod_ready_to_play.emit()
 		return
 
 	var newest_version_content = body.get_string_from_utf8()
@@ -368,7 +375,7 @@ func _on_http_request_mod_version_request_completed(result: int, response_code: 
 			if error != OK:
 				accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error
 				accept_dialog.show()
-	else:
+	elif not mod_needs_install:
 		mod_ready_to_play.emit()
 
 

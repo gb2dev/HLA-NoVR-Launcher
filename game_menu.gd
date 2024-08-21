@@ -54,7 +54,7 @@ const CHAPTER_MAPS = [
 
 var launcher: Launcher
 var remapping_input := false
-var chapters_unlocked: int = 11 # DEBUG
+var chapters_unlocked: int = 11 # TODO
 var difficulty := 2
 var dev_commentary := false
 var invert_x := false
