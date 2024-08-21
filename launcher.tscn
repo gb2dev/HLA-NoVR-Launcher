@@ -189,14 +189,21 @@ wait_time = 0.5
 wait_time = 0.5
 
 [node name="HTTPRequestLauncherHelper" type="HTTPRequest" parent="."]
+use_threads = true
 
 [node name="HTTPRequestLauncherVersion" type="HTTPRequest" parent="."]
+use_threads = true
 
 [node name="HTTPRequestLauncher" type="HTTPRequest" parent="."]
+download_chunk_size = 655360
+use_threads = true
 
 [node name="HTTPRequestModVersion" type="HTTPRequest" parent="."]
+use_threads = true
 
 [node name="HTTPRequestMod" type="HTTPRequest" parent="."]
+download_chunk_size = 655360
+use_threads = true
 
 [node name="FileDialogInstallation" type="FileDialog" parent="."]
 title = "Select the \"Half-Life Alyx\" folder (in the location where Steam installed the game)"
