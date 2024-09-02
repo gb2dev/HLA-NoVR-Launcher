@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="HLA-NoVR-Launcher"
-config/version="4.0.2"
+config/version="4.0.3"
 run/main_scene="res://launcher.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 run/max_fps=30

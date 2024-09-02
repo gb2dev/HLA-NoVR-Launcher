@@ -16,6 +16,7 @@ transparent_bg = true
 title = "Game Menu"
 size = Vector2i(960, 600)
 borderless = true
+always_on_top = true
 transparent = true
 unfocusable = true
 script = ExtResource("1_w3wyu")

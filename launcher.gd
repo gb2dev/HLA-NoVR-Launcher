@@ -101,9 +101,10 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if not geometry.is_empty():
+		var scaling := DisplayServer.screen_get_dpi() / 96.0
 		var screen_pos := DisplayServer.screen_get_position()
 		game_menu.position = Vector2(geometry[0].to_int() + screen_pos.x, geometry[1].to_int() + screen_pos.y)
-		game_menu.size = Vector2(geometry[2].to_int() + 1, geometry[3].to_int() + 1)
+		game_menu.size = Vector2(geometry[2].to_int() * scaling + 1, geometry[3].to_int() * scaling + 1)
 
 
 func _input(event: InputEvent) -> void:
