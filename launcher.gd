@@ -31,6 +31,7 @@ const ICON_VOLUME = preload("res://icons/volume.svg")
 @onready var label_info: Label = $LabelInfo
 @onready var content: Control = $Content
 @onready var label_version: Label = $Content/LabelVersion
+@onready var check_box_force_mod_reinstall: CheckBox = $Content/VBoxContainer2/CheckBoxForceModReinstall
 
 var game_menu: GameMenu
 var geometry: PackedStringArray
@@ -52,7 +53,7 @@ func _ready() -> void:
 	label_version.text = "v" + ProjectSettings.get_setting("application/config/version")
 	if not OS.get_cmdline_args().has("-debug"):
 		# Download launcher helper
-		var launcher_helper := "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.exe"
+		var launcher_helper := "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.zip"
 		var error_helper = http_request_launcher_helper.request(launcher_helper)
 		if error_helper != OK:
 			accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_helper
@@ -245,7 +246,7 @@ func _on_button_play_pressed() -> void:
 		accept_dialog.show()
 		return
 
-	if OS.get_cmdline_args().has("-debug"):
+	if OS.get_cmdline_args().has("-debug") and not check_box_force_mod_reinstall.button_pressed:
 		mod_ready_to_play.emit()
 		return
 
@@ -253,7 +254,7 @@ func _on_button_play_pressed() -> void:
 	var local_version := installation_path + "/game/hlvr/scripts/vscripts/version.lua"
 	var file = FileAccess.open(local_version, FileAccess.READ)
 	local_version_content = ""
-	if file == null:
+	if file == null or check_box_force_mod_reinstall.button_pressed:
 		mod_needs_install = true
 	else:
 		local_version_content = file.get_as_text()
@@ -294,13 +295,29 @@ func _on_http_request_launcher_helper_request_completed(result: int, response_co
 		await check_for_helper()
 		return
 
-	var file := FileAccess.open("HLA-NoVR-Launcher-Helper.exe", FileAccess.WRITE)
+	var file := FileAccess.open("HLA-NoVR-Launcher-Helper.zip", FileAccess.WRITE)
 	if not file:
 		accept_dialog.dialog_text = "Launcher helper file could not be saved."
 		accept_dialog.show()
 		await check_for_helper()
 		return
 	file.store_buffer(body)
+	file.flush()
+	# Unzip launcher helper files
+	var reader := ZIPReader.new()
+	var err := reader.open("HLA-NoVR-Launcher-Helper.zip")
+	if err != OK:
+		accept_dialog.dialog_text = "An error (%s) occurred while opening the launcher helper files archive." % err
+		accept_dialog.show()
+		await check_for_helper()
+		return
+	for path in reader.get_files():
+		var bytes := reader.read_file(path)
+		var extracted_file := FileAccess.open(path, FileAccess.WRITE)
+		extracted_file.store_buffer(bytes)
+	reader.close()
+	file.close()
+	DirAccess.remove_absolute(OS.get_executable_path().get_base_dir() + "/HLA-NoVR-Launcher-Helper.zip")
 
 	launcher_helper_ready.emit()
 
@@ -327,7 +344,7 @@ func _on_http_request_launcher_version_request_completed(result: int, response_c
 			if error != OK:
 				accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error
 				accept_dialog.show()
-			launcher_ready.emit()
+				launcher_ready.emit()
 	else:
 		accept_dialog.dialog_text = "Could not get latest launcher version." % result
 		accept_dialog.show()

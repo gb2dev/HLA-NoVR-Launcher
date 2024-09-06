@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="HLA-NoVR-Launcher"
-config/version="4.0.3"
+config/version="4.0.5"
 run/main_scene="res://launcher.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 run/max_fps=30
@@ -26,10 +26,6 @@ window/size/viewport_height=600
 window/size/resizable=false
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
-
-[editor]
-
-run/main_run_args="-debug"
 
 [gui]
 

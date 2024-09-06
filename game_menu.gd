@@ -142,6 +142,7 @@ func _thread_game_output() -> void:
 			else:
 				command = line.split("[GameMenu] ")
 			if command.size() > 1:
+				command = command[1].split(" ")
 				receive_menu_command.bind(command).call_deferred()
 
 
@@ -166,16 +167,18 @@ func retrieve_save_files(slot: String) -> void:
 
 
 func receive_menu_command(command: PackedStringArray) -> void:
-	if command[1] == "main_menu_mode":
+	if command[0] == "main_menu_mode":
 		await get_tree().create_timer(5.0).timeout
 		content.visible = true
 		for control: Control in content.get_children():
 			control.visible = false
 		vbox_main_menu.visible = true
 		visible = true
-	elif command[1] == "hide":
+	elif command[0] == "hide":
 		# content.visible = false
 		visible = false
+	elif command[0] == "give_achievement":
+		OS.execute("SAM.Game.exe", ["546560", command[1]], [])
 
 
 func send_game_command(command: String) -> void:
