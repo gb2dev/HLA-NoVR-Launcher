@@ -5,6 +5,7 @@ extends Control
 signal launcher_helper_ready
 signal launcher_ready
 signal mod_ready_to_play
+signal file_dialog_installation_closed
 
 const CONFIG_PATH = "user://config.ini"
 const GAME_MENU_SCENE = preload("res://game_menu.tscn")
@@ -39,6 +40,8 @@ var pid: int
 var installation_path: String
 var local_version_content: String
 var mod_needs_install := false
+var launcher_helper_executable_name := "HLA-NoVR-Launcher-Helper.exe"
+var os_platform_unix := false
 
 
 func _notification(what) -> void:
@@ -50,10 +53,20 @@ func _notification(what) -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	var os_name := OS.get_name()
+	os_platform_unix = os_name.contains("Linux") or os_name.contains("BSD")
+	if os_platform_unix:
+		launcher_helper_executable_name = "./HLA-NoVR-Launcher-Helper-Linux"
+
+	file_dialog_installation.dir_selected.connect(file_dialog_installation_closed.emit)
+	file_dialog_installation.canceled.connect(file_dialog_installation_closed.emit)
+
 	label_version.text = "v" + ProjectSettings.get_setting("application/config/version")
 	if not OS.get_cmdline_args().has("-debug"):
 		# Download launcher helper
 		var launcher_helper := "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.zip"
+		if os_platform_unix:
+			launcher_helper = "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper-Linux.zip"
 		var error_helper = http_request_launcher_helper.request(launcher_helper)
 		if error_helper != OK:
 			accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_helper
@@ -115,7 +128,7 @@ func _input(event: InputEvent) -> void:
 		var input := OS.get_keycode_string(event.keycode)
 		input = input.to_upper().replace(" ", "_")
 		game_menu.input_entered.emit(input)
-		OS.execute("HLA-NoVR-Launcher-Helper.exe", ["focusgame"], [])
+		OS.execute(launcher_helper_executable_name, ["focusgame"], [])
 		label_info.text = ""
 	elif event is InputEventMouseButton and event.is_pressed() and game_menu.remapping_input:
 		var button_index: int = event.button_index
@@ -125,12 +138,12 @@ func _input(event: InputEvent) -> void:
 			return
 		var input := "MOUSE%s" % button_index
 		game_menu.input_entered.emit(input)
-		OS.execute("HLA-NoVR-Launcher-Helper.exe", ["focusgame"], [])
+		OS.execute(launcher_helper_executable_name, ["focusgame"], [])
 		label_info.text = ""
 
 
 func _thread_helper() -> void:
-	var exec := OS.execute_with_pipe("HLA-NoVR-Launcher-Helper.exe", [])
+	var exec := OS.execute_with_pipe(launcher_helper_executable_name, [])
 	if exec.is_empty():
 		accept_dialog.set_deferred(&"dialog_text", "HLA-NoVR-Launcher-Helper is missing.")
 		accept_dialog.show.call_deferred()
@@ -171,7 +184,7 @@ func _thread_install_mod() -> void:
 
 
 func check_for_helper() -> void:
-	if FileAccess.file_exists("HLA-NoVR-Launcher-Helper.exe"):
+	if FileAccess.file_exists(launcher_helper_executable_name):
 		launcher_helper_ready.emit()
 	else:
 		await accept_dialog.visibility_changed
@@ -240,6 +253,7 @@ func _on_button_play_pressed() -> void:
 	if not verify_installation_path(installation_path):
 		background_video.paused = true
 		file_dialog_installation.show()
+		await file_dialog_installation_closed
 		background_video.paused = false
 	if not verify_installation_path(installation_path):
 		accept_dialog.dialog_text = "Invalid game installation."
@@ -339,6 +353,8 @@ func _on_http_request_launcher_version_request_completed(result: int, response_c
 		else:
 			# Download launcher update
 			var launcher := "https://github.com/gb2dev/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.exe"
+			if os_platform_unix:
+				launcher = "https://github.com/gb2dev/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Linux"
 			timer_download_progress_launcher.start()
 			var error = http_request_launcher.request(launcher)
 			if error != OK:
@@ -364,10 +380,10 @@ func _on_http_request_launcher_request_completed(result: int, response_code: int
 		launcher_ready.emit()
 		return
 
-	var file := FileAccess.open("HLA-NoVR-Launcher.exe.update", FileAccess.WRITE)
+	var file := FileAccess.open("HLA-NoVR-Launcher-Linux.update" if os_platform_unix else "HLA-NoVR-Launcher.exe.update", FileAccess.WRITE)
 	file.store_buffer(body)
 
-	var pid = OS.create_process("HLA-NoVR-Launcher-Helper.exe", ["update"])
+	var pid = OS.create_process(launcher_helper_executable_name, ["update"])
 	get_tree().quit()
 
 

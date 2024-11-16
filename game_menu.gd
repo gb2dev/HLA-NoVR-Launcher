@@ -103,7 +103,7 @@ func _ready() -> void:
 					get_tree().set_group(&"InputButton", &"disabled", true)
 					remapping_input = true
 					launcher.label_info.text = "Please press any key/button..."
-					OS.execute("HLA-NoVR-Launcher-Helper.exe", ["focuslauncher"], [])
+					OS.execute(launcher.launcher_helper_executable_name, ["focuslauncher"], [])
 					input_entered.connect(func(input: String):
 						get_tree().set_group(&"InputButton", "disabled", false)
 						remapping_input = false
@@ -125,7 +125,7 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
-		OS.execute("HLA-NoVR-Launcher-Helper.exe", ["focusgame"], [])
+		OS.execute(launcher.launcher_helper_executable_name, ["focusgame"], [])
 
 
 func _thread_game_output() -> void:
@@ -178,7 +178,7 @@ func receive_menu_command(command: PackedStringArray) -> void:
 		# content.visible = false
 		visible = false
 	elif command[0] == "give_achievement":
-		OS.execute("SAM.Game.exe", ["546560", command[1]], [])
+		OS.execute("SAM.Game" if launcher.os_platform_unix else "SAM.Game.exe", ["546560", command[1]], [])
 
 
 func send_game_command(command: String) -> void:
@@ -190,7 +190,7 @@ func send_game_script(content: String) -> void:
 	if menu_exec:
 		menu_exec.store_string(content)
 		menu_exec.close()
-		OS.execute("HLA-NoVR-Launcher-Helper.exe", ["exec"], [])
+		OS.execute(launcher.launcher_helper_executable_name, ["exec"], [])
 
 
 func write_to_bindings_file(key: String, value: Variant) -> void:
