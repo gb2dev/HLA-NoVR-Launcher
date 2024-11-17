@@ -14,7 +14,7 @@ If you use a Steam Deck/Linux, see the [FAQ](https://docs.google.com/document/d/
 
 ## Important Information
 
-In case you need to select a folder after clicking "Play" in the launcher, select your Half-Life: Alyx installation folder (the one with the folders `game` and `content` inside).
+In case you need to select a folder after clicking "Play" in the launcher, select your "Half-Life Alyx" folder (it's located where Steam installed the game and it has the folders `game` and `content` inside of it).
 
 Only official copies of the game bought on Steam are supported.
 
