@@ -85,6 +85,7 @@ func _ready() -> void:
 	mod_ready_to_play.connect(func():
 		# Launch Game
 		custom_launch_options.text = custom_launch_options.text.replace("-fullscreen", "")
+		custom_launch_options.text = custom_launch_options.text.replace("-nowindow", "")
 		OS.shell_open("steam://run/546560// -novr +vr_enable_fake_vr 1 -condebug +hlvr_main_menu_delay 999999 +hlvr_main_menu_delay_with_intro 999999 +hlvr_main_menu_delay_with_intro_and_saves 999999 " + custom_launch_options.text + " -window")
 		game_menu = GAME_MENU_SCENE.instantiate()
 		game_menu.launcher = self
