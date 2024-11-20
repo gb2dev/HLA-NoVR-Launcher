@@ -152,6 +152,7 @@ func _thread_helper() -> void:
 	pid = exec["pid"]
 	var file: FileAccess = exec["stdio"]
 	geometry.resize(4)
+	var escape := 0
 	while true:
 		var line := file.get_line()
 		if not line.is_empty():
@@ -161,6 +162,12 @@ func _thread_helper() -> void:
 					geometry[i] = command[i+1]
 			elif command[0] == "exit":
 				get_tree().quit()
+			elif command[0] == "escape":
+				var new_escape := int(command[1])
+				if escape != new_escape:
+					escape = new_escape
+					if escape < 0:
+						game_menu.toggle_pause_menu.call_deferred()
 			else:
 				print(command)
 

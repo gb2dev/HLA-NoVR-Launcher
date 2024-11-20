@@ -1,2 +1,4 @@
 .godot
 *.exe
+*.zip
+*.dll

@@ -51,6 +51,8 @@ const CHAPTER_MAPS = [
 @onready var vbox_load_game_slot_buttons: VBoxContainer = $Content/VBoxContainerLoadGameSlot/ScrollContainer/VBoxContainerButtons
 @onready var vbox_start_new_game_slot: VBoxContainer = $Content/VBoxContainerStartNewGameSlot
 @onready var vbox_start_new_game_slot_buttons: VBoxContainer = $Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons
+@onready var vbox_options: VBoxContainer = $Content/VBoxContainerOptions
+@onready var button_continue: Button = $Content/VBoxContainerMainMenu/ButtonContinue
 
 var launcher: Launcher
 var remapping_input := false
@@ -63,6 +65,7 @@ var subtitles := 0
 var graphics_preset := 0
 var light_sensitivity_mode := false
 var selected_chapter: int
+var pause_menu_mode := false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -168,14 +171,19 @@ func retrieve_save_files(slot: String) -> void:
 
 func receive_menu_command(command: PackedStringArray) -> void:
 	if command[0] == "main_menu_mode":
+		pause_menu_mode = false
 		await get_tree().create_timer(5.0).timeout
+		# TODO: Continue in main menu should load most recent save
+		button_continue.visible = false
 		content.visible = true
 		for control: Control in content.get_children():
 			control.visible = false
 		vbox_main_menu.visible = true
 		visible = true
 	elif command[0] == "hide":
-		# content.visible = false
+		# Pause Menu Mode
+		pause_menu_mode = true
+		button_continue.visible = true
 		visible = false
 	elif command[0] == "give_achievement":
 		OS.execute("SAM.Game" if launcher.os_platform_unix else "SAM.Game.exe", ["546560", command[1]], [])
@@ -296,9 +304,29 @@ func read_bindings_file() -> void:
 						_on_button_invert_y_pressed()
 
 
+func toggle_pause_menu():
+	if visible:
+		send_game_command("gameui_allowescape;gameui_preventescapetoshow;gameui_hide;r_drawvgui 1;unpause")
+		visible = false
+		content.visible = false
+	else:
+		# Go back to root pause menu layer
+		vbox_main_menu.show()
+		for vbox: VBoxContainer in content.get_children():
+			if vbox != vbox_main_menu:
+				vbox.hide()
+
+		send_game_command("gameui_preventescape;gameui_allowescapetoshow;gameui_activate;r_drawvgui 0;pause")
+		visible = true
+		content.visible = true
+
+
 func _on_button_continue_pressed() -> void:
-	# TODO: Implement proper loading system
-	send_game_command("load quick")
+	if pause_menu_mode:
+		toggle_pause_menu()
+	else:
+		# TODO: Implement proper loading system
+		send_game_command("load quick")
 
 
 func _on_button_start_new_game_pressed() -> void:

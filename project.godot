@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="HLA-NoVR-Launcher"
-config/version="4.1"
+config/version="4.2"
 run/main_scene="res://launcher.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -26,6 +26,10 @@ window/size/viewport_height=600
 window/size/resizable=false
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
+
+[editor]
+
+run/main_run_args="-debug"
 
 [gui]
 
