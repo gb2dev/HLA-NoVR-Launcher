@@ -106,8 +106,12 @@ func _ready() -> void:
 					get_tree().set_group(&"InputButton", &"disabled", true)
 					remapping_input = true
 					launcher.label_info.text = "Please press any key/button..."
+					always_on_top = false
 					OS.execute(launcher.launcher_helper_executable_name, ["focuslauncher"], [])
 					input_entered.connect(func(input: String):
+						hide()
+						always_on_top = true
+						show()
 						get_tree().set_group(&"InputButton", "disabled", false)
 						remapping_input = false
 						button.text = tr(binding[0]) + ": " + input
