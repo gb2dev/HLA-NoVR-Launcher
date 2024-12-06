@@ -53,6 +53,7 @@ const CHAPTER_MAPS = [
 @onready var vbox_start_new_game_slot_buttons: VBoxContainer = $Content/VBoxContainerStartNewGameSlot/ScrollContainer/VBoxContainerButtons
 @onready var vbox_options: VBoxContainer = $Content/VBoxContainerOptions
 @onready var button_continue: Button = $Content/VBoxContainerMainMenu/ButtonContinue
+@onready var vbox_addons_buttons: VBoxContainer = $Content/VBoxContainerAddons/ScrollContainer/VBoxContainer/VBoxContainerButtons
 
 var launcher: Launcher
 var remapping_input := false
@@ -422,3 +423,7 @@ func _on_button_light_sensitivity_mode_pressed() -> void:
 
 func _on_button_start_game_pressed() -> void:
 	vbox_start_new_game_slot.show()
+
+
+func _on_button_workshop_pressed() -> void:
+	OS.shell_open("steam://url/SteamWorkshopPage/546560")

@@ -109,6 +109,117 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 0.854902, 0.419608, 1)
 
+[node name="VBoxContainerAddons" type="VBoxContainer" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -178.0
+offset_right = 175.0
+offset_bottom = 178.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRectTopBar" type="ColorRect" parent="Content/VBoxContainerAddons"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+color = Color(1, 0.855, 0.42, 1)
+
+[node name="LabelTitle" type="Label" parent="Content/VBoxContainerAddons/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -9.0
+offset_right = -2.0
+offset_bottom = 9.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
+theme_override_font_sizes/font_size = 13
+text = "Addons"
+horizontal_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerAddons"]
+custom_minimum_size = Vector2(0, 276)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Content/VBoxContainerAddons/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonWorkshop" type="Button" parent="Content/VBoxContainerAddons/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Workshop"
+
+[node name="ColorRectSeparator" type="ColorRect" parent="Content/VBoxContainerAddons/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.45098, 0.34902, 0.0392157, 1)
+
+[node name="VBoxContainerButtons" type="VBoxContainer" parent="Content/VBoxContainerAddons/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ControlBottomRightCorner" type="Control" parent="Content/VBoxContainerAddons"]
+layout_mode = 2
+
+[node name="ColorRectCorner1" type="ColorRect" parent="Content/VBoxContainerAddons/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ColorRectCorner2" type="ColorRect" parent="Content/VBoxContainerAddons/ControlBottomRightCorner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 180.0
+offset_top = -29.0
+offset_right = 186.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.854902, 0.419608, 1)
+
+[node name="ControlSpacer" type="Control" parent="Content/VBoxContainerAddons"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonBack" type="Button" parent="Content/VBoxContainerAddons"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back"
+
+[node name="PanelBorder" type="Panel" parent="Content/VBoxContainerAddons/ButtonBack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
+
 [node name="VBoxContainerGames" type="VBoxContainer" parent="Content"]
 visible = false
 layout_mode = 1
@@ -1504,7 +1615,12 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_dl8s3")
 [connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonStartNewGame" to="." method="_on_button_start_new_game_pressed"]
 [connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonOptions" to="Content/VBoxContainerMainMenu" method="hide"]
 [connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonOptions" to="Content/VBoxContainerOptions" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonAddons" to="Content/VBoxContainerMainMenu" method="hide"]
+[connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonAddons" to="Content/VBoxContainerAddons" method="show"]
 [connection signal="pressed" from="Content/VBoxContainerMainMenu/ButtonQuitGame" to="." method="_on_button_quit_game_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerAddons/ScrollContainer/VBoxContainer/ButtonWorkshop" to="." method="_on_button_workshop_pressed"]
+[connection signal="pressed" from="Content/VBoxContainerAddons/ButtonBack" to="Content/VBoxContainerMainMenu" method="show"]
+[connection signal="pressed" from="Content/VBoxContainerAddons/ButtonBack" to="Content/VBoxContainerAddons" method="hide"]
 [connection signal="pressed" from="Content/VBoxContainerGames/ButtonBack" to="Content/VBoxContainerMainMenu" method="show"]
 [connection signal="pressed" from="Content/VBoxContainerGames/ButtonBack" to="Content/VBoxContainerGames" method="hide"]
 [connection signal="pressed" from="Content/VBoxContainerLoadGameSlot/ButtonBack" to="Content/VBoxContainerGames" method="show"]
