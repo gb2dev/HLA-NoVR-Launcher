@@ -896,6 +896,19 @@ theme_override_font_sizes/font_size = 13
 text = "Mouse"
 horizontal_alignment = 2
 
+[node name="LabelWarning" type="Label" parent="Content/VBoxContainerOptionsMouse/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -9.0
+offset_right = 350.0
+offset_bottom = 9.0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 13
+text = "NOTE: INVERT REQUIRES LOAD/RESTART TO APPLY"
+
 [node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsMouse"]
 custom_minimum_size = Vector2(0, 276)
 layout_mode = 2
@@ -1035,6 +1048,19 @@ theme_override_colors/font_color = Color(0.329412, 0.239216, 0.0941176, 1)
 theme_override_font_sizes/font_size = 13
 text = "Input Mapping"
 horizontal_alignment = 2
+
+[node name="LabelWarning" type="Label" parent="Content/VBoxContainerOptionsInputMapping/ColorRectTopBar"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -9.0
+offset_right = 78.0
+offset_bottom = 9.0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 13
+text = "NOTE: REQUIRES LOAD/RESTART TO APPLY"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Content/VBoxContainerOptionsInputMapping"]
 custom_minimum_size = Vector2(0, 276)
