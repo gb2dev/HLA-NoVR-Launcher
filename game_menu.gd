@@ -126,11 +126,6 @@ func _ready() -> void:
 	thread.start(_thread_game_output)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		OS.execute(launcher.launcher_helper_executable_name, ["focusgame"], [])
