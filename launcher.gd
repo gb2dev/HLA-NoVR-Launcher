@@ -128,7 +128,9 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed() and game_menu.remapping_input:
 		var input := OS.get_keycode_string(event.keycode)
 		input = input.to_upper().replace(" ", "_")
-		game_menu.input_entered.emit(input)
+		if event.location == 2:
+			input = "R" + input
+		game_menu.input_entered.emit(translate_key_name(input))
 		OS.execute(launcher_helper_executable_name, ["focusgame"], [])
 		label_info.text = ""
 	elif event is InputEventMouseButton and event.is_pressed() and game_menu.remapping_input:
@@ -255,6 +257,22 @@ func setup_config() -> void:
 		)
 		config.save(CONFIG_PATH)
 	)
+
+
+func translate_key_name(input: String) -> String:
+	match input:
+		"UP": return "UPARROW"
+		"DOWN": return "DOWNARROW"
+		"LEFT": return "LEFTARROW"
+		"RIGHT": return "RIGHTARROW"
+		"DELETE": return "DEL"
+		"INSERT": return "INS"
+		"PAGEUP": return "PGUP"
+		"PAGEDOWN": return "PGDOWN"
+		"KP_ADD": return "KP_PLUS"
+		"KP_SUBTRACT": return "KP_MINUS"
+		"KP_DIVIDE": return "KP_SLASH"
+	return input
 
 
 func _on_button_play_pressed() -> void:
