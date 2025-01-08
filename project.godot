@@ -30,7 +30,6 @@ window/per_pixel_transparency/allowed=true
 [editor]
 
 run/main_run_args="-debug"
-export/convert_text_resources_to_binary=false
 
 [gui]
 
@@ -39,7 +38,7 @@ theme/custom_font="res://fonts/DINish-Bold.otf"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://translations.de.translation", "res://translations.en.translation")
+locale/translations=PackedStringArray("res://translations.de.translation", "res://translations.en.translation", "res://translations.ru.translation")
 
 [rendering]
 

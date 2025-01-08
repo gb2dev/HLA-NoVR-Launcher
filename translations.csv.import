@@ -6,10 +6,10 @@ uid="uid://dqdrfcfa8xhtu"
 
 [deps]
 
-files=["res://translations.en.translation", "res://translations.de.translation"]
+files=["res://translations.en.translation", "res://translations.de.translation", "res://translations.ru.translation"]
 
 source_file="res://translations.csv"
-dest_files=["res://translations.en.translation", "res://translations.de.translation"]
+dest_files=["res://translations.en.translation", "res://translations.de.translation", "res://translations.ru.translation"]
 
 [params]
 
