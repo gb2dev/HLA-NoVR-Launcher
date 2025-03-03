@@ -11,6 +11,7 @@ const CONFIG_PATH = "user://config.ini"
 const GAME_MENU_SCENE = preload("res://game_menu.tscn")
 const ICON_MUTE = preload("res://icons/mute.svg")
 const ICON_VOLUME = preload("res://icons/volume.svg")
+const GITHUB_USER = "HLANoVR"
 
 @onready var config = ConfigFile.new()
 @onready var mod_branch: LineEdit = $Content/VBoxContainer2/LineEditModBranch
@@ -64,9 +65,9 @@ func _ready() -> void:
 	label_version.text = "v" + ProjectSettings.get_setting("application/config/version")
 	if not OS.get_cmdline_args().has("-debug"):
 		# Download launcher helper
-		var launcher_helper := "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.zip"
+		var launcher_helper := "https://github.com/" + GITHUB_USER + "/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper.zip"
 		if os_platform_unix:
-			launcher_helper = "https://github.com/gb2dev/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper-Linux.zip"
+			launcher_helper = "https://github.com/" + GITHUB_USER + "/HLA-NoVR-Launcher-Helper/releases/latest/download/HLA-NoVR-Launcher-Helper-Linux.zip"
 		var error_helper = http_request_launcher_helper.request(launcher_helper)
 		if error_helper != OK:
 			accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_helper
@@ -105,7 +106,7 @@ func _ready() -> void:
 		launcher_ready.emit()
 	else:
 		# Request newest launcher version
-		var newest_version := "https://api.github.com/repos/gb2dev/HLA-NoVR-Launcher/releases/latest"
+		var newest_version := "https://api.github.com/repos/" + GITHUB_USER + "/HLA-NoVR-Launcher/releases/latest"
 		var error_launcher = http_request_launcher_version.request(newest_version)
 		if error_launcher != OK:
 			accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error_launcher
@@ -300,7 +301,7 @@ func _on_button_play_pressed() -> void:
 		local_version_content = file.get_as_text()
 
 	# Request newest mod version
-	var newest_version := "https://raw.githubusercontent.com/gb2dev/HLA-NoVR/" + mod_branch.text + "/game/hlvr/scripts/vscripts/version.lua"
+	var newest_version := "https://raw.githubusercontent.com/" + GITHUB_USER + "/HLA-NoVR/" + mod_branch.text + "/game/hlvr/scripts/vscripts/version.lua"
 	var error = http_request_mod_version.request(newest_version)
 	if error != OK:
 		accept_dialog.dialog_text = "An error (%s) occurred while creating the HTTP request." % error
@@ -378,9 +379,9 @@ func _on_http_request_launcher_version_request_completed(result: int, response_c
 			launcher_ready.emit()
 		else:
 			# Download launcher update
-			var launcher := "https://github.com/gb2dev/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.exe"
+			var launcher := "https://github.com/" + GITHUB_USER + "/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher.exe"
 			if os_platform_unix:
-				launcher = "https://github.com/gb2dev/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Linux"
+				launcher = "https://github.com/" + GITHUB_USER + "/HLA-NoVR-Launcher/releases/latest/download/HLA-NoVR-Launcher-Linux"
 			timer_download_progress_launcher.start()
 			var error = http_request_launcher.request(launcher)
 			if error != OK:
@@ -428,7 +429,7 @@ func _on_http_request_mod_version_request_completed(result: int, response_code: 
 	button_play.disabled = true
 	mod_branch.editable = false
 	if install_mod:
-			var mod := "https://github.com/gb2dev/HLA-NoVR/archive/refs/heads/" + mod_branch.text + ".zip"
+			var mod := "https://github.com/" + GITHUB_USER + "/HLA-NoVR/archive/refs/heads/" + mod_branch.text + ".zip"
 			button_play.text = "Downloading..."
 			timer_download_progress_mod.start()
 			var error = http_request_mod.request(mod)
